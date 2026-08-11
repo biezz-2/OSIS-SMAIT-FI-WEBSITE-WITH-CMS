@@ -1,0 +1,1 @@
+{"version":3,"file":"sendJsonRpcError.d.ts","sourceRoot":"","sources":["../../../../src/services/mcp/utils/sendJsonRpcError.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,cAAc,EAAE,MAAM,WAAW,CAAC;AAChD,OAAO,EAAE,eAAe,EAAE,MAAM,iBAAiB,CAAC;AAElD,eAAO,MAAM,gBAAgB,GAC3B,KAAK,cAAc,EACnB,UAAU,MAAM,OAAO,eAAe,EACtC,gBAAgB,MAAM,KACrB,IAaF,CAAC"}

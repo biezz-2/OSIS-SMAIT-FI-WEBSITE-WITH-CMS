@@ -1,0 +1,148 @@
+{
+    "kind": "collectionType",
+    "collectionName": "program_kerjas",
+    "info": {
+        "singularName": "program-kerja",
+        "pluralName": "program-kerjas",
+        "displayName": "Program Kerja",
+        "description": ""
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "judul": {
+            "type": "string",
+            "required": true
+        },
+        "slug": {
+            "type": "uid",
+            "targetField": "judul",
+            "required": true
+        },
+        "kategori": {
+            "type": "enumeration",
+            "enum": [
+                "rutin",
+                "insidental"
+            ],
+            "required": true
+        },
+        "tujuan": {
+            "type": "richtext"
+        },
+        "golongan_target": {
+            "type": "string"
+        },
+        "teknis_pelaksanaan": {
+            "type": "richtext"
+        },
+        "evaluasi_form_url": {
+            "type": "string"
+        },
+        "dokumentasi": {
+            "type": "media",
+            "multiple": true,
+            "allowedTypes": ["images", "files", "videos", "audios"]
+        },
+        "enable_preview_dokumentasi": {
+            "type": "boolean",
+            "default": true
+        },
+        "tampilkan_evaluasi": {
+            "type": "boolean",
+            "default": true
+        },
+        "mode_ukuran_frame": {
+            "type": "enumeration",
+            "enum": [
+                "auto",
+                "contain",
+                "cover",
+                "square"
+            ],
+            "default": "auto"
+        },
+        "layout_grid_dokumentasi": {
+            "type": "enumeration",
+            "enum": [
+                "grid_3_col",
+                "grid_2_col",
+                "grid_4_col",
+                "grid_1_col",
+                "masonry"
+            ],
+            "default": "grid_3_col"
+        },
+        "tanggal_mulai": {
+            "type": "date"
+        },
+        "tanggal_selesai": {
+            "type": "date"
+        },
+        "jadwal_deskripsi": {
+            "type": "string"
+        },
+        "lokasi": {
+            "type": "string"
+        },
+        "status": {
+            "type": "enumeration",
+            "enum": [
+                "draft",
+                "published",
+                "archived"
+            ],
+            "default": "draft"
+        },
+        "tujuan_detail": {
+            "type": "component",
+            "repeatable": true,
+            "component": "shared.tujuan-detail"
+        },
+        "evaluasi_deskripsi": {
+            "type": "string"
+        },
+        "banner_image": {
+            "type": "media",
+            "multiple": false,
+            "allowedTypes": ["images", "files", "videos", "audios"]
+        },
+        "ketua_jabatan": {
+            "type": "string"
+        },
+        "ketua_foto": {
+            "type": "media",
+            "multiple": true,
+            "allowedTypes": ["images", "files", "videos", "audios"]
+        },
+        "bg_color": {
+            "type": "string"
+        },
+        "icon_color": {
+            "type": "string"
+        },
+        "sekbid": {
+            "type": "relation",
+            "relation": "manyToMany",
+            "target": "api::sekbid.sekbid",
+            "inversedBy": "program_kerjas"
+        },
+        "penanggung_jawab": {
+            "type": "relation",
+            "relation": "manyToMany",
+            "target": "api::anggota-osis.anggota-osis"
+        },
+        "enable_compression": {
+            "type": "boolean",
+            "default": true
+        },
+        "compression_quality": {
+            "type": "integer",
+            "min": 0,
+            "max": 100,
+            "default": 75
+        }
+    }
+}

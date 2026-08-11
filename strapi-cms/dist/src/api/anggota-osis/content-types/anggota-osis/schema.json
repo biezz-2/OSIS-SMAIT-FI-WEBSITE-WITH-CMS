@@ -1,0 +1,80 @@
+{
+    "kind": "collectionType",
+    "collectionName": "anggota_oses",
+    "info": {
+        "singularName": "anggota-osis",
+        "pluralName": "anggota-oses",
+        "displayName": "Anggota OSIS",
+        "description": ""
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "nama_lengkap": {
+            "type": "string",
+            "required": true
+        },
+        "jabatan": {
+            "type": "string",
+            "required": true
+        },
+        "divisi": {
+            "type": "enumeration",
+            "enum": [
+                "BPH",
+                "Kepala_Departemen",
+                "Sekbid_1",
+                "Sekbid_2",
+                "Sekbid_3",
+                "Sekbid_4",
+                "Sekbid_5",
+                "Sekbid_6",
+                "Sekbid_7",
+                "Sekbid_8"
+            ],
+            "required": true
+        },
+        "kelas": {
+            "type": "string"
+        },
+        "deskripsi": {
+            "type": "string"
+        },
+        "foto": {
+            "type": "media",
+            "multiple": false,
+            "allowedTypes": ["images", "files", "videos", "audios"]
+        },
+        "medsos_instagram": {
+            "type": "string"
+        },
+        "medsos_linkedin": {
+            "type": "string"
+        },
+        "medsos_twitter": {
+            "type": "string"
+        },
+        "periode": {
+            "type": "string",
+            "default": "2025-2026"
+        },
+        "status_aktif": {
+            "type": "enumeration",
+            "enum": [
+                "aktif",
+                "alumni"
+            ],
+            "default": "aktif"
+        },
+        "urutan": {
+            "type": "integer"
+        },
+        "sekbid": {
+            "type": "relation",
+            "relation": "manyToOne",
+            "target": "api::sekbid.sekbid"
+        }
+    }
+}

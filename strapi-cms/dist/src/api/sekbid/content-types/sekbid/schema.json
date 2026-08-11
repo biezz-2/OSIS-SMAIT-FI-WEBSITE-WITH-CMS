@@ -1,0 +1,102 @@
+{
+    "kind": "collectionType",
+    "collectionName": "sekbids",
+    "info": {
+        "singularName": "sekbid",
+        "pluralName": "sekbids",
+        "displayName": "Sekbid",
+        "description": ""
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "judul": {
+            "type": "string",
+            "required": true
+        },
+        "nomor": {
+            "type": "integer",
+            "required": true,
+            "unique": true,
+            "min": 1,
+            "max": 8
+        },
+        "visi": {
+            "type": "richtext"
+        },
+        "deskripsi": {
+            "type": "richtext"
+        },
+        "banner": {
+            "type": "media",
+            "multiple": false,
+            "allowedTypes": ["images", "files", "videos", "audios"]
+        },
+        "icon": {
+            "type": "media",
+            "multiple": false,
+            "allowedTypes": ["images", "files", "videos", "audios"]
+        },
+        "slug": {
+            "type": "uid",
+            "targetField": "judul",
+            "required": true
+        },
+        "warna": {
+            "type": "string"
+        },
+        "highlight_type": {
+            "type": "enumeration",
+            "enum": [
+                "showcase",
+                "terpopuler",
+                "none"
+            ]
+        },
+        "highlight_title": {
+            "type": "string"
+        },
+        "highlight_desc": {
+            "type": "string"
+        },
+        "program_kerjas": {
+            "type": "relation",
+            "relation": "manyToMany",
+            "target": "api::program-kerja.program-kerja",
+            "mappedBy": "sekbid"
+        },
+        "enable_compression": {
+            "type": "boolean",
+            "default": true
+        },
+        "compression_quality": {
+            "type": "integer",
+            "min": 0,
+            "max": 100,
+            "default": 75
+        },
+        "mode_ukuran_frame": {
+            "type": "enumeration",
+            "enum": [
+                "auto",
+                "contain",
+                "cover",
+                "square"
+            ],
+            "default": "auto"
+        },
+        "layout_grid_dokumentasi": {
+            "type": "enumeration",
+            "enum": [
+                "grid_3_col",
+                "grid_2_col",
+                "grid_4_col",
+                "grid_1_col",
+                "masonry"
+            ],
+            "default": "grid_3_col"
+        }
+    }
+}

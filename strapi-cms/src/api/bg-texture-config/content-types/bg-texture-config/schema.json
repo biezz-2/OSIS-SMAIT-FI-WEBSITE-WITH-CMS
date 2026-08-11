@@ -1,0 +1,49 @@
+{
+  "kind": "singleType",
+  "collectionName": "bg_texture_configs",
+  "info": {
+    "singularName": "bg-texture-config",
+    "pluralName": "bg-texture-configs",
+    "displayName": "Konfigurasi Background Texture",
+    "description": "Pengaturan background texture untuk halaman website"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "variant": {
+      "type": "enumeration",
+      "enum": [
+        "fabric-of-squares",
+        "grid-noise",
+        "inflicted",
+        "debut-light",
+        "groovepaper",
+        "none"
+      ],
+      "default": "fabric-of-squares"
+    },
+    "opacity": {
+      "type": "decimal",
+      "min": 0,
+      "max": 1,
+      "default": 0.5
+    },
+    "custom_bg_texture": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "applied_routes": {
+      "type": "text",
+      "default": "/*"
+    }
+  }
+}

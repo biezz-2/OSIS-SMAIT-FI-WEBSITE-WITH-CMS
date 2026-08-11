@@ -1,0 +1,72 @@
+{
+  "kind": "singleType",
+  "collectionName": "edufest_configs",
+  "info": {
+    "singularName": "edufest-config",
+    "pluralName": "edufest-configs",
+    "displayName": "Edufest Configuration",
+    "description": "Pengaturan Umum & Landing Content Edufest"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "default": "INFINITY - Edufest 2025"
+    },
+    "tagline": {
+      "type": "string",
+      "default": "Growing Talents Beyond Infinity"
+    },
+    "event_date": {
+      "type": "string",
+      "default": "13-14 Februari 2025"
+    },
+    "about_title": {
+      "type": "string",
+      "default": "About Edufest"
+    },
+    "about_text": {
+      "type": "text",
+      "default": "Edufest merupakan event rutin yang dilaksanakan oleh SMA IT Fithrah Insani dan SMK Informatika Fithrah Insani yang berisi kegiatan perlombaan untuk mewadahi bakat kreatif Siswa/i SMP/MTs sederajat dalam bidang Pendidikan dan Teknologi, serta melatih meningkatkan kepedulian terhadap sesama manusia melalui kegiatan amal."
+    },
+    "selayang_title": {
+      "type": "string",
+      "default": "Selayang Pandang"
+    },
+    "selayang_text": {
+      "type": "text",
+      "default": "Tema 'Ketakterbatasan Potensi Bakat Remaja' diangkat karena kekhawatiran mengenai remaja Indonesia yang takut mencoba hal baru, keluar dari zona nyamannya, dan malu peduli dengan lingkungan sekitar."
+    },
+    "background_audio": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "audios",
+        "files"
+      ]
+    },
+    "logo": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "location_name": {
+      "type": "string",
+      "default": "SMA dan SMK Fithrah Insani"
+    },
+    "maps_embed_url": {
+      "type": "text",
+      "default": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2984.2941894147434!2d107.52111289259334!3d-6.8650087692923354!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e68e489587729b1%3A0xa3166256027d8007!2sSMA%20dan%20SMK%20Fithrah%20Insani!5e1!3m2!1sid!2sid!4v1767604243358!5m2!1sid!2sid"
+    },
+    "scenes": {
+      "type": "component",
+      "repeatable": true,
+      "component": "edufest.scene"
+    }
+  }
+}

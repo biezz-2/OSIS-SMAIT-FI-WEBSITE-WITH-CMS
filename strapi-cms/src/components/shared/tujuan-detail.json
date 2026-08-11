@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_shared_tujuan_details",
+  "info": {
+    "displayName": "Tujuan Detail",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "deskripsi": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

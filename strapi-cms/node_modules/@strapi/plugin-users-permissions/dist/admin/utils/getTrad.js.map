@@ -1,0 +1,1 @@
+{"version":3,"file":"getTrad.js","sources":["../../../admin/src/utils/getTrad.js"],"sourcesContent":["import pluginId from '../pluginId';\n\nconst getTrad = (id) => `${pluginId}.${id}`;\n\nexport default getTrad;\n"],"names":["getTrad","id","pluginId"],"mappings":";;;;AAEA,MAAMA,UAAU,CAACC,EAAAA,GAAO,GAAGC,QAAAA,CAAS,CAAC,EAAED,EAAAA,CAAAA;;;;"}

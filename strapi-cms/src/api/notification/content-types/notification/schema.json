@@ -1,0 +1,56 @@
+{
+  "kind": "collectionType",
+  "collectionName": "notifications",
+  "info": {
+    "singularName": "notification",
+    "pluralName": "notifications",
+    "displayName": "Notification",
+    "description": "Notification history & real-time logs"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "info",
+        "success",
+        "warning",
+        "error",
+        "feedback",
+        "inbox"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "message": {
+      "type": "text",
+      "required": true
+    },
+    "data": {
+      "type": "json"
+    },
+    "source": {
+      "type": "enumeration",
+      "enum": [
+        "strapi",
+        "telegram",
+        "internal"
+      ]
+    },
+    "aiSummary": {
+      "type": "text"
+    },
+    "read": {
+      "type": "boolean",
+      "default": false
+    },
+    "timestamp": {
+      "type": "datetime"
+    }
+  }
+}

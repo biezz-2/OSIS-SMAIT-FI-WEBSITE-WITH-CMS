@@ -1,0 +1,59 @@
+{
+  "name": "strapi-cms",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A Strapi application",
+  "scripts": {
+    "build": "strapi build",
+    "console": "strapi console",
+    "deploy": "strapi deploy",
+    "dev": "strapi develop",
+    "develop": "strapi develop",
+    "start": "strapi start",
+    "strapi": "strapi",
+    "upgrade": "npx @strapi/upgrade latest",
+    "upgrade:dry": "npx @strapi/upgrade latest --dry",
+    "seed": "npx tsx scripts/seed.ts",
+    "db:sync": "node scripts/sync-db.js"
+  },
+  "dependencies": {
+    "@strapi-community/plugin-better-auth": "^1.0.0-beta.6",
+    "@strapi/admin": "5.51.0",
+    "@strapi/data-transfer": "5.51.0",
+    "@strapi/database": "5.51.0",
+    "@strapi/plugin-cloud": "5.51.0",
+    "@strapi/plugin-users-permissions": "5.51.0",
+    "@strapi/strapi": "5.51.0",
+    "@swc/core": "^1.15.47",
+    "better-auth": "^1.6.25",
+    "better-sqlite3": "12.8.0",
+    "mysql2": "^3.23.2",
+    "pg": "^8.22.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-router-dom": "^6.30.3",
+    "strapi-plugin-bulk-editor": "^0.1.11",
+    "strapi-plugin-schema-visualizer": "^1.0.5",
+    "styled-components": "^6.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@vitejs/plugin-react": "^4.7.0",
+    "esbuild": "^0.28.1",
+    "tsx": "^4.23.1",
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=20.0.0 <=26.x.x",
+    "npm": ">=6.0.0"
+  },
+  "strapi": {
+    "uuid": "a36617a4-b30c-438d-a68b-7d8321c96dbe",
+    "installId": "5d97a8665afee701372b7fc73b334a58427959004d32e95eb4a068647411fd83"
+  },
+  "optionalDependencies": {
+    "@swc/core-win32-x64-msvc": "^1.15.47"
+  }
+}

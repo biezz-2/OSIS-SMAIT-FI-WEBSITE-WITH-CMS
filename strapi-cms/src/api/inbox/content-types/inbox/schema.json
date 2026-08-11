@@ -1,0 +1,50 @@
+{
+  "kind": "collectionType",
+  "collectionName": "inboxes",
+  "info": {
+    "singularName": "inbox",
+    "pluralName": "inboxes",
+    "displayName": "Inbox & Saran Ide",
+    "description": "Kotak Masuk Saran Ide Konten dan Feedback dari Pengunjung / Siswa"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "nama": {
+      "type": "string",
+      "required": true
+    },
+    "kelas": {
+      "type": "string"
+    },
+    "kategori": {
+      "type": "string",
+      "default": "instagram"
+    },
+    "saran_ide": {
+      "type": "text",
+      "required": true
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "Baru",
+        "Dibaca",
+        "Diproses",
+        "Selesai"
+      ],
+      "default": "Baru"
+    },
+    "urgensi": {
+      "type": "enumeration",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "default": "low"
+    }
+  }
+}

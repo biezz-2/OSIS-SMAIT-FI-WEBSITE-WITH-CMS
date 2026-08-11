@@ -1,0 +1,25 @@
+{
+  "collectionName": "components_edufest_guests",
+  "info": {
+    "displayName": "Guest Star",
+    "description": "Guest Star untuk Edufest Timeline"
+  },
+  "options": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "photo": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "object_position": {
+      "type": "string",
+      "default": "50% 50%"
+    }
+  }
+}
