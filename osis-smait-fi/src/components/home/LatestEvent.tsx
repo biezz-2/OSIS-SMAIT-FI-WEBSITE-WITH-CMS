@@ -7,11 +7,26 @@ import { fetchStrapiAPI, getStrapiMediaUrl } from '@/lib/strapi';
 interface EventData {
   title: string;
   bannerUrl: string;
+  youtubeUrl?: string;
   description: string;
   secondaryText: string;
   tagline?: string;
   slug?: string;
   ctaHref?: string; // link CTA eksplisit dari Strapi (optional)
+}
+
+function getYouTubeEmbedUrl(url?: string): string | null {
+  if (!url) return null;
+  const trimmed = url.trim();
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|shorts\/|live\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = trimmed.match(regExp);
+  if (match && match[2].length === 11) {
+    return `https://www.youtube.com/embed/${match[2]}`;
+  }
+  if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) {
+    return `https://www.youtube.com/embed/${trimmed}`;
+  }
+  return null;
 }
 
 const LatestEvent = () => {
@@ -35,6 +50,7 @@ const LatestEvent = () => {
 
           const title = attrs.nama || attrs.tema || '';
           const bannerUrl = getStrapiMediaUrl(attrs.banner || attrs.gambar, '');
+          const youtubeUrl = attrs.youtube_url || attrs.youtubeUrl || '';
           const description = attrs.deskripsi || '';
           const secondaryText = attrs.tagline
             ? `Tagline: "${attrs.tagline}". ${attrs.ringkasan || ''}`
@@ -47,6 +63,7 @@ const LatestEvent = () => {
             setEventData({
               title,
               bannerUrl,
+              youtubeUrl,
               description,
               secondaryText,
               slug,
@@ -68,14 +85,24 @@ const LatestEvent = () => {
     return null; // Cleanly hide if no active event in Strapi
   }
 
+  const embedUrl = getYouTubeEmbedUrl(eventData.youtubeUrl);
+
   return (
     <section className="w-full bg-white dark:bg-slate-900 px-4 sm:px-6 md:px-8 lg:px-12 py-12 lg:py-20 overflow-hidden transition-colors">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
 
-        {/* Left Column: Image Container (7 cols) */}
+        {/* Left Column: Video or Banner Image Container (7 cols) */}
         <div className="lg:col-span-7 w-full flex items-center justify-center">
-          <div className="w-full aspect-[16/9] overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 relative group bg-gray-100">
-            {eventData.bannerUrl ? (
+          <div className="w-full aspect-[16/9] overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 relative group bg-gray-100 dark:bg-slate-800">
+            {embedUrl ? (
+              <iframe
+                src={embedUrl}
+                title={`${eventData.title} Video`}
+                className="w-full h-full border-0 rounded-2xl"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              />
+            ) : eventData.bannerUrl ? (
               <Image
                 src={eventData.bannerUrl}
                 alt={`${eventData.title} Banner`}
@@ -84,8 +111,8 @@ const LatestEvent = () => {
                 className="object-cover transform group-hover:scale-105 transition-transform duration-500"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-slate-800 text-slate-400">
-                Banner Event
+              <div className="w-full h-full flex items-center justify-center text-slate-400 font-medium">
+                Banner / Video Event
               </div>
             )}
           </div>

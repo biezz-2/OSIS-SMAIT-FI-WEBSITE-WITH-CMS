@@ -63,9 +63,19 @@ export default function SosmedHub({ initialData }: SosmedHubProps) {
 
   const metadata = attrs?.metadata_json || {};
   const socialAccounts = metadata.social_accounts || {};
-  const embeds = metadata.embeds || {};
+  const embeds = {
+    youtube: attrs?.embed_youtube || metadata.embeds?.youtube || '',
+    spotify: attrs?.embed_spotify || metadata.embeds?.spotify || '',
+    tiktok: attrs?.embed_tiktok || metadata.embeds?.tiktok || '',
+    instagram: attrs?.embed_instagram || metadata.embeds?.instagram || '',
+  };
   const spotifyPlayer = metadata.spotify_player || {};
   const customFeeds = metadata.feeds || null;
+
+  const instagramLink = attrs?.link_instagram || socialAccounts.instagram?.link || 'https://www.instagram.com/osissmaitfi?igsh=MTRyMW43d2psd3gwaQ==';
+  const tiktokLink = attrs?.link_tiktok || socialAccounts.tiktok?.link || 'https://www.tiktok.com/@osissmaitfi?_r=1&_t=ZS-98SucgDTG2Z';
+  const youtubeLink = attrs?.link_youtube || socialAccounts.youtube?.link || 'https://www.youtube.com/@osissmaitfithrahinsani9481';
+  const spotifyLink = attrs?.link_spotify || socialAccounts.spotify?.link || 'https://spotify.com';
 
   // We memoize the feeds list to avoid unnecessary recalculations
   const feedsList = useMemo(() => {
@@ -244,7 +254,7 @@ export default function SosmedHub({ initialData }: SosmedHubProps) {
     return null;
   };
 
-  const activeEmbedCode = getEmbedHtml(embeds[activeTab]);
+  const activeEmbedCode = getEmbedHtml((embeds as Record<string, string>)[activeTab]);
 
   return (
     <section className="w-full bg-[#FAFBFC] min-h-screen py-16 px-4 md:px-8 lg:px-16 overflow-hidden">
@@ -466,8 +476,8 @@ export default function SosmedHub({ initialData }: SosmedHubProps) {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`px-4 py-2.5 rounded-xl text-xs md:text-sm font-semibold font-inter transition-all duration-300 flex items-center gap-2 ${activeTab === tab.id
-                      ? 'bg-[#101828] text-white shadow-sm'
-                      : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100/50'
+                    ? 'bg-[#101828] text-white shadow-sm'
+                    : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100/50'
                     }`}
                 >
                   {tab.id !== 'all' && (
