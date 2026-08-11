@@ -55,7 +55,7 @@ interface SosmedHubProps {
 
 export default function SosmedHub({ initialData }: SosmedHubProps) {
   const attrs = initialData ? (initialData.attributes || initialData) : null;
-  
+
   // Custom titles & details
   const displayTitle = attrs?.judul_hero || 'Hub Media Sosial';
   const displaySubtitle = attrs?.sub_judul || 'Koneksi dan Terhubung dengan Kami';
@@ -75,7 +75,7 @@ export default function SosmedHub({ initialData }: SosmedHubProps) {
   const [activeTab, setActiveTab] = useState('all');
   const [filteredFeeds, setFilteredFeeds] = useState(feedsList);
   const [animating, setAnimating] = useState(false);
-  
+
   const [bgBanner, setBgBanner] = useState(() => {
     if (attrs?.banner_image) {
       return getStrapiMediaUrl(attrs.banner_image, '/media/sosmed/sosmed_bg.jpg');
@@ -190,7 +190,61 @@ export default function SosmedHub({ initialData }: SosmedHubProps) {
     }
   };
 
-  const activeEmbedCode = embeds[activeTab] || null;
+  // Embed Helper: Transform raw link (YouTube/Spotify/TikTok/Instagram) or HTML iframe string into renderable embed HTML
+  const getEmbedHtml = (val: string | undefined): string | null => {
+    if (!val || typeof val !== 'string') return null;
+    const trimmed = val.trim();
+    if (!trimmed) return null;
+
+    // If it's already an iframe or html tag, return directly
+    if (trimmed.startsWith('<')) return trimmed;
+
+    // 1. YouTube URL parsing
+    if (trimmed.includes('youtube.com') || trimmed.includes('youtu.be')) {
+      let videoId = '';
+      if (trimmed.includes('youtu.be/')) {
+        videoId = trimmed.split('youtu.be/')[1]?.split('?')[0]?.split('&')[0];
+      } else if (trimmed.includes('watch?v=')) {
+        videoId = trimmed.split('watch?v=')[1]?.split('&')[0];
+      } else if (trimmed.includes('embed/')) {
+        videoId = trimmed.split('embed/')[1]?.split('?')[0];
+      } else if (trimmed.includes('shorts/')) {
+        videoId = trimmed.split('shorts/')[1]?.split('?')[0];
+      }
+      if (videoId) {
+        return `<iframe width="100%" height="450" src="https://www.youtube.com/embed/${videoId}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen class="w-full rounded-2xl"></iframe>`;
+      }
+    }
+
+    // 2. Spotify URL parsing (track, episode, playlist, show)
+    if (trimmed.includes('spotify.com')) {
+      let embedPath = trimmed;
+      if (!trimmed.includes('/embed/')) {
+        embedPath = trimmed.replace('open.spotify.com/', 'open.spotify.com/embed/');
+      }
+      return `<iframe style="border-radius:12px" src="${embedPath}" width="100%" height="352" frameborder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
+    }
+
+    // 3. TikTok Video URL parsing
+    if (trimmed.includes('tiktok.com')) {
+      const match = trimmed.match(/\/video\/(\d+)/);
+      const videoId = match ? match[1] : '';
+      if (videoId) {
+        return `<iframe src="https://www.tiktok.com/embed/v2/${videoId}" width="100%" height="580" frameborder="0" allowfullscreen class="w-full rounded-2xl"></iframe>`;
+      }
+    }
+
+    // 4. Instagram URL parsing (p, reel)
+    if (trimmed.includes('instagram.com')) {
+      let cleanUrl = trimmed.split('?')[0];
+      if (!cleanUrl.endsWith('/')) cleanUrl += '/';
+      return `<iframe src="${cleanUrl}embed" width="100%" height="540" frameborder="0" scrolling="no" allowtransparency="true" class="w-full rounded-2xl"></iframe>`;
+    }
+
+    return null;
+  };
+
+  const activeEmbedCode = getEmbedHtml(embeds[activeTab]);
 
   return (
     <section className="w-full bg-[#FAFBFC] min-h-screen py-16 px-4 md:px-8 lg:px-16 overflow-hidden">
@@ -218,7 +272,7 @@ export default function SosmedHub({ initialData }: SosmedHubProps) {
                 {displayDescription}
               </p>
             </div>
-            
+
             {/* Total Reach Dashboard */}
             <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex items-center gap-4 min-w-[260px] self-stretch md:self-auto hover:shadow-md transition-shadow">
               <div className="p-3 bg-[#7A9EAD]/10 rounded-xl text-[#7A9EAD] shrink-0">
@@ -240,7 +294,7 @@ export default function SosmedHub({ initialData }: SosmedHubProps) {
 
         {/* SECTION 1: Profiles Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
-          
+
           {/* Card 1: Instagram */}
           <div className="bg-gradient-to-br from-[#833AB4] via-[#FD1D1D] to-[#FCB045] rounded-3xl p-6 text-white flex flex-col justify-between h-[210px] shadow-sm hover:shadow-xl hover:scale-[1.02] transition-all duration-300 group">
             <div className="flex justify-between items-start">
@@ -253,7 +307,7 @@ export default function SosmedHub({ initialData }: SosmedHubProps) {
               </div>
               <span className="text-[10px] font-bold tracking-widest uppercase bg-white/25 px-2 py-0.5 rounded-md backdrop-blur-sm">INSTAGRAM</span>
             </div>
-            
+
             <div>
               <span className="text-[11px] font-medium opacity-80 block font-inter">
                 {socialAccounts.instagram?.handle || '@osissmaitfi'}
@@ -290,7 +344,7 @@ export default function SosmedHub({ initialData }: SosmedHubProps) {
               </div>
               <span className="text-[10px] font-bold tracking-widest uppercase bg-white/10 px-2 py-0.5 rounded-md">TIKTOK</span>
             </div>
-            
+
             <div>
               <span className="text-[11px] font-medium opacity-80 block font-inter">
                 {socialAccounts.tiktok?.handle || '@osissmaitfi'}
@@ -327,7 +381,7 @@ export default function SosmedHub({ initialData }: SosmedHubProps) {
               </div>
               <span className="text-[10px] font-bold tracking-widest uppercase bg-white/20 px-2 py-0.5 rounded-md">YOUTUBE</span>
             </div>
-            
+
             <div>
               <span className="text-[11px] font-medium opacity-80 block font-inter">
                 {socialAccounts.youtube?.handle || '@osissmaitfithrahinsani9481'}
@@ -364,7 +418,7 @@ export default function SosmedHub({ initialData }: SosmedHubProps) {
               </div>
               <span className="text-[10px] font-bold tracking-widest uppercase bg-white/20 px-2 py-0.5 rounded-md">SPOTIFY</span>
             </div>
-            
+
             <div>
               <span className="text-[11px] font-medium opacity-80 block font-inter">
                 {socialAccounts.spotify?.handle || 'OSIS Podcast'}
@@ -379,10 +433,10 @@ export default function SosmedHub({ initialData }: SosmedHubProps) {
                   </span>
                   <span className="text-[9px] font-bold opacity-75 tracking-wider uppercase mt-1">PENDENGAR</span>
                 </div>
-                <a 
-                  href={socialAccounts.spotify?.link || 'https://spotify.com'} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
+                <a
+                  href={socialAccounts.spotify?.link || 'https://spotify.com'}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="px-3.5 py-1.5 bg-white text-[#1DB954] rounded-full text-xs font-bold font-inter hover:bg-white/90 transition-colors shadow-sm"
                 >
                   Kunjungi
@@ -395,10 +449,10 @@ export default function SosmedHub({ initialData }: SosmedHubProps) {
 
         {/* SECTION 2: Split Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start w-full">
-          
+
           {/* LEFT: Feed Section with Tab Filters (Takes 8 columns) */}
           <div className="lg:col-span-8 flex flex-col gap-6 w-full">
-            
+
             {/* Filter Navigation */}
             <div className="bg-white p-1.5 rounded-2xl border border-gray-200/50 shadow-sm flex flex-wrap gap-1 md:gap-2">
               {[
@@ -411,229 +465,228 @@ export default function SosmedHub({ initialData }: SosmedHubProps) {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`px-4 py-2.5 rounded-xl text-xs md:text-sm font-semibold font-inter transition-all duration-300 flex items-center gap-2 ${
-                    activeTab === tab.id
+                  className={`px-4 py-2.5 rounded-xl text-xs md:text-sm font-semibold font-inter transition-all duration-300 flex items-center gap-2 ${activeTab === tab.id
                       ? 'bg-[#101828] text-white shadow-sm'
                       : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100/50'
-                  }`}
+                    }`}
                 >
                   {tab.id !== 'all' && (
-                    <span 
-                      className="w-2.5 h-2.5 rounded-full shrink-0" 
-                      style={{ backgroundColor: tab.color }} 
+                    <span
+                      className="w-2.5 h-2.5 rounded-full shrink-0"
+                      style={{ backgroundColor: tab.color }}
                     />
                   )}
                   {tab.label}
                 </button>
               ))}
-               {/* Feeds Grid Container */}
-            <div className={`w-full transition-opacity duration-300 ${animating ? 'opacity-0' : 'opacity-100'}`}>
-              {activeEmbedCode ? (
-                <div 
-                  className="w-full rounded-3xl overflow-hidden border border-gray-200 bg-white p-4 shadow-[0_4px_20px_rgba(0,0,0,0.02)] min-h-[600px] flex items-center justify-center"
-                  dangerouslySetInnerHTML={{ __html: activeEmbedCode }}
-                />
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
-                  {filteredFeeds.map(feed => {
-                    if (feed.platform === 'instagram') {
-                      return (
-                        <div key={feed.id} className="bg-white rounded-3xl overflow-hidden border border-gray-200 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col hover:shadow-md transition-shadow">
-                          <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/30">
-                            <div className="flex items-center gap-2.5">
-                              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-400 via-pink-500 to-purple-600 flex items-center justify-center p-[1.5px]">
-                                <div className="w-full h-full bg-white rounded-full flex items-center justify-center text-[10px] font-bold text-black select-none">FI</div>
+              {/* Feeds Grid Container */}
+              <div className={`w-full transition-opacity duration-300 ${animating ? 'opacity-0' : 'opacity-100'}`}>
+                {activeEmbedCode ? (
+                  <div
+                    className="w-full rounded-3xl overflow-hidden border border-gray-200 bg-white p-4 shadow-[0_4px_20px_rgba(0,0,0,0.02)] min-h-[600px] flex items-center justify-center"
+                    dangerouslySetInnerHTML={{ __html: activeEmbedCode }}
+                  />
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
+                    {filteredFeeds.map(feed => {
+                      if (feed.platform === 'instagram') {
+                        return (
+                          <div key={feed.id} className="bg-white rounded-3xl overflow-hidden border border-gray-200 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col hover:shadow-md transition-shadow">
+                            <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/30">
+                              <div className="flex items-center gap-2.5">
+                                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-400 via-pink-500 to-purple-600 flex items-center justify-center p-[1.5px]">
+                                  <div className="w-full h-full bg-white rounded-full flex items-center justify-center text-[10px] font-bold text-black select-none">FI</div>
+                                </div>
+                                <div className="flex flex-col">
+                                  <span className="text-[#101828] text-xs font-bold leading-tight font-inter">{feed.handle}</span>
+                                  <span className="text-[#6A7282] text-[9px] font-inter">{feed.date}</span>
+                                </div>
                               </div>
-                              <div className="flex flex-col">
-                                <span className="text-[#101828] text-xs font-bold leading-tight font-inter">{feed.handle}</span>
-                                <span className="text-[#6A7282] text-[9px] font-inter">{feed.date}</span>
-                              </div>
-                            </div>
-                            <span className="text-gray-400">
-                              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                <circle cx="12" cy="12" r="2" /><circle cx="5" cy="12" r="2" /><circle cx="19" cy="12" r="2" />
-                              </svg>
-                            </span>
-                          </div>
-
-                          <div className="relative aspect-square bg-gray-100 overflow-hidden group">
-                            <img src={feed.image} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Instagram Post" />
-                            <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                              <div className="flex items-center gap-6 text-white font-bold text-sm">
-                                <span className="flex items-center gap-1.5">
-                                  <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                                  </svg>
-                                  {feed.likes}
-                                </span>
-                                <span className="flex items-center gap-1.5">
-                                  <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                                    <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
-                                  </svg>
-                                  8
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="p-5 flex flex-col gap-2.5">
-                            <p className="text-gray-700 text-xs md:text-sm font-inter leading-relaxed line-clamp-2">
-                              <span className="font-bold text-[#101828] mr-1.5">{feed.handle}</span>
-                              {feed.caption}
-                            </p>
-                            <a href={feed.link} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#7A9EAD] hover:text-[#7A9EAD]/80 inline-flex items-center gap-1 mt-1 group">
-                              Lihat di Instagram 
-                              <svg className="w-3 h-3 transform group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                              </svg>
-                            </a>
-                          </div>
-                        </div>
-                      );
-                    }
-
-                    if (feed.platform === 'youtube') {
-                      return (
-                        <div key={feed.id} className="bg-white rounded-3xl overflow-hidden border border-gray-200 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col hover:shadow-md transition-shadow">
-                          <div className="relative aspect-[16/9] bg-black overflow-hidden group">
-                            <img src={feed.image} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="YouTube Thumbnail" />
-                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/50 transition-colors duration-300">
-                              <div className="p-3.5 bg-red-600 rounded-full text-white shadow-md transform group-hover:scale-110 transition-transform duration-300">
-                                <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">
-                                  <path d="M8 5v14l11-7z" />
+                              <span className="text-gray-400">
+                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                  <circle cx="12" cy="12" r="2" /><circle cx="5" cy="12" r="2" /><circle cx="19" cy="12" r="2" />
                                 </svg>
-                              </div>
-                            </div>
-                            <span className="absolute bottom-3 right-3 bg-black/80 text-white font-mono text-[10px] font-bold px-2 py-0.5 rounded">
-                              {feed.duration}
-                            </span>
-                          </div>
-
-                          <div className="p-5 flex flex-col justify-between flex-1 gap-4">
-                            <div className="flex flex-col gap-1.5">
-                              <h4 className="text-[#101828] text-sm md:text-base font-bold font-inter leading-snug line-clamp-2">
-                                {feed.title}
-                              </h4>
-                              <div className="flex items-center gap-1.5 text-xs text-gray-500 font-inter">
-                                <span>OSIS TV</span>
-                                <span>•</span>
-                                <span>{feed.views}</span>
-                                <span>•</span>
-                                <span>{feed.date}</span>
-                              </div>
+                              </span>
                             </div>
 
-                            <a href={feed.link} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-red-600 hover:text-red-700 inline-flex items-center gap-1 group">
-                              Tonton di YouTube
-                              <svg className="w-3 h-3 transform group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                              </svg>
-                            </a>
-                          </div>
-                        </div>
-                      );
-                    }
-
-                    if (feed.platform === 'tiktok') {
-                      return (
-                        <div key={feed.id} className="bg-white rounded-3xl overflow-hidden border border-gray-200 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col hover:shadow-md transition-shadow">
-                          <div className="relative aspect-[9/16] max-h-[350px] bg-black overflow-hidden group">
-                            <img src={feed.image} className="w-full h-full object-cover transition-transform duration-750 group-hover:scale-105" alt="TikTok Preview" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/20 flex flex-col justify-between p-4">
-                              <div className="flex justify-between items-center w-full">
-                                <div className="flex items-center gap-2 bg-black/40 backdrop-blur-md px-2.5 py-1 rounded-full text-white text-[10px] font-bold font-inter">
-                                  <span className="w-1.5 h-1.5 bg-[#00BC7D] rounded-full" />
-                                  <span>{feed.handle || '@osis.sfithrahinsani'}</span>
-                                </div>
-                                <div className="p-1.5 bg-black/45 rounded-full text-white">
-                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 0 0 6-6v-1.5m-6 7.5a6 6 0 0 1-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 0 1-3-3V4.5a3 3 0 1 1 6 0v8.25a3 3 0 0 1-3 3Z" />
-                                  </svg>
-                                </div>
-                              </div>
-
-                              <div className="flex flex-col gap-2.5 text-white">
-                                <p className="text-xs md:text-sm font-inter leading-relaxed line-clamp-2">
-                                  {feed.caption}
-                                </p>
-                                <div className="flex justify-between items-center mt-2 pt-2 border-t border-white/10">
-                                  <div className="flex items-center gap-1.5 text-xs text-white/95 font-inter">
-                                    <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-                                      <path d="M8 5v14l11-7z" />
+                            <div className="relative aspect-square bg-gray-100 overflow-hidden group">
+                              <img src={feed.image} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Instagram Post" />
+                              <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                <div className="flex items-center gap-6 text-white font-bold text-sm">
+                                  <span className="flex items-center gap-1.5">
+                                    <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                                     </svg>
-                                    <span>{feed.views}</span>
-                                  </div>
-                                  <a href={feed.link} target="_blank" rel="noopener noreferrer" className="text-[10px] font-bold bg-white text-black px-3 py-1 rounded-full hover:bg-white/90 transition-all font-inter">
-                                    Lihat
-                                  </a>
+                                    {feed.likes}
+                                  </span>
+                                  <span className="flex items-center gap-1.5">
+                                    <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                                      <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
+                                    </svg>
+                                    8
+                                  </span>
                                 </div>
                               </div>
                             </div>
-                          </div>
-                        </div>
-                      );
-                    }
 
-                    if (feed.platform === 'spotify') {
-                      return (
-                        <div key={feed.id} className="bg-white rounded-3xl overflow-hidden border border-gray-200 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col hover:shadow-md transition-shadow">
-                          <div className="p-4 bg-[#1DB954]/5 border-b border-[#1DB954]/10 flex items-center gap-3">
-                            <div className="p-2 bg-[#1DB954] text-white rounded-xl">
-                              <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                                <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.563.387-.857.207-2.377-1.454-5.37-1.783-8.893-.982-.336.075-.668-.135-.744-.47-.077-.337.136-.669.471-.745 3.854-.88 7.15-.502 9.81 1.13.295.178.387.562.207.857zm1.226-2.724c-.226.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.08-1.182-.413.125-.847-.107-.972-.52-.125-.413.107-.847.52-.972 3.667-1.11 8.23-.57 11.345 1.343.367.227.487.708.26 1.075zm.106-2.836C14.393 8.74 8.56 8.547 5.17 9.575c-.528.16-1.08-.14-1.24-.668-.16-.528.14-1.08.668-1.24C8.5 6.45 14.935 6.67 19.043 9.11c.475.282.63.897.347 1.37-.282.474-.897.63-1.37.347z" />
-                              </svg>
-                            </div>
-                            <div className="flex flex-col">
-                              <span className="text-[#1DB954] text-xs font-bold leading-tight font-inter">{socialAccounts.spotify?.name || 'Agora Talk'}</span>
-                              <span className="text-[#6A7282] text-[9px] font-inter">{feed.date}</span>
-                            </div>
-                          </div>
-
-                          <div className="p-5 flex flex-col gap-4 flex-1 justify-between">
-                            <div className="flex gap-4">
-                              <div className="w-16 h-16 bg-[#101828] rounded-2xl overflow-hidden shrink-0 shadow-sm">
-                                <img src={feed.image} className="w-full h-full object-cover" alt="Podcast Episode Art" />
-                              </div>
-                              <div className="flex flex-col gap-1.5">
-                                <h4 className="text-[#101828] text-sm md:text-base font-bold font-inter leading-tight line-clamp-1">
-                                  {feed.title}
-                                </h4>
-                                <p className="text-gray-500 text-xs font-inter leading-relaxed line-clamp-2">
-                                  {feed.caption}
-                                </p>
-                              </div>
-                            </div>
-
-                            <div className="flex justify-between items-center mt-2 border-t border-gray-100 pt-4">
-                              <span className="text-xs text-gray-500 font-inter">Durasi: {feed.duration}</span>
-                              <a href={feed.link} target="_blank" rel="noopener noreferrer" className="px-3.5 py-1.5 bg-[#1DB954] text-white rounded-full text-xs font-bold hover:bg-[#1DB954]/95 transition-all inline-flex items-center gap-1 group font-inter">
-                                Dengarkan
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                            <div className="p-5 flex flex-col gap-2.5">
+                              <p className="text-gray-700 text-xs md:text-sm font-inter leading-relaxed line-clamp-2">
+                                <span className="font-bold text-[#101828] mr-1.5">{feed.handle}</span>
+                                {feed.caption}
+                              </p>
+                              <a href={feed.link} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#7A9EAD] hover:text-[#7A9EAD]/80 inline-flex items-center gap-1 mt-1 group">
+                                Lihat di Instagram
+                                <svg className="w-3 h-3 transform group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                                 </svg>
                               </a>
                             </div>
                           </div>
-                        </div>
-                      );
-                    }
+                        );
+                      }
 
-                    return null;
-                  })}
-                </div>
-              )}
+                      if (feed.platform === 'youtube') {
+                        return (
+                          <div key={feed.id} className="bg-white rounded-3xl overflow-hidden border border-gray-200 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col hover:shadow-md transition-shadow">
+                            <div className="relative aspect-[16/9] bg-black overflow-hidden group">
+                              <img src={feed.image} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="YouTube Thumbnail" />
+                              <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/50 transition-colors duration-300">
+                                <div className="p-3.5 bg-red-600 rounded-full text-white shadow-md transform group-hover:scale-110 transition-transform duration-300">
+                                  <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                                    <path d="M8 5v14l11-7z" />
+                                  </svg>
+                                </div>
+                              </div>
+                              <span className="absolute bottom-3 right-3 bg-black/80 text-white font-mono text-[10px] font-bold px-2 py-0.5 rounded">
+                                {feed.duration}
+                              </span>
+                            </div>
+
+                            <div className="p-5 flex flex-col justify-between flex-1 gap-4">
+                              <div className="flex flex-col gap-1.5">
+                                <h4 className="text-[#101828] text-sm md:text-base font-bold font-inter leading-snug line-clamp-2">
+                                  {feed.title}
+                                </h4>
+                                <div className="flex items-center gap-1.5 text-xs text-gray-500 font-inter">
+                                  <span>OSIS TV</span>
+                                  <span>•</span>
+                                  <span>{feed.views}</span>
+                                  <span>•</span>
+                                  <span>{feed.date}</span>
+                                </div>
+                              </div>
+
+                              <a href={feed.link} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-red-600 hover:text-red-700 inline-flex items-center gap-1 group">
+                                Tonton di YouTube
+                                <svg className="w-3 h-3 transform group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                                </svg>
+                              </a>
+                            </div>
+                          </div>
+                        );
+                      }
+
+                      if (feed.platform === 'tiktok') {
+                        return (
+                          <div key={feed.id} className="bg-white rounded-3xl overflow-hidden border border-gray-200 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col hover:shadow-md transition-shadow">
+                            <div className="relative aspect-[9/16] max-h-[350px] bg-black overflow-hidden group">
+                              <img src={feed.image} className="w-full h-full object-cover transition-transform duration-750 group-hover:scale-105" alt="TikTok Preview" />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/20 flex flex-col justify-between p-4">
+                                <div className="flex justify-between items-center w-full">
+                                  <div className="flex items-center gap-2 bg-black/40 backdrop-blur-md px-2.5 py-1 rounded-full text-white text-[10px] font-bold font-inter">
+                                    <span className="w-1.5 h-1.5 bg-[#00BC7D] rounded-full" />
+                                    <span>{feed.handle || '@osis.sfithrahinsani'}</span>
+                                  </div>
+                                  <div className="p-1.5 bg-black/45 rounded-full text-white">
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 0 0 6-6v-1.5m-6 7.5a6 6 0 0 1-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 0 1-3-3V4.5a3 3 0 1 1 6 0v8.25a3 3 0 0 1-3 3Z" />
+                                    </svg>
+                                  </div>
+                                </div>
+
+                                <div className="flex flex-col gap-2.5 text-white">
+                                  <p className="text-xs md:text-sm font-inter leading-relaxed line-clamp-2">
+                                    {feed.caption}
+                                  </p>
+                                  <div className="flex justify-between items-center mt-2 pt-2 border-t border-white/10">
+                                    <div className="flex items-center gap-1.5 text-xs text-white/95 font-inter">
+                                      <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z" />
+                                      </svg>
+                                      <span>{feed.views}</span>
+                                    </div>
+                                    <a href={feed.link} target="_blank" rel="noopener noreferrer" className="text-[10px] font-bold bg-white text-black px-3 py-1 rounded-full hover:bg-white/90 transition-all font-inter">
+                                      Lihat
+                                    </a>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      }
+
+                      if (feed.platform === 'spotify') {
+                        return (
+                          <div key={feed.id} className="bg-white rounded-3xl overflow-hidden border border-gray-200 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col hover:shadow-md transition-shadow">
+                            <div className="p-4 bg-[#1DB954]/5 border-b border-[#1DB954]/10 flex items-center gap-3">
+                              <div className="p-2 bg-[#1DB954] text-white rounded-xl">
+                                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                                  <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.563.387-.857.207-2.377-1.454-5.37-1.783-8.893-.982-.336.075-.668-.135-.744-.47-.077-.337.136-.669.471-.745 3.854-.88 7.15-.502 9.81 1.13.295.178.387.562.207.857zm1.226-2.724c-.226.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.08-1.182-.413.125-.847-.107-.972-.52-.125-.413.107-.847.52-.972 3.667-1.11 8.23-.57 11.345 1.343.367.227.487.708.26 1.075zm.106-2.836C14.393 8.74 8.56 8.547 5.17 9.575c-.528.16-1.08-.14-1.24-.668-.16-.528.14-1.08.668-1.24C8.5 6.45 14.935 6.67 19.043 9.11c.475.282.63.897.347 1.37-.282.474-.897.63-1.37.347z" />
+                                </svg>
+                              </div>
+                              <div className="flex flex-col">
+                                <span className="text-[#1DB954] text-xs font-bold leading-tight font-inter">{socialAccounts.spotify?.name || 'Agora Talk'}</span>
+                                <span className="text-[#6A7282] text-[9px] font-inter">{feed.date}</span>
+                              </div>
+                            </div>
+
+                            <div className="p-5 flex flex-col gap-4 flex-1 justify-between">
+                              <div className="flex gap-4">
+                                <div className="w-16 h-16 bg-[#101828] rounded-2xl overflow-hidden shrink-0 shadow-sm">
+                                  <img src={feed.image} className="w-full h-full object-cover" alt="Podcast Episode Art" />
+                                </div>
+                                <div className="flex flex-col gap-1.5">
+                                  <h4 className="text-[#101828] text-sm md:text-base font-bold font-inter leading-tight line-clamp-1">
+                                    {feed.title}
+                                  </h4>
+                                  <p className="text-gray-500 text-xs font-inter leading-relaxed line-clamp-2">
+                                    {feed.caption}
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="flex justify-between items-center mt-2 border-t border-gray-100 pt-4">
+                                <span className="text-xs text-gray-500 font-inter">Durasi: {feed.duration}</span>
+                                <a href={feed.link} target="_blank" rel="noopener noreferrer" className="px-3.5 py-1.5 bg-[#1DB954] text-white rounded-full text-xs font-bold hover:bg-[#1DB954]/95 transition-all inline-flex items-center gap-1 group font-inter">
+                                  Dengarkan
+                                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                  </svg>
+                                </a>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      }
+
+                      return null;
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
-            </div>
-            
+
           </div>
 
           {/* RIGHT: Spotify Live Player & Saran Konten Form (Takes 4 columns) */}
           <div className="lg:col-span-4 flex flex-col gap-8 w-full">
-            
+
             {/* Widget 1: Interactive Podcast Mini Player */}
             <div className="bg-[#191414] rounded-3xl p-6 text-white flex flex-col gap-5 border border-gray-900 shadow-sm relative overflow-hidden group">
               <div className="absolute top-0 right-0 w-24 h-24 bg-[#1DB954]/10 rounded-full blur-[40px] pointer-events-none" />
-              
+
               {/* Header */}
               <div className="flex justify-between items-center w-full">
                 <div className="flex items-center gap-2.5">
@@ -647,17 +700,17 @@ export default function SosmedHub({ initialData }: SosmedHubProps) {
                     <span className="text-[9px] text-[#00BC7D] font-bold font-inter tracking-wide uppercase">PEMUTAR INTERAKTIF</span>
                   </div>
                 </div>
-                
+
                 <div className="w-2.5 h-2.5 rounded-full bg-[#1DB954] animate-pulse" />
               </div>
 
               {/* Cover Art and Info */}
               <div className="flex items-center gap-4 border-b border-white/5 pb-4">
                 <div className="relative w-16 h-16 bg-gray-900 rounded-2xl overflow-hidden shrink-0 shadow-md">
-                  <img 
+                  <img
                     className={`w-full h-full object-cover transition-transform duration-[10s] ${isPlaying ? 'scale-105 rotate-3' : ''}`}
-                    src={spotifyPlayer.image || "https://placehold.co/600x600/185FA5/FFF?text=Media+OSIS?auto=format&fit=crop&w=150&h=150&q=80"} 
-                    alt="Podcast Cover art" 
+                    src={spotifyPlayer.image || "https://placehold.co/600x600/185FA5/FFF?text=Media+OSIS?auto=format&fit=crop&w=150&h=150&q=80"}
+                    alt="Podcast Cover art"
                   />
                   {isPlaying && (
                     <div className="absolute inset-0 bg-black/45 flex items-center justify-center gap-0.5">
@@ -680,7 +733,7 @@ export default function SosmedHub({ initialData }: SosmedHubProps) {
               {/* Custom Player Controls */}
               <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-3 w-full">
-                  <button 
+                  <button
                     onClick={handlePlayPause}
                     className="p-2.5 bg-white text-black rounded-full hover:scale-105 active:scale-95 transition-all shadow-md flex items-center justify-center shrink-0"
                     aria-label={isPlaying ? 'Pause' : 'Play'}
@@ -695,16 +748,16 @@ export default function SosmedHub({ initialData }: SosmedHubProps) {
                       </svg>
                     )}
                   </button>
-                  
+
                   <div className="flex-1 flex flex-col gap-1.5">
                     {/* Progress Bar Container */}
                     <div className="w-full h-1 bg-white/10 rounded-full relative overflow-hidden">
-                      <div 
-                        className="absolute left-0 top-0 bottom-0 bg-[#1DB954] rounded-full transition-all duration-1000" 
-                        style={{ width: `${(playbackSeconds / totalDurationSeconds) * 100}%` }} 
+                      <div
+                        className="absolute left-0 top-0 bottom-0 bg-[#1DB954] rounded-full transition-all duration-1000"
+                        style={{ width: `${(playbackSeconds / totalDurationSeconds) * 100}%` }}
                       />
                     </div>
-                    
+
                     <div className="flex justify-between text-[9px] font-mono text-gray-400">
                       <span>{formatTime(playbackSeconds)}</span>
                       <span>{formatTime(totalDurationSeconds)}</span>
@@ -716,13 +769,13 @@ export default function SosmedHub({ initialData }: SosmedHubProps) {
               {/* Bottom Badge CTA */}
               <div className="bg-white/5 hover:bg-white/10 transition-colors p-3 rounded-2xl flex justify-between items-center text-xs font-semibold">
                 <span className="text-gray-300 font-inter">Buka di Aplikasi</span>
-                <a 
-                  href={spotifyPlayer.link || "https://spotify.com"} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
+                <a
+                  href={spotifyPlayer.link || "https://spotify.com"}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-[#1DB954] hover:underline flex items-center gap-1 font-inter"
                 >
-                  Spotify Web 
+                  Spotify Web
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
                   </svg>
