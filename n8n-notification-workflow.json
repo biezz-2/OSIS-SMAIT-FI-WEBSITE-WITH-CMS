@@ -1,0 +1,686 @@
+{
+  "name": "Strapi to Telegram + AI Summary + SSE Broadcast + Monitoring (Enhanced Logs)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "strapi-events-osis",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Strapi Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [100, 300],
+      "webhookId": "strapi-events-osis"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "check-model",
+              "leftValue": "={{ $json.body.model }}",
+              "rightValue": "inbox",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "check-event",
+              "leftValue": "={{ $json.body.event }}",
+              "rightValue": "entry.create",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "filter-inbox",
+      "name": "Filter: Inbox Create",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [300, 300]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ JSON.stringify($json.body.entry) }}",
+        "options": {
+          "systemMessage": "Analisis data berikut dan berikan:\n1. Ringkasan singkat (1-2 kalimat)\n2. Kategori/tipe permintaan\n3. Urgensi (low/medium/high)\n4. Rekomendasi tindak lanjut\n\nFormat output JSON:\n{\n  \"summary\": \"...\",\n  \"category\": \"...\",\n  \"urgency\": \"...\",\n  \"recommendation\": \"...\"\n}",
+          "enableStreaming": false
+        }
+      },
+      "id": "ai-analysis",
+      "name": "AI Agent - Analisis Data",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "model": {
+          "value": "google/gemini-3.5-flash",
+          "mode": "id"
+        },
+        "responsesApiEnabled": false
+      },
+      "id": "ai-model",
+      "name": "AI Model (Gemini)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [700, 200],
+      "credentials": {
+        "openAiApi": {
+          "id": "XHJSDdgGecO6plKp",
+          "name": "9router"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.body.model }}_{{ $json.body.entry.id }}"
+      },
+      "id": "ai-memory",
+      "name": "AI Memory",
+      "type": "@n8n/n8n-nodes-base.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [700, 400]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.STRAPI_URL }}/api/notifications",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer {{ $env.STRAPI_TOKEN }}",
+          "Content-Type": "application/json"
+        },
+        "body": "{\"data\": {\"type\": \"{{ $json.body.model }}\", \"title\": \"{{ $json.body.entry.nama || 'New Entry' }}\", \"message\": \"{{ $json.body.entry.saran_ide || 'No message' }}\", \"data\": {{ JSON.stringify($json.body.entry) }}, \"source\": \"strapi\", \"aiSummary\": \"{{ $node[\\\"AI Agent - Analisis Data\\\"].json.output }}\"}}"
+      },
+      "id": "store-notification",
+      "name": "Store Notification in Strapi",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [900, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "const entry = $('AI Agent - Analisis Data').item.json;\nconst rawEntry = $('Filter: Inbox Create').item.json.body.entry;\n\nfunction escapeMarkdownV2(text) {\n  if (!text) return '';\n  return String(text).replace(/[_*\\[\\]()~`>#\\+\\-\\=\\|{}{\\}\\.!]/g, '\\\\$&');\n}\n\nconst nama = escapeMarkdownV2(rawEntry.nama || 'No name');\nconst saran = escapeMarkdownV2(rawEntry.saran_ide || 'No message');\nconst summary = escapeMarkdownV2(entry.output.summary || entry.output);\nconst category = escapeMarkdownV2(entry.output.category || 'general');\nconst urgency = escapeMarkdownV2(entry.output.urgency || 'low');\nconst recommendation = escapeMarkdownV2(entry.output.recommendation || 'None');\nconst id = escapeMarkdownV2(rawEntry.id);\n\nconst message = `📬 *New Inbox* \\\\(ID: \\\\`${id}\\\\`\\\\)\\n\\n` +\n  `📝 *Nama:* ${nama}\\n` +\n  `💬 *Pesan:* ${saran}\\n\\n` +\n  `🤖 *AI Summary:*\\n${summary}\\n\\n` +\n  `🏷️ *Category:* ${category}\\n` +\n  `⚡ *Urgency:* ${urgency}\\n\\n` +\n  `💡 *Recommendation:* ${recommendation}`;\n\nreturn {\n  message,\n  id: rawEntry.id\n};"
+      },
+      "id": "format-telegram-msg",
+      "name": "Format Telegram Message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 400]
+    },
+    {
+      "parameters": {
+        "chatId": "8095634777",
+        "text": "={{ $json.message }}",
+        "additionalFields": {
+          "parse_mode": "MarkdownV2",
+          "disable_web_page_preview": true,
+          "reply_markup": "={\n  \"inline_keyboard\": [\n    [\n      { \"text\": \"✅ Selesai\", \"callback_data\": \"resolve:\" + $json.id },\n      { \"text\": \"⚠️ Prioritas\", \"callback_data\": \"prioritize:\" + $json.id }\n    ],\n    [\n      { \"text\": \"🔗 Buka Admin\", \"url\": \"https://osisstrapi.biezz.my.id/admin/content-manager/collection-types/api::inbox.inbox/\" + $json.id }\n    ]\n  ]\n}\n}"
+        }
+      },
+      "id": "send-telegram",
+      "name": "Send to Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [1100, 400],
+      "credentials": {
+        "telegramApi": {
+          "id": "D63Xru2usbEAKg7O",
+          "name": "Telegram Bot OSIS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.NEXTJS_URL }}/api/sse/broadcast",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": "{\"type\": \"{{ $json.body.model }}\", \"data\": {{ JSON.stringify($json.body.entry) }}, \"aiSummary\": {{ JSON.stringify($node[\\\"AI Agent - Analisis Data\\\"].json.output) }}}"
+      },
+      "id": "broadcast-sse",
+      "name": "Broadcast via SSE",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1100, 200]
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "id": "respond-webhook",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1300, 200]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "telegram-callback",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "telegram-callback-trigger",
+      "name": "Telegram Callback Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [100, 600],
+      "webhookId": "telegram-callback"
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{ $json.body.callback_query.data }}",
+        "rules": {
+          "rules": [
+            {
+              "value2": "resolve:",
+              "operator": "startsWith"
+            },
+            {
+              "value2": "prioritize:",
+              "operator": "startsWith"
+            }
+          ]
+        }
+      },
+      "id": "callback-router",
+      "name": "Callback Router",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [300, 600]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $json.body.callback_query.data;\nconst parts = data.split(':');\nreturn {\n  action: parts[0],\n  id: parts[1],\n  callback_query_id: $json.body.callback_query.id,\n  chat_id: $json.body.callback_query.message.chat.id,\n  message_id: $json.body.callback_query.message.message_id,\n  original_text: $json.body.callback_query.message.text\n};"
+      },
+      "id": "extract-callback-data",
+      "name": "Extract Callback Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [500, 600]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.STRAPI_URL }}/api/inboxes/{{ $json.id }}",
+        "method": "PUT",
+        "headers": {
+          "Authorization": "Bearer {{ $env.STRAPI_TOKEN }}",
+          "Content-Type": "application/json"
+        },
+        "body": "{\"data\": {\"status\": \"Selesai\"}}"
+      },
+      "id": "update-strapi-resolved",
+      "name": "Update Strapi: Selesai",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [700, 500]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.STRAPI_URL }}/api/inboxes/{{ $json.id }}",
+        "method": "PUT",
+        "headers": {
+          "Authorization": "Bearer {{ $env.STRAPI_TOKEN }}",
+          "Content-Type": "application/json"
+        },
+        "body": "{\"data\": {\"urgensi\": \"high\"}}"
+      },
+      "id": "update-strapi-priority",
+      "name": "Update Strapi: High Priority",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [700, 700]
+    },
+    {
+      "parameters": {
+        "operation": "answerCallbackQuery",
+        "callbackQueryId": "={{ $node[\\\"Extract Callback Data\\\"].json.callback_query_id }}",
+        "text": "Status updated successfully!",
+        "additionalFields": {}
+      },
+      "id": "answer-callback",
+      "name": "Answer Callback Query",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [950, 600],
+      "credentials": {
+        "telegramApi": {
+          "id": "D63Xru2usbEAKg7O",
+          "name": "Telegram Bot OSIS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "editMessageText",
+        "chatId": "={{ $node[\\\"Extract Callback Data\\\"].json.chat_id }}",
+        "messageId": "={{ $node[\\\"Extract Callback Data\\\"].json.message_id }}",
+        "text": "=📬 *New Inbox* \\\\(ID: \\\\`{{ $node[\\\"Extract Callback Data\\\"].json.id }}\\\\`\\\\)\\n\\n{{ $node[\\\"Extract Callback Data\\\"].json.original_text.split('\\n').slice(2).join('\\n') }}\\n\\n✅ *Status: Selesai / Diupdate*",
+        "additionalFields": {
+          "parse_mode": "MarkdownV2"
+        }
+      },
+      "id": "edit-telegram-msg",
+      "name": "Edit Telegram Message",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [1150, 600],
+      "credentials": {
+        "telegramApi": {
+          "id": "D63Xru2usbEAKg7O",
+          "name": "Telegram Bot OSIS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "OK",
+        "options": {}
+      },
+      "id": "respond-callback-webhook",
+      "name": "Respond to Callback Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1350, 600]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "server-monitor",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "monitor-trigger",
+      "name": "Server Monitor Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [100, 950],
+      "webhookId": "server-monitor"
+    },
+    {
+      "parameters": {
+        "dataType": "boolean",
+        "value1": "={{ $json.body.alert.critical }}",
+        "rules": {
+          "rules": [
+            {
+              "value2": true,
+              "operator": "equal"
+            }
+          ]
+        }
+      },
+      "id": "monitor-router",
+      "name": "Monitor Router",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [300, 950]
+    },
+    {
+      "parameters": {
+        "chatId": "8095634777",
+        "text": "=🔴 *CRITICAL ALERT: {{ $json.body.server }}*\\n\\n⚠️ *Issue:* {{ $json.body.alert.message }}\\n\\n📊 *Metrics:*\\n- CPU Load: {{ $json.body.metrics.cpu_load }}\\n- RAM Usage: {{ $json.body.metrics.ram_usage_pct }}%\\n- Disk Usage: {{ $json.body.metrics.disk_usage_pct }}%\\n\\n🏥 *Services:*\\n- Strapi CMS: {{ $json.body.health.strapi }}\\n- Next.js Website: {{ $json.body.health.nextjs }}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "send-monitor-alert",
+      "name": "Send Critical Alert",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [550, 850],
+      "credentials": {
+        "telegramApi": {
+          "id": "D63Xru2usbEAKg7O",
+          "name": "Telegram Bot OSIS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "8095634777",
+        "text": "=🟢 *System Health Report: {{ $json.body.server }}*\\n\\n✅ All systems operational.\\n\\n📊 *Metrics:*\\n- CPU Load: {{ $json.body.metrics.cpu_load }}\\n- RAM Usage: {{ $json.body.metrics.ram_usage_pct }}%\\n- Disk Usage: {{ $json.body.metrics.disk_usage_pct }}%\\n\\n🏥 *Services:*\\n- Strapi CMS: {{ $json.body.health.strapi }}\\n- Next.js Website: {{ $json.body.health.nextjs }}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "send-monitor-report",
+      "name": "Send Health Report",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [550, 1050],
+      "credentials": {
+        "telegramApi": {
+          "id": "D63Xru2usbEAKg7O",
+          "name": "Telegram Bot OSIS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "OK",
+        "options": {}
+      },
+      "id": "respond-monitor-webhook",
+      "name": "Respond to Monitor Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [800, 950]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body;\nconst event = body.event || 'unknown';\nconst model = body.model || 'unknown';\nconst entry = body.entry || {};\n\nfunction escapeMarkdownV2(text) {\n  if (!text) return '';\n  return String(text).replace(/[_*\\[\\]()~`>#\\+\\-\\=\\|{}{\\}\\.!]/g, '\\\\$&');\n}\n\nconst eventEmoji = {\n  'entry.create': '🆕',\n  'entry.update': '📝',\n  'entry.delete': '🗑️',\n  'entry.publish': '🚀',\n  'entry.unpublish': '🛑'\n}[event] || '🔔';\n\nconst message = `${eventEmoji} *Strapi Event: ${escapeMarkdownV2(event)}*\\n` +\n  `📦 *Model:* ${escapeMarkdownV2(model)}\\n` +\n  `🆔 *ID:* ${escapeMarkdownV2(entry.id || 'N/A')}\\n` +\n  `🕒 *Time:* ${new Date().toLocaleString('id-ID')}`;\n\nreturn { message };"
+      },
+      "id": "format-generic-log",
+      "name": "Format Generic Log",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [500, 500]
+    },
+    {
+      "parameters": {
+        "chatId": "8095634777",
+        "text": "={{ $json.message }}",
+        "additionalFields": {
+          "parse_mode": "MarkdownV2"
+        }
+      },
+      "id": "send-generic-log",
+      "name": "Send Generic Log",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [700, 500],
+      "credentials": {
+        "telegramApi": {
+          "id": "D63Xru2usbEAKg7O",
+          "name": "Telegram Bot OSIS"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Strapi Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Filter: Inbox Create",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter: Inbox Create": {
+      "main": [
+        [
+          {
+            "node": "AI Agent - Analisis Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Format Generic Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent - Analisis Data": {
+      "main": [
+        [
+          {
+            "node": "Store Notification in Strapi",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Format Telegram Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Notification in Strapi": {
+      "main": [
+        [
+          {
+            "node": "Broadcast via SSE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Telegram Message": {
+      "main": [
+        [
+          {
+            "node": "Send to Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Broadcast via SSE": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Generic Log": {
+      "main": [
+        [
+          {
+            "node": "Send Generic Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Generic Log": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Model (Gemini)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent - Analisis Data",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent - Analisis Data",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Callback Webhook": {
+      "main": [
+        [
+          {
+            "node": "Callback Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Callback Router": {
+      "main": [
+        [
+          {
+            "node": "Extract Callback Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract Callback Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Callback Data": {
+      "main": [
+        [
+          {
+            "node": "Update Strapi: Selesai",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update Strapi: High Priority",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Strapi: Selesai": {
+      "main": [
+        [
+          {
+            "node": "Answer Callback Query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Strapi: High Priority": {
+      "main": [
+        [
+          {
+            "node": "Answer Callback Query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Answer Callback Query": {
+      "main": [
+        [
+          {
+            "node": "Edit Telegram Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Telegram Message": {
+      "main": [
+        [
+          {
+            "node": "Respond to Callback Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Server Monitor Webhook": {
+      "main": [
+        [
+          {
+            "node": "Monitor Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monitor Router": {
+      "main": [
+        [
+          {
+            "node": "Send Critical Alert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Health Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Critical Alert": {
+      "main": [
+        [
+          {
+            "node": "Respond to Monitor Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Health Report": {
+      "main": [
+        [
+          {
+            "node": "Respond to Monitor Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

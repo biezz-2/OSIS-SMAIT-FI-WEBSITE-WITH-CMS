@@ -297,7 +297,25 @@ export async function fetchBPHAnggotaFromStrapi() {
  * Fetch Events list from Strapi API
  */
 export async function fetchEventsFromStrapi(limit: number = 5) {
-  const json: any = await fetchStrapiAPI(`/api/events?sort=tanggal_mulai:desc&pagination[limit]=${limit}&fields[0]=judul&fields[1]=tanggal_mulai&fields[2]=deskripsi&populate[image][fields][0]=url`);
+  let json: any;
+  try {
+    json = await fetchStrapiAPI(`/api/events?sort[0]=tanggal_mulai:desc&sort[1]=createdAt:desc&pagination[limit]=${limit}&populate=*`);
+  } catch {
+    json = await fetchStrapiAPI(`/api/events?sort[0]=createdAt:desc&pagination[limit]=${limit}&populate=*`);
+  }
+  return json?.data || [];
+}
+
+/**
+ * Fetch all Events for the /events page
+ */
+export async function fetchAllEventsForPage() {
+  let json: any;
+  try {
+    json = await fetchStrapiAPI('/api/events?sort[0]=tanggal_mulai:desc&sort[1]=createdAt:desc&pagination[limit]=100&populate=*');
+  } catch {
+    json = await fetchStrapiAPI('/api/events?sort[0]=createdAt:desc&pagination[limit]=100&populate=*');
+  }
   return json?.data || [];
 }
 
@@ -341,7 +359,7 @@ export async function fetchBgTextureConfig(): Promise<{
 
   return {
     enabled: attrs.enabled !== false,
-    variant: attrs.variant || 'fabric-of-squares',
+    variant: attrs.variant || 'subtle-noise',
     opacity: typeof attrs.opacity === 'number' ? attrs.opacity : 0.5,
     custom_bg_texture_url: customUrl || undefined,
     applied_routes: attrs.applied_routes || '/*',

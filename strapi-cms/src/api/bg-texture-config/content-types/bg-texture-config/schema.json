@@ -19,6 +19,9 @@
     "variant": {
       "type": "enumeration",
       "enum": [
+        "subtle-noise",
+        "dot-matrix",
+        "gradient-glow",
         "fabric-of-squares",
         "grid-noise",
         "inflicted",
@@ -26,7 +29,7 @@
         "groovepaper",
         "none"
       ],
-      "default": "fabric-of-squares"
+      "default": "subtle-noise"
     },
     "opacity": {
       "type": "decimal",

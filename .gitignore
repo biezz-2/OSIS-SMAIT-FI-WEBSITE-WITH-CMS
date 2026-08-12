@@ -1,0 +1,58 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+.next/
+dist/
+build/
+.cache/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Roo/Kilo AI context
+.kilo/
+.roo/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+firebase-debug.log
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Strapi uploads (large binary files)
+strapi-cms/public/uploads/
+
+# Strapi build
+strapi-cms/.tmp/
+strapi-cms/.strapi/
+
+# Image cache
+.image-cache/
+osis-smait-fi/.image-cache/
+
+# Binary artifacts from npm ls
+agoraacta-website-workspace@1.0.0
+osis-smait-fi@0.1.0
+strapi-cms@0.1.0
+next
+npm
+strapi
+
+# Embedded git repos
+other-program/edufest-infinity-link-in-bio-boilerplate/

@@ -4,33 +4,34 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { 
-    fetchHalamanFromStrapi, 
-    getStrapiMediaUrl, 
-    fetchMediaAssetByKey, 
-    fetchAllSekbidsFromStrapi 
+import {
+    fetchHalamanFromStrapi,
+    getStrapiMediaUrl,
+    fetchMediaAssetByKey,
+    fetchAllSekbidsFromStrapi
 } from '@/lib/strapi';
 import { GooeyInput } from '@/components/ui/gooey-input';
 import { MegaMenuItem, type MegaMenuCard } from '@/components/ui/MegaMenu';
 import { AnimatedThemeToggler } from '@/components/ui/animated-theme-toggler';
-import { 
-    ClipboardList, 
-    Image as ImageIcon, 
-    Camera, 
-    BookOpen, 
-    Shield, 
-    GraduationCap, 
-    Globe, 
-    Activity, 
-    Leaf, 
-    ShoppingBag, 
-    Tv 
+import {
+    ClipboardList,
+    Image as ImageIcon,
+    Camera,
+    BookOpen,
+    Shield,
+    GraduationCap,
+    Globe,
+    Activity,
+    Leaf,
+    ShoppingBag,
+    Tv
 } from 'lucide-react';
 
 // Nav items tanpa sub-menu
 const simpleNavItems = [
     { name: 'HOME', path: '/' },
     { name: 'ABOUT', path: '/about' },
+    { name: 'EVENTS', path: '/events' },
     { name: 'MEDIA SOSIAL', path: '/media-sosial' },
     { name: 'ANGGOTA', path: '/anggota' },
 ];
@@ -176,7 +177,7 @@ const Navbar = () => {
                         if (attrs.deskripsi) {
                             description = attrs.deskripsi;
                         }
-                        
+
                         const iconMedia = attrs.icon || attrs.banner || attrs.gambar;
                         const resolvedIcon = getStrapiMediaUrl(iconMedia, '');
                         if (resolvedIcon) {
@@ -287,16 +288,16 @@ const Navbar = () => {
                 </Link>
 
                 {/* Desktop Nav items — hidden on mobile */}
-                <div className="hidden lg:flex items-center gap-3 relative z-50">
+                <div className="hidden lg:flex items-center gap-1.5 xl:gap-2.5 relative z-50">
                     {simpleNavItems.map((item) => (
                         <Link key={item.name} href={item.path} className="no-underline">
                             <div
-                                className="px-3 py-1.5 rounded transition-all duration-200 flex items-center justify-center cursor-pointer hover:opacity-80"
+                                className="px-2.5 xl:px-3 py-1.5 rounded transition-all duration-200 flex items-center justify-center cursor-pointer hover:opacity-80 shrink-0"
                                 style={{
                                     background: isActive(item.path) ? '#E8850A' : '#FA982E',
                                 }}
                             >
-                                <span className="text-[#1A1A1A] text-xs font-bold font-[Inter,sans-serif] leading-4">
+                                <span className="text-[#1A1A1A] text-xs font-bold font-[Inter,sans-serif] leading-4 whitespace-nowrap">
                                     {item.name}
                                 </span>
                             </div>
@@ -362,9 +363,8 @@ const Navbar = () => {
             {/* ─── MOBILE DRAWER OVERLAY ──────────────────────────────── */}
             {/* Backdrop */}
             <div
-                className={`fixed inset-0 bg-black/50 z-[45] transition-opacity duration-300 lg:hidden ${
-                    mobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-                }`}
+                className={`fixed inset-0 bg-black/50 z-[45] transition-opacity duration-300 lg:hidden ${mobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                    }`}
                 onClick={() => setMobileOpen(false)}
                 aria-hidden="true"
             />
@@ -372,9 +372,8 @@ const Navbar = () => {
             {/* Drawer Panel */}
             <div
                 ref={drawerRef}
-                className={`fixed top-0 right-0 h-full w-[85vw] max-w-[360px] bg-white z-50 transform transition-transform duration-300 ease-out lg:hidden overflow-y-auto overflow-x-hidden overscroll-contain ${
-                    mobileOpen ? 'translate-x-0' : 'translate-x-full'
-                }`}
+                className={`fixed top-0 right-0 h-full w-[85vw] max-w-[360px] bg-white z-50 transform transition-transform duration-300 ease-out lg:hidden overflow-y-auto overflow-x-hidden overscroll-contain ${mobileOpen ? 'translate-x-0' : 'translate-x-full'
+                    }`}
                 style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
             >
                 {/* Drawer Header */}
@@ -421,11 +420,10 @@ const Navbar = () => {
                             onClick={() => setMobileOpen(false)}
                         >
                             <div
-                                className={`flex items-center gap-3 px-5 py-3.5 transition-colors duration-200 ${
-                                    isActive(item.path)
-                                        ? 'bg-[#2E90FA]/10 text-[#2E90FA]'
-                                        : 'text-[#1A1A1A] hover:bg-gray-50 active:bg-gray-100'
-                                }`}
+                                className={`flex items-center gap-3 px-5 py-3.5 transition-colors duration-200 ${isActive(item.path)
+                                    ? 'bg-[#2E90FA]/10 text-[#2E90FA]'
+                                    : 'text-[#1A1A1A] hover:bg-gray-50 active:bg-gray-100'
+                                    }`}
                             >
                                 <span className="text-sm font-bold font-[Inter,sans-serif]">
                                     {item.name}
@@ -493,10 +491,10 @@ const Navbar = () => {
                                                     style={{ background: card.gradient }}
                                                 >
                                                     {card.icon && (typeof card.icon === 'string' && (card.icon.startsWith('/') || card.icon.startsWith('http'))) ? (
-                                                        <img 
-                                                            src={card.icon} 
-                                                            alt={card.title} 
-                                                            className="w-full h-full object-cover rounded-lg" 
+                                                        <img
+                                                            src={card.icon}
+                                                            alt={card.title}
+                                                            className="w-full h-full object-cover rounded-lg"
                                                         />
                                                     ) : (
                                                         <div className="text-white flex items-center justify-center">

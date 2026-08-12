@@ -1,0 +1,56 @@
+.container {
+    width: 60px;
+    height: 140px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(2px);
+}
+
+.slider {
+    width: 40px;
+    height: 100px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    touch-action: none;
+    outline: none;
+    cursor: pointer;
+    will-change: transform;
+    transition: box-shadow 0.15s;
+}
+
+.slider:focus-visible {
+    box-shadow: 0px 0px 0px 4px #0d63f8ff;
+}
+
+.indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-color: #0d63f8;
+    transform-origin: center bottom;
+    pointer-events: none;
+    will-change: transform;
+    transform: scaleY(0.5);
+}
+
+.iconContainer {
+    position: relative;
+    z-index: 1;
+    will-change: transform;
+}
+
+.icon {
+    position: relative;
+    z-index: 1;
+    bottom: 10px;
+    pointer-events: none;
+}

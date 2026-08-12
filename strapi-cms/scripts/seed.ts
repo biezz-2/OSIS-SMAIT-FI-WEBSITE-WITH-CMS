@@ -474,6 +474,16 @@ const halamanData = [
     seo_title: 'Galeri Foto - OSIS SMAIT Fithrah Insani',
     seo_description: 'Galeri foto dokumentasi kegiatan OSIS SMAIT Fithrah Insani.',
   },
+  {
+    nama_halaman: 'Events (Agenda Kegiatan)',
+    slug: 'events',
+    judul_hero: 'EVENTS',
+    sub_judul: 'Saksikan dan ikuti berbagai event, agenda kegiatan, dan ajang penampilan bakat yang diselenggarakan oleh OSIS SMAIT Fithrah Insani sepanjang periode ini.',
+    deskripsi: 'Daftar agenda kegiatan, event berlangsung, mendatang, dan terdahulu OSIS SMAIT Fithrah Insani.',
+    bg_color: '#FFF7D9',
+    seo_title: 'Events & Agenda Kegiatan - OSIS SMAIT Fithrah Insani',
+    seo_description: 'Daftar acara, event, dan agenda kegiatan OSIS SMAIT Fithrah Insani.',
+  },
 ];
 
 async function seedHalaman(jwt: string): Promise<void> {

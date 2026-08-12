@@ -1,0 +1,17 @@
+{
+  "name": "agoraacta-website-workspace",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev:solo --prefix osis-smait-fi\" \"npm run dev --prefix strapi-cms\"",
+    "start": "concurrently \"npm run start:solo --prefix osis-smait-fi\" \"npm run start --prefix strapi-cms\"",
+    "build": "npm run build --prefix osis-smait-fi && npm run build --prefix strapi-cms"
+  },
+  "dependencies": {
+    "@strapi-community/plugin-seo": "^2.1.1",
+    "@vscode/ripgrep": "^1.18.0"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
