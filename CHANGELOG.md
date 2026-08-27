@@ -6,6 +6,14 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [1.7.1] - 2026-08-27
+
+### 🐛 Diperbaiki
+- **Perbaikan Parser RSS Podcast Spotify (`/api/spotify-rss`)**:
+  - Penyesuaian regex XML parsing untuk mendukung variasi atribut `url` (petik tunggal/ganda) serta penanganan HTML entity `&amp;`.
+- **Optimasi Audio Player (`SosmedHub.tsx`)**:
+  - Penambahan atribut `preload="metadata"` pada elemen HTML5 `<audio>` untuk stabilitas pemutaran audio podcast yang melalui redirect CDN Anchor.fm / CloudFront.
+
 ## [1.7.0] - 2026-08-12
 
 ### 🚀 Ditambahkan
