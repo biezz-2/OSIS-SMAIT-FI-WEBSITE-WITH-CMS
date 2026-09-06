@@ -107,4 +107,4 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 ## [1.0.0] - 2026-07-25
 
 ### 🚀 Ditambahkan
-- Rilis perdana **Portal Web OSIS SMAIT Fithrah Insani (Agora Acta 2025 - Bhaskara)**.
+- Rilis perdana **Portal Web OSIS SMAIT Fithrah Insani (Agora Acta 2025)**.
