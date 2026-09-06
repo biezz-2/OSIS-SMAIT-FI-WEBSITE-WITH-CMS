@@ -8,7 +8,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
-> **Satu platform sentral untuk seluruh informasi, agenda, transparansi kepengurusan, dan dokumen sidang OSIS SMAIT Fithrah Insani periode Agora Acta (Bhaskara).**
+> **Satu platform sentral untuk seluruh informasi, agenda, transparansi kepengurusan, dan dokumen sidang OSIS SMAIT Fithrah Insani periode Agora Acta.**
 
 Portal ini menyelesaikan masalah klasik organisasi siswa: informasi kegiatan tercecer di grup chat, dokumentasi LPJ hilang saat pergantian periode, dan proses musyawarah besar yang sulit diakses secara transparan. Dibangun dengan Next.js 16 (App Router), Strapi v5 Headless CMS, dan PostgreSQL 16.
 
