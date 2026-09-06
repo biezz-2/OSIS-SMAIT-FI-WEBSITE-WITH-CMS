@@ -10,11 +10,11 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ### 🚀 Ditambahkan
 - **Sistem MUBES Dual-Layer (Clerk + PostgreSQL 16)**:
-  - **Migrasi Database PostgreSQL 16**: Strapi v5 bermigrasi dari MySQL ke PostgreSQL 16 (`mubes-postgres` pada port `127.0.0.1:5433`). Seluruh 44 skema, 1.248 entitas, 1.218 aset media (364 MB), dan 2.957 link relasi berhasil diimpor tanpa data loss.
-  - **Content Types Privat**: Skema `mubes-lpj`, `mubes-sidang`, `akses-user`, `audit-log`, dan `login-event`.
+  - **Migrasi Database PostgreSQL 16**: Strapi v5 resmi bermigrasi penuh dari MySQL ke PostgreSQL 16 (`mubes-postgres` pada port `127.0.0.1:5433`). Seluruh 44 skema, 1.248 entitas, 1.218 aset media (364 MB), dan 2.957 link relasi berhasil diimpor tanpa data loss.
+  - **Content Types Baru**: Pembuatan skema privat `mubes-lpj`, `mubes-sidang`, `akses-user`, `audit-log`, dan `login-event`.
   - **Zero-Cost Allowlist (Clerk Open Access + Svix Webhook)**: Webhook handler `/api/webhooks/clerk` memverifikasi signature Svix dan mencocokkan nama pendaftar secara otomatis dengan 65 anggota OSIS di database Strapi (`api::anggota-osis.anggota-osis`).
-  - **Global Audit Trail Middleware**: Strapi v5 Document Service Middleware mencatat log mutasi entitas (CUD + publish/unpublish) secara asinkron tanpa fitur Enterprise berbayar.
-  - **Backend-For-Frontend (BFF) Architecture**: Route handler `/api/mubes/lpj/[slug]` di Next.js 16 mengamankan token backend Strapi (`STRAPI_ELEVATED_TOKEN`) dan memvalidasi sesi terotorisasi.
+  - **Global Audit Trail Middleware**: Strapi v5 Document Service Middleware mencatat log histori mutasi entitas (CUD + publish/unpublish) secara asinkron tanpa fitur Enterprise berbayar.
+  - **Backend-For-Frontend (BFF) Architecture**: Route handler `/api/mubes/lpj/[slug]` di Next.js 16 mengamankan token backend Strapi (`STRAPI_ELEVATED_TOKEN`) dan hanya merespons sesi terverifikasi.
   - **Zero Layout Shift In-Place Expansion (CLS = 0)**: Shortcut `Ctrl+Shift+M` / `Cmd+Shift+M` membuka modal login Clerk; pengguna terotorisasi dapat melihat data LPJ tertutup (anggaran, nota, evaluasi internal, kendala/solusi) langsung di halaman detail program kerja tanpa perpindahan URL.
 
 ### 🔒 Keamanan & RBAC
@@ -22,6 +22,22 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 - Header `cache: no-store` diterapkan pada seluruh respons data sensitif MUBES.
 
 ---
+
+## [1.7.1] - 2026-08-27
+
+### 🐛 Diperbaiki
+- **Perbaikan Parser RSS Podcast Spotify (`/api/spotify-rss`)**:
+  - Penyesuaian regex XML parsing untuk mendukung variasi atribut `url` (petik tunggal/ganda) serta penanganan HTML entity `&amp;`.
+- **Optimasi Audio Player (`SosmedHub.tsx`)**:
+  - Penambahan atribut `preload="metadata"` pada elemen HTML5 `<audio>` untuk stabilitas pemutaran audio podcast yang melalui redirect CDN Anchor.fm / CloudFront.
+
+## [1.7.0] - 2026-08-12
+
+### 🚀 Ditambahkan
+- **Analisis Komprehensif Ekosistem**:
+  - Pembuatan dokumen `docs/analisis_akhir_agora_acta.md` yang merangkum arsitektur sistem, analisis komponen teknis (Frontend & Backend), serta rekomendasi pengembangan.
+- **Audit Struktur Proyek**:
+  - Verifikasi menyeluruh terhadap integrasi Next.js 16, Strapi v5, dan mekanisme deployment PM2.
 
 ## [1.6.0] - 2026-08-11
 
@@ -70,86 +86,21 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
   - Konfigurasi otomatis RBAC untuk peran *Chief Editor* dan *Content Contributor* saat inisialisasi server di `strapi-cms/src/index.ts`.
   - Penjadwalan sinkronisasi database MySQL secara periodik via background worker `child_process.fork()`.
 
-### 🔄 Diubah
-- **Tata Letak & Scrolling Mobile**:
-  - Penyesuaian `Navbar.tsx` untuk mencegah scrolling body utama saat drawer navigasi mobile terbuka (`overflow: hidden`).
-- **Konsistensi Tema & Estetika**:
-  - Pembaruan `globals.css` dengan penataan ulang variabel HSL dan rules `html.dark` untuk memastikan kontras tinggi yang konsisten pada semua komponen.
-
 ---
 
 ## [1.3.0] - 2026-08-04
 
 ### 🚀 Ditambahkan
-- **Halaman Anggota OSIS Premium (`/anggota`)** (`AnggotaList.tsx`):
+- **Halaman Anggota OSIS Premium (`/anggota`)**:
   - Featured card Ketua OSIS dengan foto 4:5 dan dekorasi rotated box.
   - Grid Pengurus Inti (BPH) 3 kolom dengan icon badge warna dinamis.
   - Grid Seksi Bidang 1–8 dengan avatar stack, deskripsi CMS, dan link "View Team".
-  - Sticky sidebar kiri (desktop) dengan navigasi scroll-to-section per divisi.
 - **Dynamic Image Compression API** (`/api/compress-image`):
   - Kompresi gambar on-the-fly melalui Next.js API Route.
-  - Kualitas dapat dikonfigurasi langsung dari Strapi CMS (`halaman/home`).
-- **ImageQualityContext** (`src/context/ImageQualityContext.tsx`):
+- **ImageQualityContext**:
   - Provider React context global untuk manajemen kualitas kompresi gambar.
-  - Fungsi `getOptimizedImageUrl()` digunakan oleh semua komponen gambar Strapi.
 - **Strapi Draft Preview Mode**:
   - API routes `/api/preview` dan `/api/exit-preview`.
-  - `LivePreviewListener.tsx` untuk auto-refresh saat konten Strapi diubah.
-  - `fetchStrapiAPI()` otomatis menambahkan `?status=draft` saat cookie preview aktif.
-- **Security Headers Komprehensif** (`next.config.ts`):
-  - Implementasi CSP, HSTS, X-Frame-Options, Referrer-Policy, dan Permissions-Policy.
-- **Optimasi SEO**:
-  - `generateMetadata()` dinamis pada `/anggota` dan halaman lainnya.
-  - JSON-LD Schema.org `EducationalOrganization` di Beranda.
-  - Generator otomatis `sitemap.ts` dan `robots.ts`.
-  - Preconnect dan DNS prefetch ke domain Strapi di Root Layout.
-- **Komponen LatestEvent** dengan CTA URL kustom dari Strapi dan dual-sort fallback.
-
-### 🔄 Diubah
-- **Strategi Rendering Beranda (`/`)**: Diubah dari `force-dynamic` ke **ISR revalidate 60 detik** untuk optimasi performa.
-- **Komponen `LatestEvent`**: Migrasi ke `next/image` dengan lazy-loading dan `sizes` responsif.
-- **`fetchStrapiAPI()`**: Refaktorisasi dengan auto-sanitize URL (http$\rightarrow$https) dan kompatibilitas format Strapi v4/v5.
-- **Dokumentasi (`docs/`)**: Pembaruan menyeluruh pada ARCHITECTURE.md, SYSTEM_ANALYSIS.md, dan CHANGELOG.md.
-
-### 🐛 Diperbaiki
-- Perbaikan sorting event yang gagal jika field `tanggal_mulai` tidak terekspos (fallback ke `createdAt`).
-- Perbaikan null-safety pada komponen AnggotaList saat data Strapi CMS kosong.
-
----
-
-## [1.2.0] - 2026-07-29
-
-### 🚀 Ditambahkan
-- **Integrasi Strapi v5 Headless CMS**:
-  - Koneksi API client Next.js (`/lib/strapi.ts`) untuk data dinamis Seksi Bidang, Program Kerja, Anggota Pengurus, dan Event Utama.
-  - Skema Tipe Data TypeScript lengkap untuk entitas CMS.
-- **Manajemen Logo & Media Strapi**:
-  - Dukungan upload & konfigurasi Logo OSIS, Logo Sekolah, dan Ikon Sekbid melalui Strapi Media Library.
-  - Penanganan komponen display video dan fleksibilitas format media (MP4/WebM/Images).
-- **Sistem Caching Galeri Infinity 2D**:
-  - Implementasi caching dimensi & aspek rasio gambar di `localStorage['gallery_dimensions_cache']` untuk optimasi momentum panning/zooming physics.
-
-### 🔄 Diubah
-- **Refaktorisasi Halaman & Navigasi**:
-  - Integrasi bagian media sosial agar menyatu harmonis dengan Footer dan Social Media Hub.
-  - Optimasi responsivitas mobile navbar dan transisi glassmorphism.
-- **Restrukturisasi Dokumentasi**:
-  - Pemisahan riwayat rilis ke `docs/CHANGELOG/` dan catatan pembaruan fitur ke `docs/UPDATE/`.
-
-### 🐛 Diperbaiki
-- Perbaikan isu tampilan overlay video pada kartu event Strapi.
-- Perbaikan penanganan fallback saat data gambar dari Strapi CMS tidak tersedia.
-
----
-
-## [1.1.0] - 2026-07-26
-
-### 🚀 Ditambahkan
-- **Halaman Galeri Interaktif (`/galeri/galeri-preview-infinity`)**:
-  - Tampilan foto berbasis kisi tak terbatas (infinite grid) dengan efek gesture touch/pan/zoom ala iOS.
-  - Modal Lightbox untuk pratinjau foto resolusi tinggi.
-- **Halaman Detail Seksi Bidang (`/sekbid/[id]`) & Program Kerja (`/sekbid/.../[slug]`)**:
-  - Rute dinamis untuk mengulas visi, daftar proker, target pencapaian, dan tautan evaluasi presensi.
 
 ---
 
@@ -157,8 +108,3 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ### 🚀 Ditambahkan
 - Rilis perdana **Portal Web OSIS SMAIT Fithrah Insani (Agora Acta 2025 - Bhaskara)**.
-- Halaman Beranda (`/`), Tentang Kami (`/about`), Program Kerja (`/program-kerja`), Anggota (`/anggota`), dan Media Sosial (`/media-sosial`).
-- Modern UI Design System dengan Tailwind CSS v4, Google Fonts, dan mikro-animasi fluid.
-- Halaman Portal Edufest Infinity (`/edufest-infinity`) dengan WebGL 3D Globe, GSAP timeline, Lenis smooth scroll, dan AudioManager.
-- Komponen CursorParticles dengan algoritma Poisson Disk Sampling.
-- Konfigurasi PM2 ecosystem untuk dual-server deployment (Next.js + Strapi).
