@@ -6,6 +6,20 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.0] - 2026-09-06
+
+### 🚀 Ditambahkan
+- **Redesain Portal Musyawarah Besar (MUBES) XXI — Ancient Medieval Theme (`/portal-mubes`)**:
+  - **Hero & Typography**: Tipografi seremonial klasik memadukan Google Fonts `Cinzel` (judul kapital berwibawa & aksen lencana) dan `Cormorant Garamond` (kutipan narasi & deskripsi) dipadukan dengan ornament divider emas dan ornamen eyebrow SVG.
+  - **Dual Auth Mode (Login & Registrasi Kustom)**:
+    - `MubesLoginForm`: Autentikasi Clerk kustom dengan input styling medieval gold border, toggle visibilitas password, OAuth Google login, serta feedback error interaktif.
+    - `MubesSignUpForm`: Alur registrasi mandiri dua langkah (Step 1: Nama lengkap, email @sch.id/pribadi, password; Step 2: Verifikasi kode OTP 6 digit email langsung tanpa keluar dari portal).
+  - **Modal Bantuan BPH (`MubesBphHelpModal`)**: Dialog modal bantuan akses darurat dengan kontak WhatsApp langsung ke BPH/Presidium Sidang MUBES untuk verifikasi allowlist anggota.
+  - **SSO Callback Handler (`/sso-callback`)**: Rute penanganan redirect OAuth Google Clerk khusus portal MUBES yang mengarahkan kembali ke sesi sidang secara mulus.
+  - **Aset Visual & Ikon SVG Kustom**: Penambahan background `bg-medieval.png` (high-resolution hall), divider ornamen emas, serta ikon navigasi & fitur (`feature-program.svg`, `feature-sosial.svg`, `feature-kolaborasi.svg`).
+
+---
+
 ## [2.0.0] - 2026-09-06
 
 ### 🚀 Ditambahkan

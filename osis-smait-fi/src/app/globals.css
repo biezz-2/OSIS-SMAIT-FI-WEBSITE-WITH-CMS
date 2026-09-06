@@ -33,6 +33,8 @@
   --font-playfair: var(--font-playfair);
   --font-great-vibes: var(--font-great-vibes);
   --font-inter: var(--font-inter);
+  --font-cinzel: var(--font-cinzel);
+  --font-cormorant: var(--font-cormorant);
 }
 
 html.dark {

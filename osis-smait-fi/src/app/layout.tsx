@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Playfair_Display, Great_Vibes, Inter } from "next/font/google";
+import { Geist, Geist_Mono, Playfair_Display, Great_Vibes, Inter, Cinzel, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 import LivePreviewListener from "@/components/LivePreviewListener";
 
@@ -28,6 +28,18 @@ const greatVibes = Great_Vibes({
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
+});
+
+const cinzel = Cinzel({
+  variable: "--font-cinzel",
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+});
+
+const cormorantGaramond = Cormorant_Garamond({
+  variable: "--font-cormorant",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -81,7 +93,7 @@ export default async function RootLayout({
     <html
       lang="id"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${greatVibes.variable} ${inter.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${greatVibes.variable} ${inter.variable} ${cinzel.variable} ${cormorantGaramond.variable} h-full antialiased`}
     >
       <head>
         <script
