@@ -6,6 +6,23 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.1] - 2026-09-06
+
+### 🚀 Ditambahkan & Dioptimasi
+- **Pembaruan Desain & Layout Halaman Detail Event (`/events/[slug]`)**:
+  - **Hero Viewport Penuh & Tipografi Skala Besar**: `EventHeroSection` kini menggunakan `min-h-screen` dengan tipografi judul responsif hingga `96px`, max-width dinaikkan ke `1400px`, serta pembersihan header ganda.
+  - **Harmonisasi Spacing & Grid**: `EventDomeSection`, `EventIntroSection`, dan `EventOthersSection` ditingkatkan padding dan fluid constraint (`px-6 md:px-12 lg:px-16`) untuk kenyamanan membaca di layar lebar.
+- **Peningkatan Visual Glassmorphism Portal MUBES (`/portal-mubes`)**:
+  - Peningkatan efek kartu kaca medieval dengan `backdrop-blur(36px) saturate(190%)`, border keemasan berpendar, dan refleksi ambient cahaya lembut.
+- **Ekspansi Peran RBAC MUBES (`mubes-access.ts`)**:
+  - Penambahan dukungan peran `admin`, `administrator`, dan `bph` pada validasi hak akses dokumen sidang tertutup.
+
+### 🔒 Keamanan
+- **Penguatan Content Security Policy (CSP) untuk Clerk Auth (`next.config.ts`)**:
+  - Whitelist domain resmi Clerk (`*.clerk.accounts.dev`, `clerk.accounts.dev`, `api.clerk.com`, `img.clerk.com`) dan Cloudflare Turnstile (`challenges.cloudflare.com`) pada directive `script-src`, `style-src`, `img-src`, `connect-src`, `frame-src`, dan `worker-src`.
+
+---
+
 ## [2.1.0] - 2026-09-06
 
 ### 🚀 Ditambahkan

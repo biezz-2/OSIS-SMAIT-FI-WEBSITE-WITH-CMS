@@ -65,7 +65,7 @@ export default function EventOthersSection({
   return (
     <section
       id="other-events"
-      className="w-full max-w-[1200px] mx-auto pt-[48px] md:pt-[90px] pb-[40px] md:pb-[60px] px-4 md:px-[46px] flex flex-col gap-[20px] md:gap-[26px]"
+      className="w-full max-w-[1400px] mx-auto pt-[56px] md:pt-[96px] pb-[56px] md:pb-[80px] px-6 md:px-12 lg:px-16 flex flex-col gap-[24px] md:gap-[32px]"
       style={{ backgroundColor: tokens.sectionBg }}
     >
       <h2

@@ -32,7 +32,7 @@ export default function EventDetailClient({
 
   return (
     <main
-      className="min-h-screen text-white flex flex-col items-center py-4 md:py-6 px-0 transition-colors duration-300"
+      className="min-h-screen w-full text-white flex flex-col items-center p-0 transition-colors duration-300 overflow-x-hidden"
       style={{ backgroundColor: tokens.pageBg }}
     >
       <div className="w-full flex flex-col items-center">

@@ -62,7 +62,7 @@ export default function EventDomeSection({
   return (
     <section
       id="dome"
-      className="w-full max-w-[1200px] mx-auto pt-[48px] md:pt-[80px] pb-0 px-4 md:px-[46px] flex flex-col gap-[20px] md:gap-[26px]"
+      className="w-full max-w-[1400px] mx-auto pt-[56px] md:pt-[96px] pb-0 px-6 md:px-12 lg:px-16 flex flex-col gap-[24px] md:gap-[32px]"
       style={{ backgroundColor: tokens.sectionBg }}
     >
       <div className="flex items-center justify-between w-full gap-4">

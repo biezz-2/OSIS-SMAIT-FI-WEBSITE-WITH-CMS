@@ -73,10 +73,10 @@ export default function MubesLoginForm({ onSwitchToSignUp, onOpenHelp }: MubesLo
   };
 
   return (
-    <div className="w-[480px] max-w-full px-8 py-10 bg-[#1f1a14]/65 backdrop-blur-[32px] rounded-3xl border border-[#D8B270]/30 shadow-[0_16px_36px_rgba(0,0,0,0.55),inset_0_1px_2px_rgba(242,217,166,0.20)] flex flex-col justify-start items-start gap-4">
+    <div className="relative w-[480px] max-w-full px-8 py-10 rounded-3xl flex flex-col justify-start items-start gap-4 overflow-hidden bg-gradient-to-b from-[rgba(255,245,230,0.08)] via-[rgba(255,233,207,0.03)] to-[rgba(18,14,10,0.55)] backdrop-blur-[36px] [-webkit-backdrop-filter:blur(36px)_saturate(190%)] border border-[rgba(242,217,166,0.22)] shadow-[0_24px_50px_-12px_rgba(0,0,0,0.75),inset_0_1px_1px_0_rgba(255,255,255,0.35),inset_0_0_24px_0_rgba(224,186,122,0.06)] before:absolute before:inset-0 before:rounded-3xl before:bg-gradient-to-b before:from-white/[0.08] before:via-transparent before:to-transparent before:pointer-events-none">
       {/* Decorative Card Header */}
-      <div className="self-stretch flex flex-col justify-start items-center gap-2 overflow-hidden">
-        <div className="size-6 relative">
+      <div className="relative z-10 self-stretch flex flex-col justify-start items-center gap-2 overflow-hidden">
+        <div className="size-6 relative drop-shadow-[0_2px_8px_rgba(224,186,122,0.4)]">
           <Image
             src="/images/mubes/card-header-icon.svg"
             alt=""
@@ -84,26 +84,26 @@ export default function MubesLoginForm({ onSwitchToSignUp, onOpenHelp }: MubesLo
             className="object-contain"
           />
         </div>
-        <div className="justify-start text-[#F9EFDB] text-2xl font-bold font-['Cinzel']">
+        <div className="justify-start text-[#F9EFDB] text-2xl font-bold font-['Cinzel'] tracking-wide drop-shadow-[0_2px_10px_rgba(0,0,0,0.6)]">
           Login
         </div>
-        <div className="justify-start text-[#A59989] text-xs font-normal font-['Inter']">
+        <div className="justify-start text-[#B8AB99] text-xs font-normal font-['Inter']">
           Masuk untuk memverifikasi dan mengakses halaman.
         </div>
       </div>
 
       {/* Error Feedback */}
       {errorMessage && (
-        <div className="self-stretch p-3 rounded-lg bg-red-950/60 border border-red-800/60 text-red-200 text-xs text-center font-['Inter']">
+        <div className="relative z-10 self-stretch p-3 rounded-lg bg-red-950/70 backdrop-blur-md border border-red-800/60 text-red-200 text-xs text-center font-['Inter'] shadow-[0_4px_12px_rgba(0,0,0,0.3)]">
           {errorMessage}
         </div>
       )}
 
       {/* Form Elements */}
-      <form onSubmit={handleSubmit} className="self-stretch flex flex-col justify-start items-start gap-4">
+      <form onSubmit={handleSubmit} className="relative z-10 self-stretch flex flex-col justify-start items-start gap-4">
         {/* Input Identifier */}
-        <div className="self-stretch h-12 px-4 bg-black/0 rounded-lg outline outline-1 outline-offset-[-1px] outline-[#D8B270]/25 focus-within:outline-[#E0BA7A] focus-within:bg-black/20 transition-colors inline-flex justify-start items-center gap-3 overflow-hidden">
-          <div className="size-4 relative shrink-0">
+        <div className="self-stretch h-12 px-4 bg-black/25 hover:bg-black/35 focus-within:bg-black/45 rounded-lg border border-[#D8B270]/25 focus-within:border-[#E0BA7A] focus-within:ring-1 focus-within:ring-[#E0BA7A]/40 shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)] transition-all duration-200 inline-flex justify-start items-center gap-3 overflow-hidden">
+          <div className="size-4 relative shrink-0 opacity-75">
             <Image
               src="/images/mubes/icon-user.svg"
               alt=""
@@ -117,14 +117,14 @@ export default function MubesLoginForm({ onSwitchToSignUp, onOpenHelp }: MubesLo
             value={identifier}
             onChange={(e) => setIdentifier(e.target.value)}
             placeholder="Email atau Username / Nama Lengkap"
-            className="w-full bg-transparent text-[#F9EFDB] placeholder-[#8A7D6B] text-sm font-normal font-['Inter'] focus:outline-none"
+            className="w-full bg-transparent text-[#F9EFDB] placeholder-[#948778] text-sm font-normal font-['Inter'] focus:outline-none"
           />
         </div>
 
         {/* Input Password */}
-        <div className="self-stretch h-12 px-4 bg-black/0 rounded-lg outline outline-1 outline-offset-[-1px] outline-[#D8B270]/25 focus-within:outline-[#E0BA7A] focus-within:bg-black/20 transition-colors inline-flex justify-between items-center overflow-hidden">
+        <div className="self-stretch h-12 px-4 bg-black/25 hover:bg-black/35 focus-within:bg-black/45 rounded-lg border border-[#D8B270]/25 focus-within:border-[#E0BA7A] focus-within:ring-1 focus-within:ring-[#E0BA7A]/40 shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)] transition-all duration-200 inline-flex justify-between items-center overflow-hidden">
           <div className="flex-1 flex justify-start items-center gap-3 overflow-hidden">
-            <div className="size-4 relative shrink-0">
+            <div className="size-4 relative shrink-0 opacity-75">
               <Image
                 src="/images/mubes/icon-lock.svg"
                 alt=""
@@ -138,14 +138,14 @@ export default function MubesLoginForm({ onSwitchToSignUp, onOpenHelp }: MubesLo
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Kata Sandi"
-              className="w-full bg-transparent text-[#F9EFDB] placeholder-[#8A7D6B] text-sm font-normal font-['Inter'] focus:outline-none"
+              className="w-full bg-transparent text-[#F9EFDB] placeholder-[#948778] text-sm font-normal font-['Inter'] focus:outline-none"
             />
           </div>
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
             aria-label="Toggle password visibility"
-            className="size-4 relative shrink-0 opacity-70 hover:opacity-100 transition-opacity cursor-pointer"
+            className="size-4 relative shrink-0 opacity-60 hover:opacity-100 transition-opacity cursor-pointer"
           >
             <Image
               src="/images/mubes/icon-eye.svg"
@@ -158,14 +158,14 @@ export default function MubesLoginForm({ onSwitchToSignUp, onOpenHelp }: MubesLo
 
         {/* Remember Me & Help Row */}
         <div className="self-stretch inline-flex justify-between items-center overflow-hidden pt-1">
-          <label className="flex justify-start items-center gap-2 overflow-hidden cursor-pointer select-none">
+          <label className="flex justify-start items-center gap-2 overflow-hidden cursor-pointer select-none group">
             <input
               type="checkbox"
               checked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
-              className="size-4 bg-[#282119] rounded-sm border border-[#D8B270]/40 accent-[#E0BA7A] cursor-pointer"
+              className="size-4 bg-[#282119]/80 rounded border border-[#D8B270]/40 accent-[#E0BA7A] cursor-pointer"
             />
-            <span className="justify-start text-[#CCBFAD] text-xs font-normal font-['Inter']">
+            <span className="justify-start text-[#CCBFAD] group-hover:text-[#F9EFDB] text-xs font-normal font-['Inter'] transition-colors">
               Ingat saya?
             </span>
           </label>
@@ -182,12 +182,12 @@ export default function MubesLoginForm({ onSwitchToSignUp, onOpenHelp }: MubesLo
         <button
           type="submit"
           disabled={isLoading || isGoogleLoading}
-          className="self-stretch h-12 bg-gradient-to-r from-[#E0BA7A] to-[#A77A3D] hover:brightness-105 rounded-lg shadow-[0px_4px_14px_0px_rgba(199,153,84,0.25)] outline outline-1 outline-offset-[-1px] outline-[#E0BA7A] inline-flex justify-center items-center overflow-hidden transition-all duration-200 active:scale-[0.99] disabled:opacity-60 cursor-pointer"
+          className="self-stretch h-12 bg-gradient-to-r from-[#E3BD7D] via-[#C99E5B] to-[#997038] hover:brightness-110 active:scale-[0.99] rounded-lg border border-[#E3BD7D]/80 shadow-[0_4px_16px_rgba(199,153,84,0.3),inset_0_1px_0_rgba(255,255,255,0.45)] inline-flex justify-center items-center overflow-hidden transition-all duration-200 disabled:opacity-60 cursor-pointer"
         >
           {isLoading ? (
             <span className="inline-block animate-spin size-4 border-2 border-[#1E160C] border-t-transparent rounded-full" />
           ) : (
-            <span className="justify-start text-[#1E160C] text-base font-bold font-['Cinzel']">
+            <span className="justify-start text-[#1F170D] text-[15px] font-bold font-['Cinzel'] tracking-wide">
               Masuk ke Website
             </span>
           )}
@@ -198,7 +198,7 @@ export default function MubesLoginForm({ onSwitchToSignUp, onOpenHelp }: MubesLo
           type="button"
           onClick={handleGoogleSignIn}
           disabled={isLoading || isGoogleLoading}
-          className="self-stretch h-12 bg-white/5 hover:bg-white/10 active:scale-[0.99] rounded-lg outline outline-1 outline-offset-[-1px] outline-[#D8B270]/25 hover:outline-[#D8B270]/50 inline-flex justify-center items-center gap-3 transition-all duration-200 disabled:opacity-60 cursor-pointer"
+          className="self-stretch h-12 bg-white/[0.04] hover:bg-white/[0.08] active:scale-[0.99] rounded-lg border border-[#D8B270]/25 hover:border-[#D8B270]/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_2px_8px_rgba(0,0,0,0.2)] inline-flex justify-center items-center gap-3 transition-all duration-200 disabled:opacity-60 cursor-pointer"
         >
           {isGoogleLoading ? (
             <span className="inline-block animate-spin size-4 border-2 border-[#E0BA7A] border-t-transparent rounded-full" />
@@ -231,21 +231,21 @@ export default function MubesLoginForm({ onSwitchToSignUp, onOpenHelp }: MubesLo
       </form>
 
       {/* Divider */}
-      <div className="self-stretch inline-flex justify-center items-center gap-3 overflow-hidden my-1">
-        <div className="flex-1 h-px bg-[#D8B270]/25" />
+      <div className="relative z-10 self-stretch inline-flex justify-center items-center gap-3 overflow-hidden my-1">
+        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#D8B270]/30 to-transparent" />
         <div className="justify-start text-[#A59989] text-xs font-normal font-['Inter']">
           or
         </div>
-        <div className="flex-1 h-px bg-[#D8B270]/25" />
+        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#D8B270]/30 to-transparent" />
       </div>
 
       {/* Secondary Button */}
       <button
         type="button"
         onClick={onSwitchToSignUp}
-        className="self-stretch h-12 bg-black/0 hover:bg-[#E0BA7A]/5 rounded-lg outline outline-1 outline-offset-[-1px] outline-[#D8B270]/30 hover:outline-[#D8B270]/60 inline-flex justify-center items-center overflow-hidden transition-all duration-200 cursor-pointer"
+        className="relative z-10 self-stretch h-12 bg-white/[0.02] hover:bg-[#E0BA7A]/[0.08] active:scale-[0.99] rounded-lg border border-[#D8B270]/30 hover:border-[#D8B270]/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] inline-flex justify-center items-center overflow-hidden transition-all duration-200 cursor-pointer"
       >
-        <span className="justify-start text-[#F2D193] text-sm font-bold font-['Cinzel']">
+        <span className="justify-start text-[#F2D194] text-sm font-bold font-['Cinzel'] tracking-wide">
           Ajukan Akses Halaman →
         </span>
       </button>

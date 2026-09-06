@@ -26,16 +26,16 @@ export default function MubesPortalView({ initialMode = 'login' }: MubesPortalVi
           alt="Ancient Enchanted Background"
           fill
           priority
-          className="object-cover object-center brightness-90"
+          className="object-cover object-center brightness-90 contrast-105"
         />
         {/* Dark Tint Overlay */}
-        <div className="absolute inset-0 bg-[#0d0a08]/55 backdrop-brightness-75" />
+        <div className="absolute inset-0 bg-[#0d0a08]/50 backdrop-brightness-75" />
 
         {/* Desktop Side Vignette Gradient */}
-        <div className="hidden lg:block absolute inset-0 bg-gradient-to-r from-[#0d0a08]/90 via-[#0d0a08]/40 to-[#0d0a08]/80" />
+        <div className="hidden lg:block absolute inset-0 bg-gradient-to-r from-[#0d0a08]/90 via-[#0d0a08]/30 to-[#0d0a08]/75" />
 
-        {/* Subtle Ambient Radial Glow */}
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[600px] bg-[#d9b270]/10 rounded-full blur-[120px] pointer-events-none" />
+        {/* Subtle Ambient Radial Glow positioned behind the card */}
+        <div className="absolute top-1/2 right-1/4 -translate-y-1/2 size-[650px] bg-[#d9b270]/15 rounded-full blur-[140px] pointer-events-none" />
       </div>
 
       {/* 2. Top Navigation Bar */}

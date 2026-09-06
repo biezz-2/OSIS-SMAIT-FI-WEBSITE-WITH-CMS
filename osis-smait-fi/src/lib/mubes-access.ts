@@ -23,7 +23,13 @@ export async function getMubesAccess(): Promise<MubesAccessResult> {
   const role = (metadata.role as any) || null;
 
   const isApproved = status === 'approved';
-  const hasValidRole = role === 'member' || role === 'operator' || role === 'admin_pembina';
+  const hasValidRole =
+    role === 'admin' ||
+    role === 'administrator' ||
+    role === 'bph' ||
+    role === 'member' ||
+    role === 'operator' ||
+    role === 'admin_pembina';
 
   return {
     allowed: isApproved && hasValidRole,

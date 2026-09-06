@@ -16,7 +16,7 @@ export default function EventIntroSection({ introText }: EventIntroProps) {
 
   return (
     <section
-      className="w-full max-w-[1200px] mx-auto px-4 md:px-[46px] py-[26px] md:py-[30px] flex items-center"
+      className="w-full max-w-[1400px] mx-auto px-6 md:px-12 lg:px-16 py-[36px] md:py-[48px] flex items-center"
       style={{ backgroundColor: tokens.sectionBg }}
     >
       <p
