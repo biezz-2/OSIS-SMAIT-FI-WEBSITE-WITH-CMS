@@ -5,6 +5,8 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { fetchProgramKerjaFromStrapi, getStrapiMediaUrl } from '@/lib/strapi';
 import { useImageQuality } from '@/context/ImageQualityContext';
+import { useClerk, useUser } from '@clerk/nextjs';
+import MubesLpjSection from '@/components/program-kerja/MubesLpjSection';
 
 export interface ChairPerson {
   name: string;
@@ -22,16 +24,16 @@ export interface ProgramDetailProps {
   evaluasiDesc: string;
   evaluasiUrl?: string;
   tampilkanEvaluasi?: boolean;
-  documentationImages: (string | { url: string; isVideo: boolean })[];
+  documentationImages: Array<{ url: string; isVideo: boolean; caption?: string; alt?: string }>;
   bannerImage: string;
   enablePreviewDokumentasi?: boolean;
   modeUkuranFrame?: 'auto' | 'contain' | 'cover' | 'square';
   layoutGridDokumentasi?: 'grid_3_col' | 'grid_2_col' | 'grid_4_col' | 'grid_1_col' | 'masonry';
 }
 
-function extractMediaList(mediaData: any): Array<{ url: string; isVideo: boolean }> {
+function extractMediaList(mediaData: any): Array<{ url: string; isVideo: boolean; caption?: string; alt?: string }> {
   if (!mediaData) return [];
-  
+
   let rawList: any[] = [];
   if (Array.isArray(mediaData)) {
     rawList = mediaData;
@@ -48,13 +50,15 @@ function extractMediaList(mediaData: any): Array<{ url: string; isVideo: boolean
       const attrs = doc?.attributes || doc;
       const mime = attrs?.mime || doc?.mime || '';
       const name = attrs?.name || doc?.name || doc?.url || url;
+      const caption = attrs?.caption || doc?.caption || '';
+      const alt = attrs?.alternativeText || doc?.alternativeText || attrs?.caption || doc?.caption || '';
       const isVid =
         (typeof mime === 'string' && mime.startsWith('video/')) ||
         /\.(mp4|webm|ogg|mov|m4v|avi|mkv)$/i.test(name) ||
         /\.(mp4|webm|ogg|mov|m4v|avi|mkv)$/i.test(url.split('?')[0]);
-      return { url, isVideo: isVid };
+      return { url, isVideo: isVid, caption, alt };
     })
-    .filter((item): item is { url: string; isVideo: boolean } => item !== null);
+    .filter((item): item is { url: string; isVideo: boolean; caption: any; alt: any } => item !== null);
 }
 
 function getGridContainerClass(layout?: string): string {
@@ -150,10 +154,10 @@ export function formatProgramDetail(strapiData: any): ProgramDetailProps | null 
   const finalChairs: ChairPerson[] = chairs.length > 0
     ? chairs
     : ketuaFotoList.map((fotoUrl, idx) => ({
-        name: 'Pengurus OSIS',
-        role: attrs.ketua_jabatan || 'Penanggung Jawab Program',
-        image: fotoUrl,
-      }));
+      name: 'Pengurus OSIS',
+      role: attrs.ketua_jabatan || 'Penanggung Jawab Program',
+      image: fotoUrl,
+    }));
 
   // Jika tidak ada sama sekali, tetap tampilkan 1 placeholder
   if (finalChairs.length === 0) {
@@ -190,18 +194,53 @@ export default function ProgramKerjaDetailPage({ slug, initialData }: { slug: st
     return initialData ? formatProgramDetail(initialData) : null;
   });
   const [loading, setLoading] = useState<boolean>(!initialData);
-  const [selectedMedia, setSelectedMedia] = useState<{ url: string; isVideo: boolean } | null>(null);
+  const [selectedMedia, setSelectedMedia] = useState<{ url: string; isVideo: boolean; caption?: string } | null>(null);
   const { getOptimizedImageUrl } = useImageQuality();
+
+  const { openSignIn } = useClerk();
+  const { isSignedIn } = useUser();
+  const [mubesPayload, setMubesPayload] = useState<{ allowed: boolean; role: string | null; lpj: any } | null>(null);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setSelectedMedia(null);
       }
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'M' || e.key === 'm')) {
+        e.preventDefault();
+        openSignIn();
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [openSignIn]);
+
+  useEffect(() => {
+    if (!isSignedIn || !slug) {
+      setMubesPayload(null);
+      return;
+    }
+
+    let isMounted = true;
+    async function fetchMubesLpj() {
+      try {
+        const res = await fetch(`/api/mubes/lpj/${encodeURIComponent(slug)}`, { cache: 'no-store' });
+        if (res.ok) {
+          const data = await res.json();
+          if (isMounted && data?.allowed && data?.lpj) {
+            setMubesPayload(data);
+          }
+        }
+      } catch (err) {
+        console.error('[MUBES In-place Overlay] Fetch failed:', err);
+      }
+    }
+
+    fetchMubesLpj();
+    return () => {
+      isMounted = false;
+    };
+  }, [isSignedIn, slug]);
 
   useEffect(() => {
     if (initialData) {
@@ -292,9 +331,8 @@ export default function ProgramKerjaDetailPage({ slug, initialData }: { slug: st
             </p>
 
             {/* Row kartu — side by side jika > 1 */}
-            <div className={`flex flex-row flex-wrap gap-5 ${
-              detail.chairs.length === 1 ? 'justify-center' : 'justify-start'
-            }`}>
+            <div className={`flex flex-row flex-wrap gap-5 ${detail.chairs.length === 1 ? 'justify-center' : 'justify-start'
+              }`}>
               {detail.chairs.map((chair, idx) => (
                 <div
                   key={idx}
@@ -313,7 +351,7 @@ export default function ProgramKerjaDetailPage({ slug, initialData }: { slug: st
                       <img
                         src={getOptimizedImageUrl(chair.image)}
                         alt={chair.name}
-                        className="w-full h-full object-cover absolute inset-0"
+                        className="w-full h-full object-cover object-top absolute inset-0"
                       />
                     ) : (
                       <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-800 to-slate-950 p-4 text-center">
@@ -395,6 +433,15 @@ export default function ProgramKerjaDetailPage({ slug, initialData }: { slug: st
                     {detail.evaluasiDesc}
                   </p>
                 )}
+
+                {/* MUBES In-place Overlay Section */}
+                {mubesPayload?.lpj && (
+                  <MubesLpjSection
+                    lpj={mubesPayload.lpj}
+                    role={mubesPayload.role}
+                    onPreviewImage={(url, caption) => setSelectedMedia({ url, isVideo: false, caption })}
+                  />
+                )}
               </div>
             </div>
           </div>
@@ -426,28 +473,36 @@ export default function ProgramKerjaDetailPage({ slug, initialData }: { slug: st
                 const { frameClass, imgClass } = getFrameContainerClass(detail.modeUkuranFrame, isMasonry);
                 const optUrl = getOptimizedImageUrl(rawUrl);
 
+                const captionText = typeof item === 'object' ? (item.caption || item.alt) : undefined;
+
                 return (
-                  <div
-                    key={index}
-                    onClick={() => {
-                      if (isPreviewActive) {
-                        setSelectedMedia({ url: rawUrl, isVideo: isVid });
-                      }
-                    }}
-                    className={`${frameClass} ${isPreviewActive ? 'cursor-pointer' : ''}`}
-                  >
-                    {isVid ? (
-                      <video
-                        src={rawUrl}
-                        controls
-                        className={imgClass}
-                      />
-                    ) : (
-                      <img
-                        src={optUrl}
-                        alt={`Dokumentasi ${index + 1}`}
-                        className={imgClass}
-                      />
+                  <div key={index} className="flex flex-col gap-2">
+                    <div
+                      onClick={() => {
+                        if (isPreviewActive) {
+                          setSelectedMedia({ url: rawUrl, isVideo: isVid, caption: captionText });
+                        }
+                      }}
+                      className={`${frameClass} ${isPreviewActive ? 'cursor-pointer' : ''}`}
+                    >
+                      {isVid ? (
+                        <video
+                          src={rawUrl}
+                          controls
+                          className={imgClass}
+                        />
+                      ) : (
+                        <img
+                          src={optUrl}
+                          alt={captionText || `Dokumentasi ${index + 1}`}
+                          className={imgClass}
+                        />
+                      )}
+                    </div>
+                    {captionText && (
+                      <p className="text-xs md:text-sm text-slate-600 dark:text-slate-400 font-medium px-1 leading-snug line-clamp-2 mt-1">
+                        {captionText}
+                      </p>
                     )}
                   </div>
                 );
@@ -463,11 +518,16 @@ export default function ProgramKerjaDetailPage({ slug, initialData }: { slug: st
           className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
           onClick={() => setSelectedMedia(null)}
         >
-          <div className="relative max-w-4xl max-h-[90vh] overflow-hidden" onClick={(e) => e.stopPropagation()}>
+          <div className="relative max-w-4xl max-h-[90vh] overflow-hidden flex flex-col items-center" onClick={(e) => e.stopPropagation()}>
             {selectedMedia.isVideo ? (
-              <video src={selectedMedia.url} controls autoPlay className="w-full h-auto max-h-[85vh] rounded-2xl" />
+              <video src={selectedMedia.url} controls autoPlay className="w-full h-auto max-h-[80vh] rounded-2xl" />
             ) : (
-              <img src={getOptimizedImageUrl(selectedMedia.url)} alt="Preview" className="w-full h-auto max-h-[85vh] object-contain rounded-2xl" />
+              <img src={getOptimizedImageUrl(selectedMedia.url)} alt="Preview" className="w-full h-auto max-h-[80vh] object-contain rounded-2xl" />
+            )}
+            {selectedMedia.caption && (
+              <div className="w-full bg-slate-900/90 text-white text-sm md:text-base px-4 py-3 text-center mt-2 rounded-xl backdrop-blur-sm border border-slate-700/50">
+                {selectedMedia.caption}
+              </div>
             )}
             <button
               onClick={() => setSelectedMedia(null)}

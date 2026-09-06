@@ -6,6 +6,23 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.0.0] - 2026-09-06
+
+### 🚀 Ditambahkan
+- **Sistem MUBES Dual-Layer (Clerk + PostgreSQL 16)**:
+  - **Migrasi Database PostgreSQL 16**: Strapi v5 resmi bermigrasi penuh dari MySQL ke PostgreSQL 16 (`mubes-postgres` pada port `127.0.0.1:5433`). Seluruh 44 skema, 1.248 entitas, 1.218 aset media (364 MB), dan 2.957 link relasi berhasil diimpor tanpa data loss.
+  - **Content Types Baru**: Pembuatan skema privat `mubes-lpj`, `mubes-sidang`, `akses-user`, `audit-log`, dan `login-event`.
+  - **Zero-Cost Allowlist (Clerk Open Access + Svix Webhook)**: Webhook handler `/api/webhooks/clerk` memverifikasi signature Svix dan mencocokkan nama pendaftar secara otomatis dengan 65 anggota OSIS di database Strapi (`api::anggota-osis.anggota-osis`).
+  - **Global Audit Trail Middleware**: Strapi v5 Document Service Middleware mencatat log histori mutasi entitas (CUD + publish/unpublish) secara asinkron tanpa fitur Enterprise berbayar.
+  - **Backend-For-Frontend (BFF) Architecture**: Route handler `/api/mubes/lpj/[slug]` di Next.js 16 mengamankan token backend Strapi (`STRAPI_ELEVATED_TOKEN`) dan hanya merespons sesi terverifikasi.
+  - **Zero Layout Shift In-Place Expansion (CLS = 0)**: Shortcut `Ctrl+Shift+M` / `Cmd+Shift+M` membuka modal login Clerk; pengguna terotorisasi dapat melihat data LPJ tertutup (anggaran, nota, evaluasi internal, kendala/solusi) langsung di halaman detail program kerja tanpa perpindahan URL.
+
+### 🔒 Keamanan & RBAC
+- Akses publik role `Public` di Strapi Users-Permissions dikunci ketat (`403 Forbidden`) untuk endpoint `mubes-lpj`, `mubes-sidang`, `akses-user`, `audit-log`, dan `login-event`.
+- Header `cache: no-store` diterapkan pada seluruh respons data sensitif MUBES.
+
+---
+
 ## [1.7.1] - 2026-08-27
 
 ### 🐛 Diperbaiki

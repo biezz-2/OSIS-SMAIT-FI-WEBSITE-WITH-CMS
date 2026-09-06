@@ -8,7 +8,8 @@ import {
     fetchHalamanFromStrapi,
     getStrapiMediaUrl,
     fetchMediaAssetByKey,
-    fetchAllSekbidsFromStrapi
+    fetchAllSekbidsFromStrapi,
+    fetchNavbarConfigFromStrapi
 } from '@/lib/strapi';
 import { GooeyInput } from '@/components/ui/gooey-input';
 import { MegaMenuItem, type MegaMenuCard } from '@/components/ui/MegaMenu';
@@ -26,14 +27,16 @@ import {
     ShoppingBag,
     Tv
 } from 'lucide-react';
+import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 
-// Nav items tanpa sub-menu
-const simpleNavItems = [
+// Nav items standar (di luar Mega Menu)
+const defaultNavItems = [
     { name: 'HOME', path: '/' },
     { name: 'ABOUT', path: '/about' },
     { name: 'EVENTS', path: '/events' },
-    { name: 'MEDIA SOSIAL', path: '/media-sosial' },
     { name: 'ANGGOTA', path: '/anggota' },
+    { name: 'MEDIA SOSIAL', path: '/media-sosial' },
+    { name: 'PARTNERS', path: '/partners' },
 ];
 
 // Fallback gradients for the 8 Sekbids
@@ -116,6 +119,9 @@ const initialGaleriCards = (): MegaMenuCard[] => [
 
 const Navbar = () => {
     const [logoUrl, setLogoUrl] = useState<string>('');
+    const [brandName, setBrandName] = useState<string>('OSIS SMAIT FITHRAH INSANI');
+    const [brandNameMobile, setBrandNameMobile] = useState<string>('OSIS SMAIT FI');
+    const [navItems, setNavItems] = useState(defaultNavItems);
     const [mobileOpen, setMobileOpen] = useState(false);
     const [expandedAccordion, setExpandedAccordion] = useState<string | null>(null);
     const drawerRef = useRef<HTMLDivElement>(null);
@@ -223,6 +229,25 @@ const Navbar = () => {
     }, [mobileOpen]);
 
     useEffect(() => {
+        async function loadNavbarConfig() {
+            try {
+                const config = await fetchNavbarConfigFromStrapi();
+                if (config) {
+                    if (config.brand_name) setBrandName(config.brand_name);
+                    if (config.brand_name_mobile) setBrandNameMobile(config.brand_name_mobile);
+                    if (config.logo_url) setLogoUrl(config.logo_url);
+                    if (config.nav_items && config.nav_items.length > 0) {
+                        setNavItems(config.nav_items);
+                    }
+                }
+            } catch (err) {
+                console.warn('Failed to load navbar config from Strapi:', err);
+            }
+        }
+        loadNavbarConfig();
+    }, []);
+
+    useEffect(() => {
         async function loadLogo() {
             try {
                 const homeData = await fetchHalamanFromStrapi('home');
@@ -280,36 +305,95 @@ const Navbar = () => {
                         <div className="w-8 h-8 rounded-full bg-black" />
                     )}
                     <span className="text-white text-sm font-bold font-[Roboto,sans-serif] leading-[17px] hidden min-[420px]:inline">
-                        OSIS SMAIT FITHRAH INSANI
+                        {brandName}
                     </span>
                     <span className="text-white text-sm font-bold font-[Roboto,sans-serif] leading-[17px] min-[420px]:hidden">
-                        OSIS SMAIT FI
+                        {brandNameMobile}
                     </span>
                 </Link>
 
-                {/* Desktop Nav items — hidden on mobile */}
-                <div className="hidden lg:flex items-center gap-1.5 xl:gap-2.5 relative z-50">
-                    {simpleNavItems.map((item) => (
-                        <Link key={item.name} href={item.path} className="no-underline">
-                            <div
-                                className="px-2.5 xl:px-3 py-1.5 rounded transition-all duration-200 flex items-center justify-center cursor-pointer hover:opacity-80 shrink-0"
-                                style={{
-                                    background: isActive(item.path) ? '#E8850A' : '#FA982E',
-                                }}
-                            >
-                                <span className="text-[#1A1A1A] text-xs font-bold font-[Inter,sans-serif] leading-4 whitespace-nowrap">
-                                    {item.name}
-                                </span>
-                            </div>
-                        </Link>
-                    ))}
+                {/* Desktop Nav items — hidden on mobile & tablet (shows on xl: 1280px+) */}
+                <div className="hidden xl:flex items-center gap-1.5 xl:gap-2.5 relative z-50">
+                    {/* 1. HOME */}
+                    <Link href="/" className="no-underline">
+                        <div
+                            className="px-2.5 xl:px-3 py-1.5 rounded transition-all duration-200 flex items-center justify-center cursor-pointer hover:opacity-80 shrink-0"
+                            style={{ background: isActive('/') ? '#E8850A' : '#FA982E' }}
+                        >
+                            <span className="text-[#1A1A1A] text-xs font-bold font-[Inter,sans-serif] leading-4 whitespace-nowrap">
+                                HOME
+                            </span>
+                        </div>
+                    </Link>
 
-                    {/* Mega menu items (desktop hover) */}
+                    {/* 2. ABOUT */}
+                    <Link href="/about" className="no-underline">
+                        <div
+                            className="px-2.5 xl:px-3 py-1.5 rounded transition-all duration-200 flex items-center justify-center cursor-pointer hover:opacity-80 shrink-0"
+                            style={{ background: isActive('/about') ? '#E8850A' : '#FA982E' }}
+                        >
+                            <span className="text-[#1A1A1A] text-xs font-bold font-[Inter,sans-serif] leading-4 whitespace-nowrap">
+                                ABOUT
+                            </span>
+                        </div>
+                    </Link>
+
+                    {/* 3. EVENTS */}
+                    <Link href="/events" className="no-underline">
+                        <div
+                            className="px-2.5 xl:px-3 py-1.5 rounded transition-all duration-200 flex items-center justify-center cursor-pointer hover:opacity-80 shrink-0"
+                            style={{ background: isActive('/events') ? '#E8850A' : '#FA982E' }}
+                        >
+                            <span className="text-[#1A1A1A] text-xs font-bold font-[Inter,sans-serif] leading-4 whitespace-nowrap">
+                                EVENTS
+                            </span>
+                        </div>
+                    </Link>
+
+                    {/* 4. ANGGOTA */}
+                    <Link href="/anggota" className="no-underline">
+                        <div
+                            className="px-2.5 xl:px-3 py-1.5 rounded transition-all duration-200 flex items-center justify-center cursor-pointer hover:opacity-80 shrink-0"
+                            style={{ background: isActive('/anggota') ? '#E8850A' : '#FA982E' }}
+                        >
+                            <span className="text-[#1A1A1A] text-xs font-bold font-[Inter,sans-serif] leading-4 whitespace-nowrap">
+                                ANGGOTA
+                            </span>
+                        </div>
+                    </Link>
+
+                    {/* 5. PROGRAM KERJA (Mega Menu) */}
                     <MegaMenuItem
                         label="PROGRAM KERJA"
                         href="/program-kerja"
                         cards={programKerjaCards}
                     />
+
+                    {/* 6. MEDIA SOSIAL */}
+                    <Link href="/media-sosial" className="no-underline">
+                        <div
+                            className="px-2.5 xl:px-3 py-1.5 rounded transition-all duration-200 flex items-center justify-center cursor-pointer hover:opacity-80 shrink-0"
+                            style={{ background: isActive('/media-sosial') ? '#E8850A' : '#FA982E' }}
+                        >
+                            <span className="text-[#1A1A1A] text-xs font-bold font-[Inter,sans-serif] leading-4 whitespace-nowrap">
+                                MEDIA SOSIAL
+                            </span>
+                        </div>
+                    </Link>
+
+                    {/* 7. PARTNERS */}
+                    <Link href="/partners" className="no-underline">
+                        <div
+                            className="px-2.5 xl:px-3 py-1.5 rounded transition-all duration-200 flex items-center justify-center cursor-pointer hover:opacity-80 shrink-0"
+                            style={{ background: isActive('/partners') ? '#E8850A' : '#FA982E' }}
+                        >
+                            <span className="text-[#1A1A1A] text-xs font-bold font-[Inter,sans-serif] leading-4 whitespace-nowrap">
+                                PARTNERS
+                            </span>
+                        </div>
+                    </Link>
+
+                    {/* 8. GALERI (Mega Menu) */}
                     <MegaMenuItem
                         label="GALERI"
                         href="/galeri/galeri-preview-infinity"
@@ -323,10 +407,35 @@ const Navbar = () => {
                         expandedOffset={45}
                     />
                     <AnimatedThemeToggler variant="diamond" />
+
+                    {/* Clerk Auth Controls */}
+                    <div className="flex items-center gap-2 pl-1">
+                        <SignedOut>
+                            <SignInButton mode="modal">
+                                <button
+                                    type="button"
+                                    className="px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-white text-xs font-semibold font-[Inter,sans-serif] transition-colors cursor-pointer"
+                                >
+                                    Masuk
+                                </button>
+                            </SignInButton>
+                            <SignUpButton mode="modal">
+                                <button
+                                    type="button"
+                                    className="px-3 py-1.5 rounded-lg bg-[#2E90FA] hover:bg-[#1570EF] text-white text-xs font-semibold font-[Inter,sans-serif] transition-colors cursor-pointer"
+                                >
+                                    Daftar
+                                </button>
+                            </SignUpButton>
+                        </SignedOut>
+                        <SignedIn>
+                            <UserButton />
+                        </SignedIn>
+                    </div>
                 </div>
 
-                {/* Mobile Right Controls: Theme Toggler + Hamburger */}
-                <div className="lg:hidden flex items-center gap-1.5">
+                {/* Mobile & Tablet Right Controls: Theme Toggler + Hamburger (shows below xl) */}
+                <div className="xl:hidden flex items-center gap-1.5">
                     <AnimatedThemeToggler variant="diamond" className="hover:bg-white/25 text-white" />
                     <button
                         type="button"
@@ -360,10 +469,10 @@ const Navbar = () => {
                 </div>
             </nav>
 
-            {/* ─── MOBILE DRAWER OVERLAY ──────────────────────────────── */}
+            {/* ─── MOBILE & TABLET DRAWER OVERLAY ────────────────────── */}
             {/* Backdrop */}
             <div
-                className={`fixed inset-0 bg-black/50 z-[45] transition-opacity duration-300 lg:hidden ${mobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                className={`fixed inset-0 bg-black/50 z-[45] transition-opacity duration-300 xl:hidden ${mobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
                     }`}
                 onClick={() => setMobileOpen(false)}
                 aria-hidden="true"
@@ -372,7 +481,7 @@ const Navbar = () => {
             {/* Drawer Panel */}
             <div
                 ref={drawerRef}
-                className={`fixed top-0 right-0 h-full w-[85vw] max-w-[360px] bg-white z-50 transform transition-transform duration-300 ease-out lg:hidden overflow-y-auto overflow-x-hidden overscroll-contain ${mobileOpen ? 'translate-x-0' : 'translate-x-full'
+                className={`fixed top-0 right-0 h-full w-[85vw] max-w-[360px] bg-white z-50 transform transition-transform duration-300 ease-out xl:hidden overflow-y-auto overflow-x-hidden overscroll-contain ${mobileOpen ? 'translate-x-0' : 'translate-x-full'
                     }`}
                 style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
             >
@@ -410,113 +519,191 @@ const Navbar = () => {
                     <AnimatedThemeToggler variant="diamond" className="text-[#1A1A1A] hover:bg-gray-100" />
                 </div>
 
-                {/* Mobile Nav Links */}
+                {/* Mobile Nav Links Sesuai Urutan Presisi */}
                 <div className="flex flex-col py-2">
-                    {simpleNavItems.map((item) => (
-                        <Link
-                            key={item.name}
-                            href={item.path}
-                            className="no-underline"
-                            onClick={() => setMobileOpen(false)}
-                        >
-                            <div
-                                className={`flex items-center gap-3 px-5 py-3.5 transition-colors duration-200 ${isActive(item.path)
-                                    ? 'bg-[#2E90FA]/10 text-[#2E90FA]'
-                                    : 'text-[#1A1A1A] hover:bg-gray-50 active:bg-gray-100'
-                                    }`}
-                            >
-                                <span className="text-sm font-bold font-[Inter,sans-serif]">
-                                    {item.name}
-                                </span>
-                                {isActive(item.path) && (
-                                    <div className="w-1.5 h-1.5 rounded-full bg-[#2E90FA]" />
-                                )}
+                    {/* Mobile Clerk Auth Controls */}
+                    <div className="px-5 py-3 border-b border-gray-100 flex items-center justify-between">
+                        <SignedOut>
+                            <div className="flex items-center gap-2 w-full">
+                                <SignInButton mode="modal">
+                                    <button
+                                        type="button"
+                                        className="flex-1 py-2 text-center rounded-lg border border-gray-200 text-[#1A1A1A] text-xs font-semibold font-[Inter,sans-serif] hover:bg-gray-50 active:bg-gray-100 transition-colors"
+                                    >
+                                        Masuk
+                                    </button>
+                                </SignInButton>
+                                <SignUpButton mode="modal">
+                                    <button
+                                        type="button"
+                                        className="flex-1 py-2 text-center rounded-lg bg-[#2E90FA] text-white text-xs font-semibold font-[Inter,sans-serif] hover:bg-[#1570EF] active:bg-[#1849A9] transition-colors"
+                                    >
+                                        Daftar
+                                    </button>
+                                </SignUpButton>
                             </div>
-                        </Link>
-                    ))}
+                        </SignedOut>
+                        <SignedIn>
+                            <div className="flex items-center justify-between w-full">
+                                <span className="text-xs font-semibold text-gray-700 font-[Inter,sans-serif]">Akun Pengguna</span>
+                                <UserButton />
+                            </div>
+                        </SignedIn>
+                    </div>
 
-                    {/* Divider */}
-                    <div className="mx-5 my-2 border-t border-gray-100" />
+                    {/* 1. HOME */}
+                    <Link href="/" className="no-underline" onClick={() => setMobileOpen(false)}>
+                        <div className={`flex items-center gap-3 px-5 py-3.5 transition-colors duration-200 ${isActive('/') ? 'bg-[#2E90FA]/10 text-[#2E90FA]' : 'text-[#1A1A1A] hover:bg-gray-50 active:bg-gray-100'}`}>
+                            <span className="text-sm font-bold font-[Inter,sans-serif]">HOME</span>
+                            {isActive('/') && <div className="w-1.5 h-1.5 rounded-full bg-[#2E90FA]" />}
+                        </div>
+                    </Link>
 
-                    {/* Mega Menu Accordion Sections */}
-                    {megaMenuSections.map((section) => (
-                        <div key={section.label}>
-                            {/* Accordion Header */}
-                            <button
-                                type="button"
-                                onClick={() => toggleAccordion(section.label)}
-                                className="w-full flex items-center justify-between px-5 py-3.5 text-left hover:bg-gray-50 active:bg-gray-100 transition-colors"
+                    {/* 2. ABOUT */}
+                    <Link href="/about" className="no-underline" onClick={() => setMobileOpen(false)}>
+                        <div className={`flex items-center gap-3 px-5 py-3.5 transition-colors duration-200 ${isActive('/about') ? 'bg-[#2E90FA]/10 text-[#2E90FA]' : 'text-[#1A1A1A] hover:bg-gray-50 active:bg-gray-100'}`}>
+                            <span className="text-sm font-bold font-[Inter,sans-serif]">ABOUT</span>
+                            {isActive('/about') && <div className="w-1.5 h-1.5 rounded-full bg-[#2E90FA]" />}
+                        </div>
+                    </Link>
+
+                    {/* 3. EVENTS */}
+                    <Link href="/events" className="no-underline" onClick={() => setMobileOpen(false)}>
+                        <div className={`flex items-center gap-3 px-5 py-3.5 transition-colors duration-200 ${isActive('/events') ? 'bg-[#2E90FA]/10 text-[#2E90FA]' : 'text-[#1A1A1A] hover:bg-gray-50 active:bg-gray-100'}`}>
+                            <span className="text-sm font-bold font-[Inter,sans-serif]">EVENTS</span>
+                            {isActive('/events') && <div className="w-1.5 h-1.5 rounded-full bg-[#2E90FA]" />}
+                        </div>
+                    </Link>
+
+                    {/* 4. ANGGOTA */}
+                    <Link href="/anggota" className="no-underline" onClick={() => setMobileOpen(false)}>
+                        <div className={`flex items-center gap-3 px-5 py-3.5 transition-colors duration-200 ${isActive('/anggota') ? 'bg-[#2E90FA]/10 text-[#2E90FA]' : 'text-[#1A1A1A] hover:bg-gray-50 active:bg-gray-100'}`}>
+                            <span className="text-sm font-bold font-[Inter,sans-serif]">ANGGOTA</span>
+                            {isActive('/anggota') && <div className="w-1.5 h-1.5 rounded-full bg-[#2E90FA]" />}
+                        </div>
+                    </Link>
+
+                    {/* 5. PROGRAM KERJA (Accordion) */}
+                    <div>
+                        <button
+                            type="button"
+                            onClick={() => toggleAccordion('PROGRAM KERJA')}
+                            className="w-full flex items-center justify-between px-5 py-3.5 text-left hover:bg-gray-50 active:bg-gray-100 transition-colors"
+                        >
+                            <span className="text-sm font-bold font-[Inter,sans-serif] text-[#1A1A1A]">PROGRAM KERJA</span>
+                            <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 16 16"
+                                fill="none"
+                                stroke="#6A7282"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="transition-transform duration-200"
+                                style={{ transform: expandedAccordion === 'PROGRAM KERJA' ? 'rotate(180deg)' : 'none' }}
                             >
-                                <span className="text-sm font-bold font-[Inter,sans-serif] text-[#1A1A1A]">
-                                    {section.label}
-                                </span>
-                                <svg
-                                    width="16"
-                                    height="16"
-                                    viewBox="0 0 16 16"
-                                    fill="none"
-                                    stroke="#6A7282"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    className="transition-transform duration-200"
-                                    style={{
-                                        transform: expandedAccordion === section.label ? 'rotate(180deg)' : 'none',
-                                    }}
-                                >
-                                    <path d="M4 6L8 10L12 6" />
-                                </svg>
-                            </button>
+                                <path d="M4 6L8 10L12 6" />
+                            </svg>
+                        </button>
 
-                            {/* Accordion Content */}
-                            <div
-                                className="overflow-hidden transition-all duration-300 ease-out"
-                                style={{
-                                    maxHeight: expandedAccordion === section.label ? `${section.cards.length * 110 + 20}px` : '0px',
-                                    opacity: expandedAccordion === section.label ? 1 : 0,
-                                }}
-                            >
-                                <div className="px-5 pb-3 flex flex-col gap-2">
-                                    {section.cards.map((card) => (
-                                        <Link
-                                            key={card.href}
-                                            href={card.href}
-                                            className="no-underline"
-                                            onClick={() => setMobileOpen(false)}
-                                        >
-                                            <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 active:bg-gray-200 transition-colors">
-                                                {/* Icon with gradient bg */}
-                                                <div
-                                                    className="w-10 h-10 rounded-lg flex items-center justify-center text-lg shrink-0 overflow-hidden"
-                                                    style={{ background: card.gradient }}
-                                                >
-                                                    {card.icon && (typeof card.icon === 'string' && (card.icon.startsWith('/') || card.icon.startsWith('http'))) ? (
-                                                        <img
-                                                            src={card.icon}
-                                                            alt={card.title}
-                                                            className="w-full h-full object-cover rounded-lg"
-                                                        />
-                                                    ) : (
-                                                        <div className="text-white flex items-center justify-center">
-                                                            {card.icon ?? '📄'}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                                <div className="flex flex-col gap-0.5 min-w-0">
-                                                    <span className="text-xs font-bold text-[#1A1A1A] truncate">
-                                                        {card.title}
-                                                    </span>
-                                                    <span className="text-[11px] text-[#6A7282] line-clamp-1">
-                                                        {card.description}
-                                                    </span>
-                                                </div>
+                        <div
+                            className="overflow-hidden transition-all duration-300 ease-out"
+                            style={{
+                                maxHeight: expandedAccordion === 'PROGRAM KERJA' ? `${programKerjaCards.length * 110 + 20}px` : '0px',
+                                opacity: expandedAccordion === 'PROGRAM KERJA' ? 1 : 0,
+                            }}
+                        >
+                            <div className="px-5 pb-3 flex flex-col gap-2">
+                                {programKerjaCards.map((card) => (
+                                    <Link key={card.href} href={card.href} className="no-underline" onClick={() => setMobileOpen(false)}>
+                                        <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 active:bg-gray-200 transition-colors">
+                                            <div className="w-10 h-10 rounded-lg flex items-center justify-center text-lg shrink-0 overflow-hidden" style={{ background: card.gradient }}>
+                                                {card.icon && (typeof card.icon === 'string' && (card.icon.startsWith('/') || card.icon.startsWith('http'))) ? (
+                                                    <img src={card.icon} alt={card.title} className="w-full h-full object-cover rounded-lg" />
+                                                ) : (
+                                                    <div className="text-white flex items-center justify-center">{card.icon ?? '📄'}</div>
+                                                )}
                                             </div>
-                                        </Link>
-                                    ))}
-                                </div>
+                                            <div className="flex flex-col gap-0.5 min-w-0">
+                                                <span className="text-xs font-bold text-[#1A1A1A] truncate">{card.title}</span>
+                                                <span className="text-[11px] text-[#6A7282] line-clamp-1">{card.description}</span>
+                                            </div>
+                                        </div>
+                                    </Link>
+                                ))}
                             </div>
                         </div>
-                    ))}
+                    </div>
+
+                    {/* 6. MEDIA SOSIAL */}
+                    <Link href="/media-sosial" className="no-underline" onClick={() => setMobileOpen(false)}>
+                        <div className={`flex items-center gap-3 px-5 py-3.5 transition-colors duration-200 ${isActive('/media-sosial') ? 'bg-[#2E90FA]/10 text-[#2E90FA]' : 'text-[#1A1A1A] hover:bg-gray-50 active:bg-gray-100'}`}>
+                            <span className="text-sm font-bold font-[Inter,sans-serif]">MEDIA SOSIAL</span>
+                            {isActive('/media-sosial') && <div className="w-1.5 h-1.5 rounded-full bg-[#2E90FA]" />}
+                        </div>
+                    </Link>
+
+                    {/* 7. PARTNERS */}
+                    <Link href="/partners" className="no-underline" onClick={() => setMobileOpen(false)}>
+                        <div className={`flex items-center gap-3 px-5 py-3.5 transition-colors duration-200 ${isActive('/partners') ? 'bg-[#2E90FA]/10 text-[#2E90FA]' : 'text-[#1A1A1A] hover:bg-gray-50 active:bg-gray-100'}`}>
+                            <span className="text-sm font-bold font-[Inter,sans-serif]">PARTNERS</span>
+                            {isActive('/partners') && <div className="w-1.5 h-1.5 rounded-full bg-[#2E90FA]" />}
+                        </div>
+                    </Link>
+
+                    {/* 8. GALERI (Accordion) */}
+                    <div>
+                        <button
+                            type="button"
+                            onClick={() => toggleAccordion('GALERI')}
+                            className="w-full flex items-center justify-between px-5 py-3.5 text-left hover:bg-gray-50 active:bg-gray-100 transition-colors"
+                        >
+                            <span className="text-sm font-bold font-[Inter,sans-serif] text-[#1A1A1A]">GALERI</span>
+                            <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 16 16"
+                                fill="none"
+                                stroke="#6A7282"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="transition-transform duration-200"
+                                style={{ transform: expandedAccordion === 'GALERI' ? 'rotate(180deg)' : 'none' }}
+                            >
+                                <path d="M4 6L8 10L12 6" />
+                            </svg>
+                        </button>
+
+                        <div
+                            className="overflow-hidden transition-all duration-300 ease-out"
+                            style={{
+                                maxHeight: expandedAccordion === 'GALERI' ? `${galeriCards.length * 110 + 20}px` : '0px',
+                                opacity: expandedAccordion === 'GALERI' ? 1 : 0,
+                            }}
+                        >
+                            <div className="px-5 pb-3 flex flex-col gap-2">
+                                {galeriCards.map((card) => (
+                                    <Link key={card.href} href={card.href} className="no-underline" onClick={() => setMobileOpen(false)}>
+                                        <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 active:bg-gray-200 transition-colors">
+                                            <div className="w-10 h-10 rounded-lg flex items-center justify-center text-lg shrink-0 overflow-hidden" style={{ background: card.gradient }}>
+                                                {card.icon && (typeof card.icon === 'string' && (card.icon.startsWith('/') || card.icon.startsWith('http'))) ? (
+                                                    <img src={card.icon} alt={card.title} className="w-full h-full object-cover rounded-lg" />
+                                                ) : (
+                                                    <div className="text-white flex items-center justify-center">{card.icon ?? '📄'}</div>
+                                                )}
+                                            </div>
+                                            <div className="flex flex-col gap-0.5 min-w-0">
+                                                <span className="text-xs font-bold text-[#1A1A1A] truncate">{card.title}</span>
+                                                <span className="text-[11px] text-[#6A7282] line-clamp-1">{card.description}</span>
+                                            </div>
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Mobile Footer */}

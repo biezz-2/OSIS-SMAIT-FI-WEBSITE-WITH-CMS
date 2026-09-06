@@ -8,21 +8,13 @@ Membuat halaman `/events` yang menampilkan daftar semua event OSIS, dikelola mel
 
 ## 2. Kondisi Saat Ini (Existing State)
 
-### Strapi CMS — Content Type `event` sudah ada
-Schema di [`strapi-cms/src/api/event/content-types/event/schema.json`](strapi-cms/src/api/event/content-types/event/schema.json:1):
-- `nama` (string, required) — judul event
-- `slug` (uid, required) — auto-generated dari nama
-- `tanggal` (datetime) — tanggal tunggal
-- `tanggal_mulai` / `tanggal_selesai` (datetime) — range tanggal
-- `lokasi` (string)
-- `deskripsi` (richtext)
-- `banner` (media, single) — gambar utama
-- `highlights` (media, multiple) — galeri foto
-- `kategori` (enum: internal / eksternal)
-- `status` (enum: draft / published / archived)
-- `tema`, `tagline`, `ringkasan`, `sub_judul` (string/text)
-- `cta_url`, `youtube_url` (string)
-- Relasi: `artikel_madings` (oneToMany)
+### Strapi CMS — Content Type `event` (Disempurnakan & Dirapikan)
+Schema di [`strapi-cms/src/api/event/content-types/event/schema.json`](strapi-cms/src/api/event/content-types/event/schema.json:1) telah dirapikan urutan field-nya agar tampilan **Content Manager** di Strapi Admin tersusun secara hirarki dan mudah dikelola:
+1. **Identitas Event**: `nama`, `slug`, `tagline`, `sub_judul`, `tema`
+2. **Kategori & Status**: `kategori` (internal/eksternal), `status` (draft/published/archived)
+3. **Waktu & Lokasi**: `tanggal_mulai`, `tanggal_selesai`, `tanggal`, `lokasi`
+4. **Konten & Visual**: `ringkasan`, `deskripsi`, `banner`, `highlights`
+5. **Navigasi & Integrasi**: `cta_url` (digunakan jika event memiliki custom landing page seperti `/edufest-infinity`), `youtube_url`, `artikel_madings`
 
 ### Frontend — Sudah ada komponen terkait
 - [`osis-smait-fi/src/components/home/LatestEvent.tsx`](osis-smait-fi/src/components/home/LatestEvent.tsx:1) — menampilkan 1 event terbaru di homepage

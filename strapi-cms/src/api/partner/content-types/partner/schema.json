@@ -1,0 +1,54 @@
+{
+    "kind": "collectionType",
+    "collectionName": "partners",
+    "info": {
+        "singularName": "partner",
+        "pluralName": "partners",
+        "displayName": "Partner",
+        "description": "Daftar partner, pengembang, dan kolaborator OSIS SMAIT Fithrah Insani"
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "nama": {
+            "type": "string",
+            "required": true
+        },
+        "role": {
+            "type": "string",
+            "default": "Developer Partner"
+        },
+        "github_url": {
+            "type": "string"
+        },
+        "website_url": {
+            "type": "string"
+        },
+        "deskripsi": {
+            "type": "text"
+        },
+        "avatar": {
+            "type": "media",
+            "multiple": false,
+            "allowedTypes": [
+                "images"
+            ]
+        },
+        "avatar_url": {
+            "type": "string"
+        },
+        "urutan": {
+            "type": "integer",
+            "default": 0
+        },
+        "is_active": {
+            "type": "boolean",
+            "default": true
+        },
+        "tags": {
+            "type": "json"
+        }
+    }
+}

@@ -7,7 +7,7 @@ const LatestEvent = dynamic(() => import('@/components/home/LatestEvent'));
 const Introduction = dynamic(() => import('@/components/home/Introduction'));
 const Footer = dynamic(() => import('@/components/Footer'));
 
-export const revalidate = 60; // ISR: revalidate every 60s instead of force-dynamic
+export const revalidate = 10800; // ISR: revalidate setiap 3 jam
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -36,7 +36,7 @@ export default async function Page() {
       <Navbar />
       <Hero initialData={homeData} />
       <Introduction initialData={homeData} />
-      <LatestEvent />
+      <LatestEvent initialHalamanData={homeData} />
       <Footer />
     </main>
   );

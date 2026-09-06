@@ -1,0 +1,38 @@
+{
+  "kind": "collectionType",
+  "collectionName": "mubes_sidangs",
+  "info": {
+    "singularName": "mubes-sidang",
+    "pluralName": "mubes-sidangs",
+    "displayName": "MUBES Sidang Pleno",
+    "description": "Session regulation, commissions, and legal mandates"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "tahun_periode": {
+      "type": "string",
+      "required": true
+    },
+    "tata_tertib": {
+      "type": "richtext"
+    },
+    "daftar_komisi": {
+      "type": "json"
+    },
+    "draft_konsideran": {
+      "type": "richtext"
+    },
+    "status_sidang": {
+      "type": "enumeration",
+      "enum": [
+        "pra_mubes",
+        "berlangsung",
+        "selesai"
+      ],
+      "default": "pra_mubes",
+      "required": true
+    }
+  }
+}

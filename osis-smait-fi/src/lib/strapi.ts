@@ -29,7 +29,8 @@ export function getStrapiMediaUrl(media: any, fallbackUrl: string = ''): string 
 
   // Case 3: Strapi uploaded media object (v4, v5, formats)
   const fileData = media.file || media.url ? media : (media.data?.attributes || media.attributes || media.data);
-  const rawUrl = fileData?.url || media?.url || media?.attributes?.url || media?.formats?.medium?.url || media?.formats?.large?.url;
+  const formats = fileData?.formats || media?.formats || media?.attributes?.formats;
+  const rawUrl = formats?.medium?.url || formats?.large?.url || fileData?.url || media?.url || media?.attributes?.url;
 
   if (rawUrl) {
     let url = sanitizeUrl(rawUrl);
@@ -50,17 +51,6 @@ export const STRAPI_INTERNAL_URL = typeof window === 'undefined'
   ? (process.env.STRAPI_INTERNAL_URL || 'http://127.0.0.1:1337').replace(/\/$/, '')
   : STRAPI_URL;
 
-// In-memory cache structures for server-side deduplication and short-term query caching
-interface ServerCacheEntry {
-  data: any;
-  timestamp: number;
-}
-const serverResponseCache = new Map<string, ServerCacheEntry>();
-const serverInflightRequests = new Map<string, Promise<any>>();
-
-/**
- * Generic safe fetch helper for Strapi REST API (Client and Server safe)
- */
 export async function fetchStrapiAPI<T>(endpoint: string, options: FetchStrapiOptions = {}): Promise<T | null> {
   let isDraftMode = options.isDraftMode || false;
 
@@ -84,90 +74,46 @@ export async function fetchStrapiAPI<T>(endpoint: string, options: FetchStrapiOp
   }
 
   const baseURL = typeof window === 'undefined' ? STRAPI_INTERNAL_URL : STRAPI_URL;
-  let urlString = cleanEndpoint.startsWith('http')
+  const urlString = cleanEndpoint.startsWith('http')
     ? cleanEndpoint
     : `${baseURL}${cleanEndpoint.startsWith('/') ? '' : '/'}${cleanEndpoint}`;
 
-  if (isDraftMode && !urlString.includes('status=')) {
-    const separator = urlString.includes('?') ? '&' : '?';
-    urlString += `${separator}status=draft`;
+  let finalUrl = urlString;
+  if (isDraftMode && !finalUrl.includes('status=')) {
+    const separator = finalUrl.includes('?') ? '&' : '?';
+    finalUrl += `${separator}status=draft`;
   }
 
-  const isServer = typeof window === 'undefined';
-  const cacheKey = `${urlString}::${isDraftMode}::${options.method || 'GET'}::${JSON.stringify(options.headers || {})}`;
+  try {
+    const defaultCacheOptions = isDraftMode
+      ? { cache: 'no-store' as const }
+      : { next: { revalidate: 60, tags: ['strapi'] } };
 
-  // Helper fetch function to perform the actual network request
-  const performFetch = async () => {
-    try {
-      const defaultCacheOptions = isDraftMode
-        ? { cache: 'no-store' as const }
-        : { next: { revalidate: 60 } };
+    const signal = options.signal || AbortSignal.timeout(5000);
 
-      const signal = options.signal || AbortSignal.timeout(5000);
-
-      const res = await fetch(urlString, {
-        ...defaultCacheOptions,
-        signal,
-        ...options,
-        headers: {
-          'Content-Type': 'application/json',
-          ...(isDraftMode ? { 'strapi-encode-source-maps': 'true' } : {}),
-          ...options.headers,
-        },
-      });
-
-      if (!res.ok) {
-        if (!(res.status === 404 && options.silent404)) {
-          console.warn(`[Strapi API] Request to ${endpoint} returned status ${res.status}`);
-        }
-        return null;
-      }
-
-      const data = await res.json();
-      return data;
-    } catch (error) {
-      console.warn(`[Strapi API Error] Failed to fetch ${endpoint}:`, error);
-      return null;
-    }
-  };
-
-  // On server, deduplicate active/in-flight requests and query short-term memory cache
-  if (isServer && !isDraftMode && (options.method === 'GET' || !options.method)) {
-    // 1. Check in-memory cache
-    const cached = serverResponseCache.get(cacheKey);
-    const now = Date.now();
-    if (cached) {
-      const cacheDuration = cached.data === null ? 30000 : 60000; // 30s for null/404, 60s for successful responses
-      if (now - cached.timestamp < cacheDuration) {
-        return cached.data;
-      } else {
-        serverResponseCache.delete(cacheKey);
-      }
-    }
-
-    // 2. Check in-flight requests (deduplication)
-    const inFlight = serverInflightRequests.get(cacheKey);
-    if (inFlight) {
-      return inFlight;
-    }
-
-    // 3. Initiate request and record in-flight
-    const fetchPromise = performFetch().then((result) => {
-      serverResponseCache.set(cacheKey, { data: result, timestamp: Date.now() });
-      serverInflightRequests.delete(cacheKey);
-      return result;
-    }).catch((err) => {
-      serverResponseCache.set(cacheKey, { data: null, timestamp: Date.now() });
-      serverInflightRequests.delete(cacheKey);
-      return null;
+    const res = await fetch(finalUrl, {
+      ...defaultCacheOptions,
+      signal,
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(isDraftMode ? { 'strapi-encode-source-maps': 'true' } : {}),
+        ...options.headers,
+      },
     });
 
-    serverInflightRequests.set(cacheKey, fetchPromise);
-    return fetchPromise;
-  }
+    if (!res.ok) {
+      if (!(res.status === 404 && options.silent404)) {
+        console.warn(`[Strapi API] Request to ${endpoint} returned status ${res.status}`);
+      }
+      return null;
+    }
 
-  // Client-side execution or cache bypass
-  return performFetch();
+    return await res.json();
+  } catch (error) {
+    console.warn(`[Strapi API Error] Failed to fetch ${endpoint}:`, error);
+    return null;
+  }
 }
 
 /**
@@ -228,9 +174,9 @@ export async function fetchSekbidFromStrapi(sekbidIdOrNumber: string | number) {
     ? `filters[nomor][$eq]=${sekbidIdOrNumber}`
     : `filters[slug][$eq]=${sekbidIdOrNumber}`;
 
-  let json: any = await fetchStrapiAPI(`/api/sekbids?${filterQuery}&populate[program_kerjas][fields][0]=judul&populate[program_kerjas][fields][1]=tujuan`);
+  let json: any = await fetchStrapiAPI(`/api/sekbids?${filterQuery}&populate[program_kerjas][fields][0]=judul&populate[program_kerjas][fields][1]=tujuan&populate[program_kerjas][fields][2]=slug&populate[program_kerjas][fields][3]=kategori`);
   if (!json || json?.error) {
-    json = await fetchStrapiAPI(`/api/sekbids?${filterQuery}&fields[0]=judul&fields[1]=deskripsi&populate[program_kerjas][fields][0]=judul`);
+    json = await fetchStrapiAPI(`/api/sekbids?${filterQuery}&fields[0]=judul&fields[1]=deskripsi&populate[program_kerjas][fields][0]=judul&populate[program_kerjas][fields][1]=slug&populate[program_kerjas][fields][2]=kategori`);
   }
   const items = json?.data || [];
 
@@ -247,12 +193,16 @@ export async function fetchSekbidFromStrapi(sekbidIdOrNumber: string | number) {
 export async function fetchProgramKerjaFromStrapi(slug: string) {
   let json: any = await fetchStrapiAPI(
     `/api/program-kerjas?filters[slug][$eq]=${slug}` +
-    `&populate[dokumentasi]=true` +
+    `&populate[dokumentasi][fields][0]=url` +
+    `&populate[dokumentasi][fields][1]=caption` +
+    `&populate[dokumentasi][fields][2]=alternativeText` +
     `&populate[banner_image]=true` +
     `&populate[ketua_foto]=true` +
     `&populate[tujuan_detail]=true` +
     `&populate[sekbid][fields][0]=judul` +
-    `&populate[penanggung_jawab][fields][0]=nama_lengkap`
+    `&populate[penanggung_jawab][populate][foto][fields][0]=url` +
+    `&populate[penanggung_jawab][fields][0]=nama_lengkap` +
+    `&populate[penanggung_jawab][fields][1]=jabatan`
   );
 
   if (!json || json?.error) {
@@ -320,6 +270,18 @@ export async function fetchAllEventsForPage() {
 }
 
 /**
+ * Fetch single Event by slug from Strapi API
+ */
+export async function fetchEventBySlug(slug: string) {
+  const json: any = await fetchStrapiAPI(`/api/events?filters[slug][$eq]=${slug}&populate=*`);
+  const items = json?.data || [];
+  if (items.length > 0) {
+    return items[0];
+  }
+  return null;
+}
+
+/**
  * Fetch all active OSIS members from Strapi API
  */
 export async function fetchAllAnggotaFromStrapi() {
@@ -334,7 +296,7 @@ export async function fetchAllAnggotaFromStrapi() {
  */
 export async function fetchAllSekbidsFromStrapi() {
   const json: any = await fetchStrapiAPI(
-    '/api/sekbids?sort=nomor:asc&fields[0]=nomor&fields[1]=judul&fields[2]=deskripsi&fields[3]=visi&populate[icon][fields][0]=url&populate[banner][fields][0]=url&populate[program_kerjas][fields][0]=judul&populate[program_kerjas][fields][1]=tujuan'
+    '/api/sekbids?sort=nomor:asc&populate=*'
   );
   return json?.data || [];
 }
@@ -371,7 +333,7 @@ export async function fetchBgTextureConfig(): Promise<{
  */
 export async function fetchGaleriFotoFromStrapi() {
   const json: any = await fetchStrapiAPI(
-    '/api/galeri-fotos?sort=createdAt:desc&pagination[limit]=100&fields[0]=judul&fields[1]=deskripsi&populate[foto][fields][0]=url&populate[foto][fields][1]=width&populate[foto][fields][2]=height'
+    '/api/galeri-fotos?sort[0]=tanggal:desc&sort[1]=createdAt:desc&pagination[limit]=100&fields[0]=judul&fields[1]=deskripsi&fields[2]=tanggal&fields[3]=kategori&populate[foto][fields][0]=url&populate[foto][fields][1]=width&populate[foto][fields][2]=height&populate[foto][fields][3]=formats'
   );
   return json?.data || [];
 }
@@ -407,7 +369,7 @@ export interface SeksiBidang {
   name: string;
   description: string;
   image: string;
-  highlightType: 'SHOWCASE' | 'TERPOPULER';
+  highlightType: string;
   highlightTitle: string;
   highlightDesc: string;
   link: string;
@@ -422,15 +384,24 @@ export function formatSekbidList(items: any[]): SeksiBidang[] {
     const prokers = attrs.program_kerjas?.data || attrs.program_kerjas || [];
     const firstProker = prokers.length > 0 ? (prokers[0].attributes || prokers[0]) : null;
 
+    // Tentukan label highlight dengan hirarki: highlight_label -> highlight_type (upper) -> fallback berdasarkan nomor
+    let label = attrs.highlight_label;
+    if (!label && attrs.highlight_type && attrs.highlight_type !== 'none') {
+      label = attrs.highlight_type.toUpperCase();
+    }
+    if (!label) {
+      label = num === 1 || num === 8 ? 'TERPOPULER' : 'SHOWCASE';
+    }
+
     return {
       id: item.id,
       number: `Seksi Bidang ${num}`,
       name: attrs.judul || attrs.nama || `Sekbid ${num}`,
       description: attrs.deskripsi || attrs.visi || '',
       image: bannerUrl,
-      highlightType: num === 1 || num === 8 ? 'TERPOPULER' : 'SHOWCASE',
-      highlightTitle: firstProker ? firstProker.judul : 'Program Utama',
-      highlightDesc: firstProker ? (firstProker.tujuan || firstProker.deskripsi || '') : 'Program kerja unggulan.',
+      highlightType: label,
+      highlightTitle: attrs.highlight_title || (firstProker ? firstProker.judul : 'Program Utama'),
+      highlightDesc: attrs.highlight_desc || (firstProker ? (firstProker.tujuan || firstProker.deskripsi || '') : 'Program kerja unggulan.'),
       link: `/sekbid/sekbid-${num}`,
     };
   });
@@ -449,4 +420,148 @@ export async function fetchAllProgramKerjaForSitemap(): Promise<Array<{ slug: st
       updatedAt: attrs.updatedAt || new Date().toISOString(),
     };
   });
+}
+
+export interface PartnerData {
+  id: number;
+  nama: string;
+  role: string;
+  github_url: string;
+  website_url?: string;
+  deskripsi: string;
+  avatar_url: string;
+  tags?: string[];
+}
+
+/**
+ * Fetch active Partners list from Strapi API with fallback
+ */
+export async function fetchPartnersFromStrapi(): Promise<PartnerData[]> {
+  const json: any = await fetchStrapiAPI(
+    '/api/partners?filters[is_active][$eq]=true&sort=urutan:asc&populate[avatar][fields][0]=url'
+  );
+  const items = json?.data || [];
+
+  if (items.length > 0) {
+    return items.map((item: any) => {
+      const attrs = item.attributes || item;
+      const avatarMedia = attrs.avatar;
+      const resolvedAvatar = getStrapiMediaUrl(avatarMedia, attrs.avatar_url || `https://github.com/${attrs.nama}.png`);
+
+      return {
+        id: item.id,
+        nama: attrs.nama || '',
+        role: attrs.role || 'Developer Partner',
+        github_url: attrs.github_url || `https://github.com/${attrs.nama}`,
+        website_url: attrs.website_url || '',
+        deskripsi: attrs.deskripsi || '',
+        avatar_url: resolvedAvatar,
+        tags: attrs.tags || [],
+      };
+    });
+  }
+
+  // Fallback partners data for biezz-2
+  return [
+    {
+      id: 1,
+      nama: "biezz-2",
+      role: "Lead Systems & Infrastructure Architect",
+      github_url: "https://github.com/biezz-2",
+      website_url: "https://github.com/biezz-2",
+      deskripsi: "Arsitek utama infrastruktur backend, mengelola Strapi CMS, deployment server, serta integrasi sistem terpadu OSIS.",
+      avatar_url: "https://github.com/biezz-2.png",
+      tags: ["Lead Developer", "Strapi CMS", "Backend", "DevOps"]
+    }
+  ];
+}
+
+export interface NavbarConfig {
+  brand_name?: string;
+  brand_name_mobile?: string;
+  logo_url?: string;
+  nav_items?: Array<{ name: string; path: string }>;
+}
+
+export async function fetchNavbarConfigFromStrapi(): Promise<NavbarConfig | null> {
+  // Try fetching singleType navbar-config first
+  let json: any = await fetchStrapiAPI('/api/navbar-config?populate=*', { silent404: true });
+  let item = json?.data;
+
+  // Fallback to halamans collectionType if singleType not found
+  if (!item) {
+    json = await fetchStrapiAPI('/api/halamans?filters[slug][$eq]=navbar-config&populate=*', { silent404: true });
+    item = json?.data?.[0];
+  }
+
+  const attrs = item?.attributes || item || {};
+  const metadata = attrs.metadata_json || {};
+  const logoMedia = attrs.logo || attrs.banner_image;
+
+  return {
+    brand_name: attrs.brand_name || attrs.nama_halaman || metadata.brand_name || 'OSIS SMAIT FITHRAH INSANI',
+    brand_name_mobile: attrs.brand_name_mobile || metadata.brand_name_mobile || 'OSIS SMAIT FI',
+    logo_url: getStrapiMediaUrl(logoMedia, ''),
+    nav_items: metadata.nav_items || [
+      { name: 'HOME', path: '/' },
+      { name: 'ABOUT', path: '/about' },
+      { name: 'EVENTS', path: '/events' },
+      { name: 'ANGGOTA', path: '/anggota' },
+      { name: 'MEDIA SOSIAL', path: '/media-sosial' },
+      { name: 'PARTNERS', path: '/partners' }
+    ],
+  };
+}
+
+export interface FooterConfig {
+  brand_title: string;
+  slogan: string;
+  slogan_sub?: string;
+  periode: string;
+  social_links: Array<{ platform: string; url: string; label: string }>;
+  quick_links: Array<{ label: string; href: string }>;
+  alamat: string;
+  telepon: string;
+  email: string;
+  copyright_text: string;
+}
+
+export async function fetchFooterConfigFromStrapi(): Promise<FooterConfig | null> {
+  // Try fetching singleType footer-config first
+  let json: any = await fetchStrapiAPI('/api/footer-config?populate=*', { silent404: true });
+  let item = json?.data;
+
+  // Fallback to halamans collectionType if singleType not found
+  if (!item) {
+    json = await fetchStrapiAPI('/api/halamans?filters[slug][$eq]=footer-config&populate=*', { silent404: true });
+    item = json?.data?.[0];
+  }
+
+  const attrs = item?.attributes || item || {};
+  const metadata = attrs.metadata_json || {};
+
+  return {
+    brand_title: attrs.brand_title || attrs.nama_halaman || metadata.brand_title || 'OSIS SMAIT FI',
+    slogan: attrs.slogan || attrs.sub_judul || metadata.slogan || 'Agora Acta - Dari Gagasan Menuju Aksi, Dari Partisipasi Menuju Kontribusi.',
+    slogan_sub: attrs.slogan_sub || metadata.slogan_sub || '2025 - 2026',
+    periode: metadata.periode || '2025 - 2026',
+    social_links: metadata.social_links || [
+      { platform: 'instagram', url: 'https://www.instagram.com/osissmaitfi?igsh=MTRyMW43d2psd3gwaQ==', label: 'Instagram' },
+      { platform: 'youtube', url: 'https://www.youtube.com/@osissmaitfithrahinsani9481', label: 'YouTube' },
+      { platform: 'tiktok', url: 'https://www.tiktok.com/@osissmaitfi?_r=1&_t=ZS-98SucgDTG2Z', label: 'TikTok' },
+      { platform: 'email', url: 'mailto:osissmaitfi@gmail.com', label: 'Email' }
+    ],
+    quick_links: metadata.quick_links || [
+      { label: 'Home', href: '/' },
+      { label: 'About Us', href: '/about' },
+      { label: 'Program Kerja', href: '/program-kerja' },
+      { label: 'Social Media', href: '/media-sosial' },
+      { label: 'Foto Anggota', href: '/anggota' },
+      { label: 'Partners', href: '/partners' }
+    ],
+    alamat: attrs.alamat || metadata.alamat || 'SMAIT Fithrah Insani, Jl. H. Gofur No. 10 Tanimulya, Ngamprah, Kab. Bandung Barat',
+    telepon: attrs.telepon || metadata.telepon || '(022) 87808984',
+    email: attrs.email || metadata.email || 'osissmaitfi@gmail.com',
+    copyright_text: attrs.copyright_text || metadata.copyright_text || 'OSIS SMAIT Fithrah Insani. All rights reserved.'
+  };
 }

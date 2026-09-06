@@ -39,9 +39,6 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin =>
       },
     },
   },
-  'better-auth': {
-    enabled: false,
-  },
   'schema-visualizer': {
     enabled: true,
   },

@@ -1,1 +1,0 @@
-export declare const server: import("msw/node").SetupServer;

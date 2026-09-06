@@ -70,6 +70,8 @@ Aplikasi ini dibagi menjadi beberapa modul halaman dan backend CMS:
 
 - **Frontend Framework**: [Next.js 16 (App Router v16.2.11)](https://nextjs.org/)
 - **Backend CMS**: [Strapi v5 Headless CMS](https://strapi.io/)
+- **Database**: PostgreSQL 16 (`mubes-postgres` Docker container)
+- **Autentikasi & Keamanan**: [Clerk Auth](https://clerk.com/) & [Svix](https://svix.com/) Webhook Verification
 - **UI & Animation Libraries**:
   - [React 19](https://react.dev/)
   - [GSAP](https://gsap.com/) & [Framer Motion](https://motion.dev/) (Animasi interaktif premium)
@@ -88,22 +90,23 @@ osis-smait-fi-workspace/
 │   ├── docs/                # Dokumentasi Proyek (ARCHITECTURE, CONTRIBUTING, PRD)
 │   ├── public/              # Aset statis (ikon, favicon, audio, media)
 │   ├── src/
-│   │   ├── app/             # Next.js App Router (Rute & Layout)
+│   │   ├── app/             # Next.js App Router (Rute, BFF /api/mubes, Webhook Clerk)
 │   │   │   ├── edufest-infinity/ # Portal Event Edufest (WebGL Scenes & Globe)
 │   │   │   └── ...          # Halaman Umum (About, Anggota, Program Kerja, dll.)
-│   │   ├── components/      # Komponen UI (scenes, globe, intro, timeline, ui, dll.)
-│   │   └── lib/             # Utility (lenis, gsap, strapi fetcher, poisson-disk)
+│   │   ├── components/      # Komponen UI (MubesLpjSection, scenes, globe, ui, dll.)
+│   │   └── lib/             # Utility (mubes-access, lenis, strapi fetcher, dll.)
 ├── strapi-cms/              # [BACKEND] Headless CMS Strapi v5
-│   ├── config/              # Konfigurasi Server, Database, & Plugins
-│   ├── database/            # Database SQLite
-│   ├── src/api/             # Content-Types (Member, Event, Sekbid, Proker, Galeri)
+│   ├── config/              # Konfigurasi Server, Database (PostgreSQL 16), & Plugins
+│   ├── public/uploads/      # Media Assets (1.218 files, 364 MB)
+│   ├── src/api/             # Content-Types (mubes-lpj, mubes-sidang, akses-user, audit-log, dll.)
+│   └── src/index.ts         # Document Service Middleware (Global Audit Trail)
 ```
 
 ---
 
-## 🔄 Integrasi Strapi CMS
+## 🔄 Integrasi Strapi CMS & PostgreSQL
 
-Frontend terhubung dengan backend Strapi melalui module helper `src/lib/strapi.ts`. Pengurus OSIS dapat mengedit konten melalui Strapi Admin Panel di `http://localhost:1337/admin`.
+Frontend terhubung dengan backend Strapi melalui module helper `src/lib/strapi.ts` dan BFF route handlers. Backend menggunakan PostgreSQL 16 container (`127.0.0.1:5433`). Pengurus OSIS dapat mengedit konten melalui Strapi Admin Panel di `https://osisstrapi.biezz.my.id/admin`.
 
 ---
 

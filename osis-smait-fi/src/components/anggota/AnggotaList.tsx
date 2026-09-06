@@ -57,6 +57,7 @@ const AnggotaList: React.FC<AnggotaListProps> = ({
   const [categories, setCategories] = useState<CategorySection[]>([]);
   const [sekbidImages, setSekbidImages] = useState<Record<string, string>>({});
   const [sekbidDescs, setSekbidDescs] = useState<Record<string, string>>({});
+  const [sekbidTitles, setSekbidTitles] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(!initialMembers);
   const { getOptimizedImageUrl } = useImageQuality();
 
@@ -123,6 +124,7 @@ const AnggotaList: React.FC<AnggotaListProps> = ({
 
         const imageMap: Record<string, string> = {};
         const descMap: Record<string, string> = {};
+        const titleMap: Record<string, string> = {};
         rawSekbids.forEach((item: any) => {
           const attrs = item.attributes || item;
           const nomor = attrs.nomor || item.id;
@@ -135,9 +137,14 @@ const AnggotaList: React.FC<AnggotaListProps> = ({
           if (desc) {
             descMap[`sekbid-${nomor}`] = desc.replace(/[#*_~`>\[\]]/g, '').trim();
           }
+          if (attrs.judul) {
+            titleMap[`sekbid-${nomor}`] = attrs.judul;
+            titleMap[`${nomor}`] = attrs.judul;
+          }
         });
         setSekbidImages(imageMap);
         setSekbidDescs(descMap);
+        setSekbidTitles(titleMap);
       } catch (err) {
         console.warn('Failed to load Sekbids from Strapi:', err);
       }
@@ -227,7 +234,7 @@ const AnggotaList: React.FC<AnggotaListProps> = ({
         <div className="max-w-[1440px] mx-auto flex flex-col lg:flex-row relative lg:min-h-[860px]">
 
           {/* ── LEFT SIDEBAR ─────────────────────────────────────────── */}
-          <div className="hidden lg:flex flex-col justify-start pt-32 px-[98px] w-[596px] shrink-0">
+          <div className="hidden lg:flex flex-col justify-start pt-32 px-12 lg:px-16 w-full lg:w-[480px] xl:w-[540px] shrink-0">
             <div className="sticky top-28 flex flex-col">
               {/* Big headline */}
               <div className="mb-6 text-[72px] font-bold leading-[1] text-[#1A1A1A] dark:text-white whitespace-pre-line">
@@ -269,7 +276,8 @@ const AnggotaList: React.FC<AnggotaListProps> = ({
                       const num = idx + 1;
                       const divKey = `Sekbid_${num}`;
                       const sectionId = `sekbid-${num}`;
-                      const name = divisionMeta[divKey]?.name || `Sekbid ${num}`;
+                      const strapiTitle = sekbidTitles[sectionId] || sekbidTitles[`${num}`];
+                      const name = strapiTitle ? `Sekbid ${num}: ${strapiTitle}` : (divisionMeta[divKey]?.name || `Sekbid ${num}`);
                       return (
                         <button
                           key={sectionId}
@@ -331,13 +339,6 @@ const AnggotaList: React.FC<AnggotaListProps> = ({
                       )}
                     </div>
 
-                    {/* Top-right dot indicator */}
-                    <div
-                      className="absolute top-7 right-7 flex items-center justify-center w-8 h-8 bg-white dark:bg-slate-900 rounded-full shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.10)] dark:shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.30)]"
-                    >
-                      <div className="w-2 h-2 rounded-full bg-[#101828] dark:bg-white" />
-                    </div>
-
                     {/* Info area */}
                     <div className="flex flex-col items-center text-center pb-2 px-2 relative">
                       {/* Badge */}
@@ -391,38 +392,10 @@ const AnggotaList: React.FC<AnggotaListProps> = ({
                             className="w-full h-full object-cover object-top"
                           />
                         )}
-                        {/* Icon badge overlay */}
-                        <div
-                          className="absolute flex items-center justify-center"
-                          style={{
-                            width: '40px',
-                            height: '40px',
-                            background: idx % 3 === 0 ? '#7A9EAD' : idx % 3 === 1 ? '#1C2331' : '#AACDDC',
-                            borderRadius: '12px',
-                            top: '172px',
-                            right: '16px',
-                            boxShadow: '0px 10px 15px -3px rgba(0, 0, 0, 0.10)',
-                            zIndex: 2,
-                          }}
-                        >
-                          {/* SVG Icon */}
-                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                            {idx % 3 === 0 ? (
-                              <rect x="1.33" y="2" width="13.33" height="12" rx="1" stroke="white" strokeWidth="1.33" />
-                            ) : idx % 3 === 1 ? (
-                              <>
-                                <rect x="1.33" y="1.33" width="10.67" height="10.67" rx="1" stroke="white" strokeWidth="1.33" />
-                                <rect x="8.28" y="8.28" width="6.11" height="6.11" rx="0.5" stroke="white" strokeWidth="1.33" />
-                              </>
-                            ) : (
-                              <rect x="2" y="3" width="12" height="10" rx="1" stroke="white" strokeWidth="1.33" />
-                            )}
-                          </svg>
-                        </div>
                       </div>
 
                       {/* Info */}
-                      <div className="flex flex-col pt-8 pb-6 px-6">
+                      <div className="flex flex-col pt-6 pb-6 px-6">
                         <h4 className="text-[14px] font-bold text-[#101828] dark:text-white leading-[20px] mb-1">
                           {member.name}
                         </h4>
@@ -474,12 +447,12 @@ const AnggotaList: React.FC<AnggotaListProps> = ({
                   id={section.id}
                   className="scroll-mt-24 flex flex-col relative hover:z-20 hover:shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_8px_32px_rgba(0,0,0,0.4)] transition-shadow duration-300 bg-white dark:bg-slate-900 border border-[#F3F4F6] dark:border-slate-800 shadow-[0px_4px_20px_rgba(0,0,0,0.03)] dark:shadow-[0px_4px_20px_rgba(0,0,0,0.2)] rounded-[24px]"
                 >
-                  {/* Image area */}
+                  {/* Image area - Single Clean Frame */}
                   <div
                     className="relative overflow-hidden h-[270px] bg-[#F3F4F6] dark:bg-slate-800 rounded-t-[23px]"
                   >
                     {(() => {
-                      const sekbidImg = sekbidImages[section.id] || sekbidImages[sekbidNum] || section.members[0]?.image;
+                      const sekbidImg = sekbidImages[section.id] || sekbidImages[sekbidNum];
                       return sekbidImg ? (
                         <img
                           src={getOptimizedImageUrl(sekbidImg)}

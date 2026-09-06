@@ -48,12 +48,19 @@ Proyek berjalan di lingkungan VPS menggunakan PM2 dengan struktur:
 
 Untuk menjaga kompatibilitas aplikasi tanpa merombak ulang kode, berikut adalah perbandingan opsi deployment:
 
-### Opsi A: Hybrid (Rekomendasi Terbaik & Termurah)
-* **Frontend Next.js**: Firebase Hosting / Vercel (Gratis/Sangat Murah, mendukung SSR & Image Optimization).
-* **Backend Strapi & Database**: Tetap di VPS saat ini menggunakan PM2 (karena SQLite dan local storage aman dan murah di VPS).
-* **Keuntungan**: Tidak perlu memodifikasi kode, gratis untuk frontend hosting, latensi rendah untuk backend.
+### Opsi A: Vercel + VPS (⭐ Rekomendasi Terbaik — Termurah & Termudah)
+* **Frontend Next.js**: Vercel (Gratis, native Next.js support, zero-config).
+* **Backend Strapi & Database**: Tetap di VPS saat ini menggunakan PM2.
+* **Keuntungan**: Tidak perlu modifikasi kode, gratis untuk frontend, Vercel adalah platform resmi Next.js.
+* **Lihat**: [Panduan Setup Vercel](#-6-panduan-deploy-ke-vercel-opsi-a) di bawah.
 
-### Opsi B: Full Serverless Google Cloud (Biaya Tinggi)
+### Opsi B: Hybrid Firebase + VPS
+* **Frontend Next.js**: Firebase App Hosting (mendukung SSR, perlu modifikasi minor).
+* **Backend Strapi & Database**: Tetap di VPS saat ini menggunakan PM2.
+* **Keuntungan**: Gratis untuk frontend hosting, latensi rendah untuk backend.
+* **Kerugian**: Perlu setup `apphosting.yaml`, modifikasi image cache dan SSE.
+
+### Opsi C: Full Serverless Google Cloud (Biaya Tinggi)
 * **Frontend**: Firebase App Hosting.
 * **Backend**: Google Cloud Run (Docker Container).
 * **Database**: Google Cloud SQL (PostgreSQL).
@@ -64,6 +71,108 @@ Untuk menjaga kompatibilitas aplikasi tanpa merombak ulang kode, berikut adalah 
 ---
 
 ## 📋 5. Kesimpulan
-1. **Next.js Frontend** **bisa** di-upload dan dijalankan di Firebase dengan beberapa modifikasi minor pada fitur caching gambar.
+1. **Next.js Frontend** **bisa** di-upload dan dijalankan di Firebase/Vercel dengan beberapa modifikasi minor pada fitur caching gambar.
 2. **Strapi CMS Backend** **tidak bisa** dijalankan langsung di Firebase Hosting tradisional. Harus dideploy menggunakan Google Cloud Run (Docker) dengan mengganti database SQLite ke database eksternal dan memindahkan media uploads ke Cloud Storage.
-3. Jika ingin meminimalkan biaya dan waktu migrasi, disarankan menggunakan **Opsi A (Hybrid)**.
+3. Jika ingin meminimalkan biaya dan waktu migrasi, disarankan menggunakan **Opsi A (Vercel + VPS)**.
+
+---
+
+## 🚀 6. Panduan Deploy ke Vercel (Opsi A)
+
+### Prasyarat
+- Akun GitHub/GitLab/Bitbucket (repo harus di-push ke salah satu platform)
+- Akun Vercel gratis di [vercel.com](https://vercel.com)
+
+### Langkah 1: Siapkan Repository
+
+Pastikan struktur monorepo sudah di-push ke GitHub. Vercel akan membaca folder `osis-smait-fi/` sebagai root project Next.js.
+
+### Langkah 2: Import Project di Vercel
+
+1. Login ke [vercel.com/new](https://vercel.com/new)
+2. Klik **"Import Git Repository"** → pilih repo GitHub
+3. Di bagian **"Root Directory"**, set ke: `osis-smait-fi`
+4. Framework Preset otomatis terdeteksi sebagai **Next.js**
+5. Klik **Deploy**
+
+### Langkah 3: Konfigurasi Environment Variables
+
+Di Vercel Dashboard → Project Settings → Environment Variables, tambahkan:
+
+| Variable | Value | Scope |
+| :--- | :--- | :--- |
+| `NEXT_PUBLIC_STRAPI_URL` | `https://osisstrapi.biezz.my.id` | Production, Preview |
+| `NEXT_PUBLIC_SITE_URL` | `https://your-domain.vercel.app` (atau custom domain) | Production |
+| `STRAPI_INTERNAL_URL` | `https://osisstrapi.biezz.my.id` | Production |
+| `REVALIDATE_SECRET` | *(secret dari VPS Strapi webhook)* | Production |
+| `TELEGRAM_BOT_TOKEN` | *(token bot Telegram)* | Production |
+| `TELEGRAM_CHAT_ID` | *(chat ID Telegram)* | Production |
+| `TELEGRAM_FEEDBACK_BOT_TOKEN` | *(token feedback bot)* | Production |
+| `CF_ZONE_ID` | *(Cloudflare Zone ID, jika pakai)* | Production |
+| `CF_API_TOKEN` | *(Cloudflare API Token, jika pakai)* | Production |
+| `PREVIEW_SECRET` | `preview_secret_agoraacta_2026` | Production, Preview |
+
+> **Penting**: `STRAPI_INTERNAL_URL` di Vercel harus menggunakan URL publik Strapi (bukan `127.0.0.1:1337`) karena Vercel serverless functions tidak berada di jaringan yang sama dengan VPS.
+
+### Langkah 4: Konfigurasi CORS di Strapi (VPS)
+
+Strapi di VPS perlu mengizinkan request dari domain Vercel. Edit konfigurasi middleware Strapi atau tambahkan domain Vercel ke allowed origins.
+
+### Langkah 5: Update Webhook Strapi
+
+Di Strapi admin panel, update webhook URL revalidasi agar mengarah ke Vercel:
+
+```
+https://your-domain.vercel.app/api/strapi-webhook
+```
+
+### Langkah 6: Custom Domain (Opsional)
+
+1. Di Vercel Dashboard → Project Settings → Domains
+2. Tambahkan domain custom (misal `osissmaitfithrahinsani.sch.id`)
+3. Update DNS records sesuai instruksi Vercel (CNAME ke `cname.vercel-dns.com`)
+4. Update `NEXT_PUBLIC_SITE_URL` di Environment Variables
+
+### Langkah 7: Update `next.config.ts`
+
+Perubahan yang **mungkin** diperlukan di `osis-smait-fi/next.config.ts`:
+
+```typescript
+// Hapus baris ini (tidak diperlukan di Vercel):
+// outputFileTracingRoot: path.join(__dirname),
+
+// Tambahkan domain Vercel di CSP frame-ancestors jika perlu
+```
+
+> Catatan: `outputFileTracingRoot` dan `import path` bisa tetap ada — Vercel mengabaikannya. Hanya perlu dihapus jika menyebabkan build error.
+
+### Yang TIDAK Perlu Diubah
+
+- ✅ **API Routes** — semua berfungsi (termasuk `compress-image`, `revalidate`, `strapi-webhook`, `inbox`, `preview`)
+- ✅ **SSE notifications** — Vercel Serverless Functions mendukung streaming responses (dengan batasan 60 detik pada Hobby plan, 300 detik pada Pro)
+- ✅ **Image Optimization** — Vercel memiliki built-in Next.js Image Optimization
+- ✅ **ISR / Revalidation** — fully supported oleh Vercel
+- ✅ **Dynamic routes** — fully supported
+
+### Catatan Penting
+
+1. **SSE timeout**: Pada Vercel Hobby (gratis), serverless function timeout 60 detik. SSE akan reconnect otomatis. Jika butuh koneksi lebih lama, pertimbangkan upgrade ke Pro atau ganti ke polling.
+2. **Image cache** (`/api/compress-image`): Vercel serverless filesystem bersifat read-only kecuali `/tmp`. Jika API ini menulis ke `.image-cache` di disk, cache akan hilang setelah cold start. Alternatif: gunakan Next.js `<Image>` component yang memanfaatkan Vercel Image Optimization secara otomatis.
+3. **Build time**: Vercel free tier memiliki limit 100 jam build/bulan. Untuk proyek ini cukup.
+4. **Bandwidth**: 100GB/bulan pada free tier. Cukup untuk website sekolah.
+
+---
+
+## 📊 7. Perbandingan Ringkas Opsi Deployment
+
+| Aspek | Opsi A: Vercel + VPS | Opsi B: Firebase + VPS | Opsi C: Full GCP |
+| :--- | :--- | :--- | :--- |
+| **Biaya Frontend** | Gratis | Gratis (App Hosting) | Gratis (App Hosting) |
+| **Biaya Backend** | VPS existing | VPS existing | >$15/bulan |
+| **Modifikasi Kode** | Minimal/Tidak ada | Minor (image cache, SSE) | Besar (DB, storage, dll) |
+| **Kompleksitas Setup** | Rendah | Sedang | Tinggi |
+| **Next.js Support** | Native (Vercel = pembuat Next.js) | Baik (via App Hosting) | Baik (via App Hosting) |
+| **Auto Deploy dari Git** | ✅ | ✅ | Manual setup |
+| **Preview Deployments** | ✅ Otomatis per PR | ❌ | ❌ |
+| **Image Optimization** | ✅ Built-in | Perlu konfigurasi | Perlu konfigurasi |
+| **Custom Domain** | ✅ Gratis + SSL | ✅ Gratis + SSL | ✅ |

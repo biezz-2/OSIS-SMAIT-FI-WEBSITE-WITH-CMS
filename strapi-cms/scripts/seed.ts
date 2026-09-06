@@ -484,7 +484,109 @@ const halamanData = [
     seo_title: 'Events & Agenda Kegiatan - OSIS SMAIT Fithrah Insani',
     seo_description: 'Daftar acara, event, dan agenda kegiatan OSIS SMAIT Fithrah Insani.',
   },
+  {
+    nama_halaman: 'Partners & Kemitraan',
+    slug: 'partners',
+    judul_hero: 'Partners',
+    sub_judul: 'OSIS SMAIT Fithrah Insani membuka kolaborasi dan kemitraan strategis bersama berbagai lembaga, instansi, dan sponsor untuk mewujudkan inovasi serta dampak positif berkelanjutan.',
+    deskripsi: 'Sinergi teknologi modern dan dedikasi pengembang independen untuk menghadirkan pengalaman platform OSIS yang responsif, terintegrasi, dan berdampak.',
+    seo_title: 'Partners & Kolaborator - OSIS SMAIT Fithrah Insani',
+    seo_description: 'Halaman resmi kemitraan, pengembang, dan kolaborator strategis OSIS SMAIT Fithrah Insani.',
+    metadata_json: {
+      hero_button_text: 'Gabung Mitra',
+      shader_title: 'Ekosistem Inovasi',
+      shader_subtitle: '& Pengembang Partner',
+      shader_description: 'Sinergi teknologi modern dan dedikasi pengembang independen untuk menghadirkan pengalaman platform OSIS yang responsif, terintegrasi, dan berdampak.',
+      shader_color_tint: '#FA982E',
+      showcase_title: 'Partner & Kontributor Utama',
+      showcase_subtitle: 'Para profesional dan pengembang independen di balik infrastruktur digital OSIS SMAIT Fithrah Insani.'
+    }
+  },
+  {
+    nama_halaman: 'OSIS SMAIT FITHRAH INSANI',
+    slug: 'navbar-config',
+    seo_title: 'Config Navbar OSIS',
+    seo_description: 'Konfigurasi menu dan branding navbar website OSIS.',
+    metadata_json: {
+      brand_name: 'OSIS SMAIT FITHRAH INSANI',
+      brand_name_mobile: 'OSIS SMAIT FI',
+      nav_items: [
+        { name: 'HOME', path: '/' },
+        { name: 'ABOUT', path: '/about' },
+        { name: 'EVENTS', path: '/events' },
+        { name: 'ANGGOTA', path: '/anggota' },
+        { name: 'MEDIA SOSIAL', path: '/media-sosial' },
+        { name: 'PARTNERS', path: '/partners' }
+      ]
+    }
+  },
+  {
+    nama_halaman: 'OSIS SMAIT FI',
+    slug: 'footer-config',
+    sub_judul: 'Agora Acta - Dari Gagasan Menuju Aksi, Dari Partisipasi Menuju Kontribusi.',
+    seo_title: 'Config Footer OSIS',
+    seo_description: 'Konfigurasi teks, link sosmed, kontak, dan copyright footer website OSIS.',
+    metadata_json: {
+      slogan_sub: '2025 - 2026',
+      periode: '2025 - 2026',
+      social_links: [
+        { platform: 'instagram', url: 'https://www.instagram.com/osissmaitfi?igsh=MTRyMW43d2psd3gwaQ==', label: 'Instagram' },
+        { platform: 'youtube', url: 'https://www.youtube.com/@osissmaitfithrahinsani9481', label: 'YouTube' },
+        { platform: 'tiktok', url: 'https://www.tiktok.com/@osissmaitfi?_r=1&_t=ZS-98SucgDTG2Z', label: 'TikTok' },
+        { platform: 'email', url: 'mailto:osissmaitfi@gmail.com', label: 'Email' }
+      ],
+      quick_links: [
+        { label: 'Home', href: '/' },
+        { label: 'About Us', href: '/about' },
+        { label: 'Program Kerja', href: '/program-kerja' },
+        { label: 'Social Media', href: '/media-sosial' },
+        { label: 'Foto Anggota', href: '/anggota' },
+        { label: 'Partners', href: '/partners' }
+      ],
+      alamat: 'SMAIT Fithrah Insani, Jl. H. Gofur No. 10 Tanimulya, Ngamprah, Kab. Bandung Barat',
+      telepon: '(022) 87808984',
+      email: 'osissmaitfi@gmail.com',
+      copyright_text: 'OSIS SMAIT Fithrah Insani. All rights reserved.'
+    }
+  },
 ];
+
+const partnerSeedData = [
+  {
+    nama: "junior-draft",
+    role: "Organisasi & Parent Entity",
+    github_url: "https://github.com/junior-draft",
+    website_url: "https://github.com/junior-draft",
+    deskripsi: "Organisasi pengembang utama yang menaungi biezz-2 dan menahkodai seluruh perancangan serta ekosistem proyek digital OSIS SMAIT Fithrah Insani.",
+    avatar_url: "https://github.com/junior-draft.png",
+    urutan: 1,
+    is_active: true,
+    tags: ["Organization", "Parent Entity", "Project Lead"]
+  },
+  {
+    nama: "biezz-2",
+    role: "Lead Systems & Infrastructure Architect",
+    github_url: "https://github.com/biezz-2",
+    website_url: "https://osisstrapi.biezz.my.id",
+    deskripsi: "Arsitek utama infrastruktur backend di bawah naungan junior-draft, mengelola Strapi CMS, deployment server, serta integrasi sistem terpadu OSIS.",
+    avatar_url: "https://github.com/biezz-2.png",
+    urutan: 2,
+    is_active: true,
+    tags: ["Member of junior-draft", "Strapi CMS", "Backend", "DevOps"]
+  }
+];
+
+async function seedPartners(jwt: string): Promise<void> {
+  console.log('\n🤝 Seeding Partner Data...');
+  for (const partner of partnerSeedData) {
+    const result = await apiCall(jwt, '/api/partners', 'POST', { data: partner });
+    if (result) {
+      console.log(`  ✅ [Partner] ${partner.nama} (${partner.role})`);
+    } else {
+      console.log(`  ❌ Failed: ${partner.nama}`);
+    }
+  }
+}
 
 async function seedHalaman(jwt: string): Promise<void> {
   console.log('\n📄 Seeding 5 Halaman Utama...');
@@ -527,8 +629,9 @@ async function main() {
     // 5. Seed Events
     await seedEvents(jwt);
 
-    // 6. Seed Halaman Utama
+    // 6. Seed Halaman Utama & Partners
     await seedHalaman(jwt);
+    await seedPartners(jwt);
 
     console.log('\n=====================================');
     console.log('🎉 Seeding completed!');

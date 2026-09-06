@@ -30,7 +30,7 @@ export default async function EventsPage() {
     const heroTitle = pageAttrs.judul_hero || 'EVENTS';
     const heroSubtitle = pageAttrs.sub_judul || pageAttrs.deskripsi || 'Saksikan dan ikuti berbagai event, agenda kegiatan, dan ajang penampilan bakat yang diselenggarakan oleh OSIS SMAIT Fithrah Insani sepanjang periode ini.';
     const heroBgUrl = getStrapiMediaUrl(pageAttrs.banner_image || pageAttrs.background_image, '');
-    const customBgColor = pageAttrs.bg_color || '#FFF7D9';
+    const customBgColor = pageAttrs.bg_color || '';
     const pageBgImage = getStrapiMediaUrl(pageAttrs.background_image, '');
 
     const now = new Date();
@@ -59,6 +59,7 @@ export default async function EventsPage() {
             id: item.id,
             title: attrs.nama || attrs.tema || 'Event OSIS',
             bannerUrl,
+            youtubeUrl: attrs.youtube_url || attrs.embed_youtube || attrs.link_youtube || attrs.video_url || '',
             description: attrs.deskripsi || attrs.sub_judul || '',
             summary: attrs.ringkasan || (attrs.tagline ? `"${attrs.tagline}"` : ''),
             date: startDateStr,
@@ -74,12 +75,10 @@ export default async function EventsPage() {
 
     return (
         <div
-            className="min-h-screen flex flex-col text-[#1A1A1A] dark:text-stone-100 transition-colors duration-300 relative"
+            className="min-h-screen flex flex-col text-[#1A1A1A] dark:text-stone-100 transition-colors duration-300 relative bg-[#F7F7F7] dark:bg-stone-950"
             style={{
-                backgroundColor: customBgColor,
-                backgroundImage: pageBgImage ? `url(${pageBgImage})` : undefined,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
+                ...(customBgColor ? { backgroundColor: customBgColor } : {}),
+                ...(pageBgImage ? { backgroundImage: `url(${pageBgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}),
             }}
         >
             <Navbar />
@@ -115,11 +114,6 @@ export default async function EventsPage() {
             {/* Events Listing Section */}
             <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-12 sm:py-20 flex flex-col gap-16 relative">
                 {/* Ambient gradient orbs — give backdrop-blur something to refract */}
-                <div className="pointer-events-none absolute inset-0 overflow-hidden -z-10" aria-hidden="true">
-                    <div className="absolute -top-32 -left-40 w-[500px] h-[500px] rounded-full bg-amber-300/25 dark:bg-amber-500/15 blur-[120px]" />
-                    <div className="absolute top-1/3 -right-32 w-[400px] h-[400px] rounded-full bg-rose-300/20 dark:bg-rose-500/10 blur-[100px]" />
-                    <div className="absolute bottom-0 left-1/4 w-[450px] h-[450px] rounded-full bg-sky-200/20 dark:bg-indigo-500/10 blur-[110px]" />
-                </div>
                 {/* 1. EVENT SEDANG BERLANGSUNG */}
                 {ongoingEvents.length > 0 && (
                     <section className="flex flex-col gap-8">
@@ -135,6 +129,7 @@ export default async function EventsPage() {
                                     key={event.id}
                                     title={event.title}
                                     bannerUrl={event.bannerUrl}
+                                    youtubeUrl={event.youtubeUrl}
                                     description={event.description}
                                     summary={event.summary}
                                     date={event.date}
@@ -150,7 +145,7 @@ export default async function EventsPage() {
                 {/* 2. UPCOMING EVENT */}
                 <section className="flex flex-col gap-8">
                     <div className="text-left border-b border-stone-300 dark:border-stone-800 pb-3">
-                        <h2 className="text-xl sm:text-2xl font-bold text-[#5F5C4F] dark:text-amber-200 tracking-[0.15em] font-sans uppercase">
+                        <h2 className="text-xl sm:text-2xl font-bold text-[#5F5C4F] dark:text-stone-200 tracking-[0.15em] font-sans uppercase">
                             UPCOMING EVENT
                         </h2>
                     </div>
@@ -162,6 +157,7 @@ export default async function EventsPage() {
                                     key={event.id}
                                     title={event.title}
                                     bannerUrl={event.bannerUrl}
+                                    youtubeUrl={event.youtubeUrl}
                                     description={event.description}
                                     summary={event.summary}
                                     date={event.date}
@@ -172,7 +168,7 @@ export default async function EventsPage() {
                             ))}
                         </div>
                     ) : (
-                        <div className="text-center py-12 bg-amber-50/50 dark:bg-stone-900/50 rounded-3xl border-2 border-dashed border-stone-300 dark:border-stone-800">
+                        <div className="text-center py-12 bg-stone-100/50 dark:bg-stone-900/50 rounded-3xl border-2 border-dashed border-stone-300 dark:border-stone-800">
                             <p className="text-stone-500 dark:text-stone-400 font-medium">
                                 Belum ada event mendatang saat ini.
                             </p>
@@ -194,6 +190,7 @@ export default async function EventsPage() {
                                     key={event.id}
                                     title={event.title}
                                     bannerUrl={event.bannerUrl}
+                                    youtubeUrl={event.youtubeUrl}
                                     description={event.description}
                                     summary={event.summary}
                                     date={event.date}

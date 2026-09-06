@@ -1,0 +1,47 @@
+{
+  "kind": "singleType",
+  "collectionName": "footer_configs",
+  "info": {
+    "singularName": "footer-config",
+    "pluralName": "footer-configs",
+    "displayName": "Konfigurasi Footer",
+    "description": "Pengaturan slogan, link sosial media, kontak, dan copyright footer website OSIS"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "brand_title": {
+      "type": "string",
+      "default": "OSIS SMAIT FI"
+    },
+    "slogan": {
+      "type": "text",
+      "default": "Agora Acta - Dari Gagasan Menuju Aksi, Dari Partisipasi Menuju Kontribusi."
+    },
+    "slogan_sub": {
+      "type": "string",
+      "default": "2025 - 2026"
+    },
+    "alamat": {
+      "type": "text",
+      "default": "SMAIT Fithrah Insani, Jl. H. Gofur No. 10 Tanimulya, Ngamprah, Kab. Bandung Barat"
+    },
+    "telepon": {
+      "type": "string",
+      "default": "(022) 87808984"
+    },
+    "email": {
+      "type": "string",
+      "default": "osissmaitfi@gmail.com"
+    },
+    "copyright_text": {
+      "type": "string",
+      "default": "OSIS SMAIT Fithrah Insani. All rights reserved."
+    },
+    "metadata_json": {
+      "type": "json"
+    }
+  }
+}

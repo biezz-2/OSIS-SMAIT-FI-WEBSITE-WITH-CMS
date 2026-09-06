@@ -587,6 +587,9 @@ export interface ApiBgTextureConfigBgTextureConfig
       Schema.Attribute.Private;
     variant: Schema.Attribute.Enumeration<
       [
+        'subtle-noise',
+        'dot-matrix',
+        'gradient-glow',
         'fabric-of-squares',
         'grid-noise',
         'inflicted',
@@ -595,7 +598,7 @@ export interface ApiBgTextureConfigBgTextureConfig
         'none',
       ]
     > &
-      Schema.Attribute.DefaultTo<'fabric-of-squares'>;
+      Schema.Attribute.DefaultTo<'subtle-noise'>;
   };
 }
 
@@ -808,6 +811,7 @@ export interface ApiEventEvent extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    youtube_url: Schema.Attribute.String;
   };
 }
 
@@ -876,11 +880,16 @@ export interface ApiHalamanHalaman extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    cta_url: Schema.Attribute.String;
     deskripsi: Schema.Attribute.RichText;
     dot_color: Schema.Attribute.String &
       Schema.Attribute.DefaultTo<'rgba(0, 0, 0, 0.25)'>;
     dot_gap: Schema.Attribute.String & Schema.Attribute.DefaultTo<'24px 24px'>;
     dot_size: Schema.Attribute.String & Schema.Attribute.DefaultTo<'2.5px'>;
+    embed_instagram: Schema.Attribute.String;
+    embed_spotify: Schema.Attribute.String;
+    embed_tiktok: Schema.Attribute.String;
+    embed_youtube: Schema.Attribute.String;
     enable_compression: Schema.Attribute.Boolean &
       Schema.Attribute.DefaultTo<true>;
     gambar_list: Schema.Attribute.Media<'images' | 'files', true>;
@@ -890,6 +899,10 @@ export interface ApiHalamanHalaman extends Struct.CollectionTypeSchema {
       ['grid_3_col', 'grid_2_col', 'grid_4_col', 'grid_1_col', 'masonry']
     > &
       Schema.Attribute.DefaultTo<'grid_3_col'>;
+    link_instagram: Schema.Attribute.String;
+    link_spotify: Schema.Attribute.String;
+    link_tiktok: Schema.Attribute.String;
+    link_youtube: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -897,15 +910,26 @@ export interface ApiHalamanHalaman extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     logo: Schema.Attribute.Media<'images'>;
+    max_rss_episodes: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 50;
+          min: 1;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<5>;
     metadata_json: Schema.Attribute.JSON;
     mode_ukuran_frame: Schema.Attribute.Enumeration<
       ['auto', 'contain', 'cover', 'square']
     > &
       Schema.Attribute.DefaultTo<'auto'>;
     nama_halaman: Schema.Attribute.String & Schema.Attribute.Required;
+    overlay_image: Schema.Attribute.Media<'images'>;
     overlay_text: Schema.Attribute.Text &
       Schema.Attribute.DefaultTo<'Bergerak\nBersama,\nMenciptakan Jejak\nPositif'>;
     publishedAt: Schema.Attribute.DateTime;
+    rss_spotify: Schema.Attribute.String;
     seo_description: Schema.Attribute.Text;
     seo_title: Schema.Attribute.String;
     slug: Schema.Attribute.UID<'nama_halaman'> & Schema.Attribute.Required;
@@ -946,6 +970,8 @@ export interface ApiInboxInbox extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    urgensi: Schema.Attribute.Enumeration<['low', 'medium', 'high']> &
+      Schema.Attribute.DefaultTo<'low'>;
   };
 }
 
@@ -1036,6 +1062,45 @@ export interface ApiNotificationNotification
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+  };
+}
+
+export interface ApiPartnerPartner extends Struct.CollectionTypeSchema {
+  collectionName: 'partners';
+  info: {
+    description: 'Daftar partner, pengembang, dan kolaborator OSIS SMAIT Fithrah Insani';
+    displayName: 'Partner';
+    pluralName: 'partners';
+    singularName: 'partner';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    avatar: Schema.Attribute.Media<'images'>;
+    avatar_url: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    deskripsi: Schema.Attribute.Text;
+    github_url: Schema.Attribute.String;
+    is_active: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::partner.partner'
+    > &
+      Schema.Attribute.Private;
+    nama: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    role: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'Developer Partner'>;
+    tags: Schema.Attribute.JSON;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    urutan: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    website_url: Schema.Attribute.String;
   };
 }
 
@@ -1723,6 +1788,7 @@ declare module '@strapi/strapi' {
       'api::inbox.inbox': ApiInboxInbox;
       'api::media-asset.media-asset': ApiMediaAssetMediaAsset;
       'api::notification.notification': ApiNotificationNotification;
+      'api::partner.partner': ApiPartnerPartner;
       'api::program-kerja.program-kerja': ApiProgramKerjaProgramKerja;
       'api::sekbid.sekbid': ApiSekbidSekbid;
       'plugin::content-releases.release': PluginContentReleasesRelease;

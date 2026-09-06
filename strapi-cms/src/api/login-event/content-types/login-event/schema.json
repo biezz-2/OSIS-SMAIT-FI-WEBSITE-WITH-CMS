@@ -1,0 +1,33 @@
+{
+  "kind": "collectionType",
+  "collectionName": "login_events",
+  "info": {
+    "singularName": "login-event",
+    "pluralName": "login-events",
+    "displayName": "Login Event",
+    "description": "Telemetry and rate-limiting store"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "identifier": {
+      "type": "string",
+      "required": true
+    },
+    "clerk_user_id": {
+      "type": "string"
+    },
+    "ip_address": {
+      "type": "string"
+    },
+    "success": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "user_agent": {
+      "type": "string"
+    }
+  }
+}

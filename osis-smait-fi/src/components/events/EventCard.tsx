@@ -12,6 +12,7 @@ export interface EventCardProps {
     date?: string; // ISO date string or formatted date
     slug?: string;
     ctaUrl?: string;
+    youtubeUrl?: string;
     statusBadge?: 'upcoming' | 'ongoing' | 'past';
 }
 
@@ -30,6 +31,20 @@ function parseEventDate(dateStr?: string) {
     return { day, month };
 }
 
+function getYouTubeEmbedUrl(url?: string): string | null {
+    if (!url) return null;
+    const trimmed = url.trim();
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|shorts\/|live\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = trimmed.match(regExp);
+    if (match && match[2].length === 11) {
+        return `https://www.youtube.com/embed/${match[2]}`;
+    }
+    if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) {
+        return `https://www.youtube.com/embed/${trimmed}`;
+    }
+    return null;
+}
+
 export default function EventCard({
     title,
     bannerUrl,
@@ -38,15 +53,17 @@ export default function EventCard({
     date,
     slug,
     ctaUrl,
+    youtubeUrl,
     statusBadge,
 }: EventCardProps) {
+    const embedUrl = getYouTubeEmbedUrl(youtubeUrl);
     const { day, month } = parseEventDate(date);
-    const targetUrl = ctaUrl || (slug ? `/events/${slug}` : '#');
+    const targetUrl = ctaUrl || (slug === 'edufest-infinity' ? '/edufest-infinity' : (slug ? `/events/${slug}` : '#'));
     const glassRef = useRef<HTMLDivElement>(null);
     const reflectionRef = useRef<HTMLDivElement>(null);
 
     const badgeConfig = {
-        upcoming: { text: 'Mendatang', bg: 'bg-amber-500/10 text-amber-600 border-amber-500/30 dark:bg-amber-400/20 dark:text-amber-300' },
+        upcoming: { text: 'Mendatang', bg: 'bg-stone-500/10 text-stone-600 border-stone-500/30 dark:bg-stone-400/20 dark:text-stone-300' },
         ongoing: { text: 'Berlangsung', bg: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/30 dark:bg-emerald-400/20 dark:text-emerald-300 animate-pulse' },
         past: { text: 'Selesai', bg: 'bg-stone-500/10 text-stone-500 border-stone-500/30 dark:bg-stone-800 dark:text-stone-400' },
     };
@@ -68,7 +85,7 @@ export default function EventCard({
     return (
         <div className="w-full flex flex-col lg:flex-row items-center lg:items-stretch gap-6 lg:gap-8 py-6">
             {/* Date Column */}
-            <div className="flex flex-row lg:flex-col items-center justify-center shrink-0 min-w-[100px] text-[#5B5B5B] dark:text-amber-200">
+            <div className="flex flex-row lg:flex-col items-center justify-center shrink-0 min-w-[100px] text-[#5B5B5B] dark:text-stone-200">
                 <span className="text-2xl lg:text-3xl font-bold font-sans tracking-widest uppercase mr-3 lg:mr-0">
                     {month}
                 </span>
@@ -77,9 +94,17 @@ export default function EventCard({
                 </span>
             </div>
 
-            {/* Image Banner */}
+            {/* Image/Video Banner */}
             <div className="w-full lg:w-[450px] xl:w-[480px] h-[260px] sm:h-[300px] lg:h-[320px] relative rounded-2xl overflow-hidden shadow-md shrink-0 bg-stone-200 dark:bg-stone-800">
-                {bannerUrl ? (
+                {embedUrl ? (
+                    <iframe
+                        src={embedUrl}
+                        title={title}
+                        className="w-full h-full border-0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                    />
+                ) : bannerUrl ? (
                     <Image
                         src={bannerUrl}
                         alt={title}
@@ -89,7 +114,7 @@ export default function EventCard({
                     />
                 ) : (
                     <div className="w-full h-full flex items-center justify-center text-stone-400 font-medium">
-                        No Image Preview
+                        No Media Preview
                     </div>
                 )}
             </div>
@@ -157,7 +182,7 @@ export default function EventCard({
                 </div>
 
                 {/* CTA Link */}
-                <div className="relative z-10 mt-6 flex items-center gap-2 text-[#5B5B5B] dark:text-amber-300 font-bold text-sm sm:text-base tracking-wider hover:opacity-80 transition-opacity">
+                <div className="relative z-10 mt-6 flex items-center gap-2 text-[#5B5B5B] dark:text-stone-300 font-bold text-sm sm:text-base tracking-wider hover:opacity-80 transition-opacity">
                     <Link href={targetUrl} className="inline-flex items-center gap-2 no-underline text-inherit">
                         <span>View Event Details</span>
                         <svg

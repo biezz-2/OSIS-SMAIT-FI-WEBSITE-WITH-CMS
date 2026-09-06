@@ -1,0 +1,56 @@
+{
+  "kind": "collectionType",
+  "collectionName": "akses_users",
+  "info": {
+    "singularName": "akses-user",
+    "pluralName": "akses-users",
+    "displayName": "Akses User",
+    "description": "Bridge between Clerk identities and internal MUBES RBAC"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "clerk_user_id": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "nama_lengkap_input": {
+      "type": "string",
+      "required": true
+    },
+    "email": {
+      "type": "email"
+    },
+    "role": {
+      "type": "enumeration",
+      "enum": [
+        "member",
+        "operator",
+        "admin_pembina"
+      ]
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "pending",
+        "approved",
+        "ditolak"
+      ],
+      "default": "pending",
+      "required": true
+    },
+    "matched_anggota": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::anggota-osis.anggota-osis"
+    },
+    "catatan_review": {
+      "type": "text"
+    },
+    "approved_by": {
+      "type": "string"
+    }
+  }
+}

@@ -1,9 +1,25 @@
 # 📢 Pembaruan Terkini (Latest Updates)
 
-> **Versi**: 1.6.0
-> **Tanggal Pembaruan**: 11 Agustus 2026
+> **Versi**: 2.0.0  
+> **Tanggal Pembaruan**: 06 September 2026
 
 Dokumen ini berisi rincian lengkap mengenai pembaruan teknis dan fungsionalitas terbaru pada proyek **OSIS SMAIT Fithrah Insani (Agora Acta 2025)** serta sub-proyek terkait.
+
+---
+
+## 📌 Ringkasan Pembaruan (September 2026 — v2.0.0)
+
+### 1. Migrasi Database ke Dedicated PostgreSQL 16
+- **Containerization**: Strapi v5 resmi bermigrasi penuh dari MySQL lama ke database container `mubes-postgres` (PostgreSQL 16) yang berjalan terisolasi pada port `127.0.0.1:5433` (database: `strapi_osis`).
+- **Integritas Data Penuh**: Sebanyak 44 skema, 1.248 entitas data, 1.218 aset media fisik (364 MB), dan 2.957 link relasi telah dimigrasikan dengan sukses tanpa ada data yang hilang.
+- **Decommissioning Sync Worker**: Background worker sinkronisasi berkala MySQL-ke-SQLite dinonaktifkan demi stabilitas ACID PostgreSQL murni.
+
+### 2. Implementasi Sistem MUBES Dual-Layer & Free-Tier Zero-Cost Auth
+- **Zero-Cost Allowlist Engine**: Mengintegrasikan Clerk Auth dengan webhook handler Svix (`/api/webhooks/clerk`) yang memverifikasi signature dan secara otomatis mencocokkan nama pendaftar dengan 65 anggota OSIS di database Strapi (`api::anggota-osis`).
+- **Skema Data Privat & Karantina RBAC**: Penambahan content types `mubes-lpj`, `mubes-sidang`, `akses-user`, `audit-log`, dan `login-event`. Akses publik role `Public` dikunci ketat (`403 Forbidden`).
+- **Global Audit Trail Middleware**: Strapi v5 Document Service Middleware mencatat snapshot mutasi (`before_data` & `after_data`) untuk seluruh aksi CUD dan publish/unpublish.
+- **Next.js 16 BFF Route Handler**: `/api/mubes/lpj/[slug]` memvalidasi sesi Clerk pengguna sebelum mengambil data LPJ dari Strapi dengan elevated token, mencegah kebocoran kredensial ke peramban.
+- **In-Place UI Expansion & Zero Layout Shift (CLS = 0)**: Shortcut keyboard `Ctrl+Shift+M` / `Cmd+Shift+M` memicu modal login Clerk. Pengguna terotorisasi langsung melihat data LPJ (realisasi anggaran, nota kuitansi, evaluasi internal, kendala & solusi) di tempat tanpa perpindahan rute atau pergeseran tata letak publik.
 
 ---
 

@@ -1,0 +1,55 @@
+{
+  "kind": "collectionType",
+  "collectionName": "mubes_lpjs",
+  "info": {
+    "singularName": "mubes-lpj",
+    "pluralName": "mubes-lpjs",
+    "displayName": "MUBES LPJ",
+    "description": "Sensitive evaluation data for program kerja"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "program_kerja": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::program-kerja.program-kerja"
+    },
+    "realisasi_anggaran": {
+      "type": "decimal",
+      "precision": 14,
+      "scale": 2,
+      "required": true
+    },
+    "sumber_dana": {
+      "type": "string",
+      "required": true
+    },
+    "evaluasi_internal": {
+      "type": "richtext",
+      "required": true
+    },
+    "kendala_solusi": {
+      "type": "json"
+    },
+    "nota_kwitansi": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": [
+        "images",
+        "files"
+      ]
+    },
+    "status_pengesahan": {
+      "type": "enumeration",
+      "enum": [
+        "draft",
+        "ditinjau",
+        "disahkan"
+      ],
+      "default": "draft",
+      "required": true
+    }
+  }
+}

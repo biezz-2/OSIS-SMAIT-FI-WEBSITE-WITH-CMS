@@ -170,7 +170,7 @@ function IdCardModal({ member, division, isOpen, onClose }: IdCardModalProps) {
       >
         {/* Dark overlay */}
         <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
-        
+
         {/* Modal Container - Extra Large */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -195,7 +195,7 @@ function IdCardModal({ member, division, isOpen, onClose }: IdCardModalProps) {
             {/* Background decoration - Larger */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-white/5 to-transparent rounded-full -translate-y-1/2 translate-x-1/2" />
             <div className="absolute bottom-0 left-0 w-56 h-56 bg-gradient-to-tr from-white/5 to-transparent rounded-full translate-y-1/2 -translate-x-1/2" />
-            
+
             {/* Content - Very Large padding */}
             <div className="relative p-16">
               {/* Edufest Logo/Header - Larger */}
@@ -208,7 +208,7 @@ function IdCardModal({ member, division, isOpen, onClose }: IdCardModalProps) {
                 <div className="relative">
                   {/* Photo container - Auto size based on photo */}
                   <div className={`rounded-2xl bg-gradient-to-br ${gradientClass} p-[4px]`}>
-                    <div 
+                    <div
                       className="rounded-xl bg-[#0a0a0f] flex items-center justify-center overflow-hidden relative"
                       style={{ maxWidth: '100%', maxHeight: '60vh' }}
                       onMouseEnter={() => setIsHovered(true)}
@@ -268,11 +268,10 @@ function IdCardModal({ member, division, isOpen, onClose }: IdCardModalProps) {
                       {photos.map((_, idx) => (
                         <div
                           key={idx}
-                          className={`h-1.5 rounded-full transition-all duration-300 ${
-                            idx === currentPhotoIndex 
-                              ? "bg-white/80 w-8" 
-                              : "bg-white/20 w-2"
-                          }`}
+                          className={`h-1.5 rounded-full transition-all duration-300 ${idx === currentPhotoIndex
+                            ? "bg-white/80 w-8"
+                            : "bg-white/20 w-2"
+                            }`}
                         />
                       ))}
                     </div>
@@ -344,10 +343,10 @@ function MemberCard({ member, index, isCore = false, onClick }: MemberCardProps)
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.03, duration: 0.4 }}
       onClick={handleClick}
-      className={`relative p-5 bg-gradient-to-br ${gradientClass} backdrop-blur-md border ${borderClass} rounded-xl hover:bg-white/10 transition-all duration-300 group cursor-pointer hover:scale-105 hover:shadow-lg hover:shadow-white/5`}
+      className={`relative p-5 bg-gradient-to-br ${gradientClass} backdrop-blur-md border ${borderClass} bg-white/80 dark:bg-white/5 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-300 group cursor-pointer hover:scale-105 hover:shadow-lg`}
     >
       {/* Subtle glow effect on hover */}
-      <div 
+      <div
         className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl pointer-events-none"
         style={{ background: `radial-gradient(circle at center, ${glowColor}, transparent 70%)` }}
       />
@@ -355,28 +354,28 @@ function MemberCard({ member, index, isCore = false, onClick }: MemberCardProps)
       {/* Content */}
       <div className="relative flex flex-col items-center text-center">
         {/* Photo circle dengan subtle ring - Main photo */}
-        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-white/10 to-transparent p-[1px] mb-3">
-          <div className="w-full h-full rounded-full bg-white/5 flex items-center justify-center overflow-hidden">
+        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gray-200 dark:from-white/10 to-transparent p-[1px] mb-3">
+          <div className="w-full h-full rounded-full bg-gray-100 dark:bg-white/5 flex items-center justify-center overflow-hidden">
             {mainPhoto ? (
-              <img 
-                src={mainPhoto} 
+              <img
+                src={mainPhoto}
                 alt={name}
                 className="w-full h-full rounded-full object-cover"
               />
             ) : (
-              <span className="text-lg font-semibold text-white/90">{initials}</span>
+              <span className="text-lg font-semibold text-gray-800 dark:text-white/90">{initials}</span>
             )}
           </div>
         </div>
 
         {/* Name dengan subtle gradient */}
-        <h4 className="text-sm font-semibold text-white/90 mb-1 tracking-wide">
+        <h4 className="text-sm font-semibold text-gray-900 dark:text-white/90 mb-1 tracking-wide">
           {name}
         </h4>
 
         {/* Role */}
         {role && (
-          <p className="text-xs text-white/50 font-light px-2">
+          <p className="text-xs text-gray-600 dark:text-white/50 font-light px-2">
             {role.split(" ").slice(1).join(" ")}
           </p>
         )}
@@ -447,16 +446,15 @@ function Level({ title, children, isCore = false }: LevelProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className={`text-xs font-medium tracking-widest mb-5 px-4 py-1.5 rounded-full border ${
-            isCore 
-              ? "bg-amber-500/10 text-amber-300/80 border-amber-500/20" 
-              : "bg-white/5 text-white/50 border-white/10 uppercase tracking-wider"
-          }`}
+          className={`text-xs font-medium tracking-widest mb-5 px-4 py-1.5 rounded-full border ${isCore
+            ? "bg-amber-500/10 text-amber-300/80 border-amber-500/20"
+            : "bg-white/5 text-white/50 border-white/10 uppercase tracking-wider"
+            }`}
         >
           {title}
         </motion.h3>
       )}
-      
+
       <div className="flex flex-wrap justify-center gap-3 px-2">
         {children}
       </div>
@@ -482,14 +480,14 @@ function DivisionSection({ division, index, onMemberClick }: DivisionSectionProp
       className="flex flex-col items-center"
     >
       {/* Division header card - Minimal */}
-      <div className={`relative px-5 py-2.5 mb-4 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10`}>
+      <div className={`relative px-5 py-2.5 mb-4 rounded-lg bg-white/60 dark:bg-white/5 backdrop-blur-sm border border-black/10 dark:border-white/10`}>
         <div className="text-center">
-          <h3 className="text-sm font-medium text-white/80 tracking-wide">
+          <h3 className="text-sm font-medium text-gray-900 dark:text-white/80 tracking-wide">
             {division.label}
           </h3>
           {division.coordinator && (
-            <p className="text-xs text-white/40 mt-0.5">
-              Koord. <span className="text-white/60">{division.coordinator}</span>
+            <p className="text-xs text-gray-600 dark:text-white/40 mt-0.5">
+              Koord. <span className="text-gray-800 dark:text-white/60">{division.coordinator}</span>
             </p>
           )}
         </div>
@@ -498,9 +496,9 @@ function DivisionSection({ division, index, onMemberClick }: DivisionSectionProp
       {/* Members grid */}
       <div className="flex flex-wrap justify-center gap-2.5">
         {division.members.map((member, idx) => (
-          <MemberCard 
-            key={typeof member === 'string' ? `${division.id}_${idx}` : member.id} 
-            member={member} 
+          <MemberCard
+            key={typeof member === 'string' ? `${division.id}_${idx}` : member.id}
+            member={member}
             index={idx}
             isCore={isCore}
             onClick={onMemberClick}
@@ -540,7 +538,7 @@ export default function PanitiaPage() {
   // Separate core and divisions
   const coreDivision = committee.find(d => d.type === "core");
   const otherDivisions = committee.filter(d => d.type !== "core");
-  
+
   // Handle member click
   const handleMemberClick = useCallback((member: Member | string) => {
     setSelectedMember(member);
@@ -553,13 +551,13 @@ export default function PanitiaPage() {
     setSelectedMember(null);
     setSelectedDivision(null);
   }, []);
-  
+
   // Group divisions into rows for better layout
   const divisionRows = useMemo(() => {
     const rows: Division[][] = [];
     let currentRow: Division[] = [];
     let currentCount = 0;
-    
+
     otherDivisions.forEach((div) => {
       const count = div.members.length + 1;
       if (currentCount + count > 4 && currentRow.length > 0) {
@@ -571,11 +569,11 @@ export default function PanitiaPage() {
         currentCount += count;
       }
     });
-    
+
     if (currentRow.length > 0) {
       rows.push(currentRow);
     }
-    
+
     return rows;
   }, [otherDivisions]);
 
@@ -584,18 +582,17 @@ export default function PanitiaPage() {
       {/* Navigation */}
       <LiquidGlassNav />
 
-      {/* Background - Deep dark dengan subtle gradient & grid pattern */}
-      <div className="fixed inset-0 bg-[#0a0a0f]">
-        {/* Subtle radial gradient */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#1a1a2e]/30 via-[#0a0a0f] to-[#050508]" />
-        
-        {/* Grid pattern - subtle */}
-        <div 
-          className="absolute inset-0 opacity-[0.03]"
+      {/* Background - Dynamic adaptive gradient */}
+      <div className="fixed inset-0 bg-[var(--background)] transition-colors duration-300">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-500/5 via-[var(--background)] to-[var(--background)]" />
+
+        {/* Grid pattern */}
+        <div
+          className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]"
           style={{
             backgroundImage: `
-              linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px)
+              linear-gradient(currentColor 1px, transparent 1px),
+              linear-gradient(90deg, currentColor 1px, transparent 1px)
             `,
             backgroundSize: "60px 60px"
           }}
@@ -603,18 +600,14 @@ export default function PanitiaPage() {
 
         {/* Subtle glow accents */}
         <motion.div
-          animate={{
-            opacity: [0.15, 0.25, 0.15],
-          }}
+          animate={{ opacity: [0.15, 0.25, 0.15] }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-0 left-1/3 w-[400px] h-[400px] rounded-full bg-cyan-500/5 blur-[100px]"
+          className="absolute top-0 left-1/3 w-[400px] h-[400px] rounded-full bg-cyan-500/10 blur-[100px]"
         />
         <motion.div
-          animate={{
-            opacity: [0.1, 0.2, 0.1],
-          }}
+          animate={{ opacity: [0.1, 0.2, 0.1] }}
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 3 }}
-          className="absolute bottom-0 right-1/3 w-[500px] h-[500px] rounded-full bg-purple-500/5 blur-[120px]"
+          className="absolute bottom-0 right-1/3 w-[500px] h-[500px] rounded-full bg-purple-500/10 blur-[120px]"
         />
       </div>
 
@@ -627,10 +620,10 @@ export default function PanitiaPage() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h1 className="text-2xl md:text-3xl lg:text-4xl font-light text-white/90 mb-3 tracking-tight">
-            Struktur <span className="font-medium text-white">Panitia</span>
+          <h1 className="text-2xl md:text-3xl lg:text-4xl font-light text-[var(--foreground)] mb-3 tracking-tight">
+            Struktur <span className="font-medium text-[var(--foreground)]">Panitia</span>
           </h1>
-          <p className="text-sm md:text-base text-white/40 max-w-lg mx-auto font-light">
+          <p className="text-sm md:text-base text-[var(--foreground)]/60 max-w-lg mx-auto font-light">
             Tim yang akan mewujudkan Edufest 2025
           </p>
         </motion.div>
@@ -641,9 +634,9 @@ export default function PanitiaPage() {
           {coreDivision && (
             <Level title="Dewan Pengurus" isCore={true}>
               {coreDivision.members.map((member, idx) => (
-                <MemberCard 
-                  key={typeof member === 'string' ? `core_${idx}` : member.id} 
-                  member={member} 
+                <MemberCard
+                  key={typeof member === 'string' ? `core_${idx}` : member.id}
+                  member={member}
                   index={idx}
                   isCore={true}
                   onClick={handleMemberClick}
@@ -664,7 +657,7 @@ export default function PanitiaPage() {
                 {rowIndex > 0 && (
                   <TreeConnector index={rowIndex} total={divisionRows.length} />
                 )}
-                
+
                 {/* Subtle divider line */}
                 <motion.div
                   initial={{ opacity: 0 }}
@@ -674,13 +667,13 @@ export default function PanitiaPage() {
                 >
                   <div className="h-px w-48 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
                 </motion.div>
-                
+
                 {/* Division cards in this row */}
                 <div className="flex flex-wrap justify-center gap-6">
                   {row.map((division, idx) => (
-                    <DivisionSection 
-                      key={division.id} 
-                      division={division} 
+                    <DivisionSection
+                      key={division.id}
+                      division={division}
                       index={rowIndex * row.length + idx}
                       onMemberClick={handleMemberClick}
                     />
@@ -723,7 +716,7 @@ export default function PanitiaPage() {
       </footer>
 
       {/* ID Card Modal - Extra Large Version with Rectangular Photo */}
-      <IdCardModal 
+      <IdCardModal
         member={selectedMember || ""}
         division={selectedDivision || undefined}
         isOpen={selectedMember !== null}

@@ -1,4 +1,7 @@
 import React from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import remarkBreaks from 'remark-breaks';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { fetchHalamanFromStrapi } from '@/lib/strapi';
@@ -33,8 +36,8 @@ export default async function PrivacyPolicyPage() {
         <div className="bg-white rounded-2xl p-8 sm:p-12 shadow-sm border border-slate-100 space-y-8 font-roboto leading-relaxed text-slate-700">
           {deskripsi ? (
             typeof deskripsi === 'string' ? (
-              <div className="prose prose-blue max-w-none whitespace-pre-line">
-                {deskripsi}
+              <div className="prose prose-blue max-w-none dark:prose-invert">
+                <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>{deskripsi}</ReactMarkdown>
               </div>
             ) : (
               <div className="prose prose-blue max-w-none">

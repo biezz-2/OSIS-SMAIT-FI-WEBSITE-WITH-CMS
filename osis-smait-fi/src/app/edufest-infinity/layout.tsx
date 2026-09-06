@@ -29,11 +29,8 @@ export default function EdufestLayout({
   const [introComplete, setIntroComplete] = useState(false);
   const pathname = usePathname();
 
-  // Navigation should only show on pages other than the intro-landing page
-  const showNav = pathname !== "/edufest-infinity";
-
   return (
-    <div className="edufest-theme bg-[var(--background)] text-[var(--foreground)] min-h-screen antialiased no-scrollbar">
+    <div className="edufest-theme bg-[var(--background)] text-[var(--foreground)] min-h-screen antialiased no-scrollbar transition-colors duration-300">
       <CursorParticles />
       <AudioManager isLoading={!introComplete} />
       <PageTransitionLoader />
@@ -44,7 +41,7 @@ export default function EdufestLayout({
         />
       ) : (
         <>
-          {showNav && <LiquidGlassNav />}
+          <LiquidGlassNav />
           {children}
         </>
       )}

@@ -16,7 +16,7 @@ const nextConfig: NextConfig = {
       {
         source: '/images/:path*',
         headers: [
-          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+          { key: 'Cache-Control', value: 'public, max-age=10800' },
         ],
       },
       {
@@ -26,12 +26,13 @@ const nextConfig: NextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.youtube.com https://s.ytimg.com https://static.cloudflareinsights.com",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.youtube.com https://s.ytimg.com https://static.cloudflareinsights.com https://www.instagram.com https://*.instagram.com https://www.tiktok.com https://*.tiktok.com https://open.spotify.com",
               "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: blob: https://osisstrapi.biezz.my.id https: https://i.ytimg.com",
+              "img-src 'self' data: blob: https://osisstrapi.biezz.my.id https: https://i.ytimg.com https://*.cdninstagram.com https://*.tiktokcdn.com",
               "font-src 'self'",
-              "connect-src 'self' https://osisstrapi.biezz.my.id https://www.youtube.com https://cloudflareinsights.com",
-              "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com",
+              "connect-src 'self' https://osisstrapi.biezz.my.id https://www.youtube.com https://cloudflareinsights.com https://www.instagram.com https://*.instagram.com https://www.tiktok.com https://*.tiktok.com https://open.spotify.com",
+              "media-src 'self' https://d8j0ntlcm91z4.cloudfront.net https://osisstrapi.biezz.my.id blob:",
+              "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://open.spotify.com https://*.spotify.com https://www.tiktok.com https://*.tiktok.com https://www.instagram.com https://*.instagram.com",
               "frame-ancestors 'self' https://osisstrapi.biezz.my.id http://localhost:1337",
               "object-src 'none'",
               "base-uri 'self'",

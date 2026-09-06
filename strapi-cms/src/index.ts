@@ -23,7 +23,64 @@ function setupDatabaseSync() {
 }
 
 export default {
-  register(/* { strapi }: { strapi: Core.Strapi } */) { },
+  register({ strapi }: { strapi: Core.Strapi }) {
+    // Document Service Middleware: Global Audit Logger
+    strapi.documents.use(async (context: any, next: any) => {
+      const { action, uid, params } = context;
+      const trackedActions = ['create', 'update', 'delete', 'publish', 'unpublish'];
+
+      if (
+        !trackedActions.includes(action) ||
+        (uid as string) === 'api::audit-log.audit-log' ||
+        (uid as string) === 'api::login-event.login-event'
+      ) {
+        return next();
+      }
+
+      let beforeData = null;
+      if (['update', 'delete', 'publish', 'unpublish'].includes(action) && params?.documentId) {
+        try {
+          beforeData = await strapi.documents(uid as any).findOne({
+            documentId: params.documentId,
+          });
+        } catch {
+          beforeData = null;
+        }
+      }
+
+      const result = await next();
+
+      try {
+        const actor = context.state?.user;
+        const actorId = actor?.id ? String(actor.id) : (params?.data?.clerk_actor_id || 'system');
+        const actorName = actor
+          ? `${actor.firstname ?? ''} ${actor.lastname ?? ''}`.trim()
+          : (params?.data?.clerk_actor_name || 'System / BFF');
+
+        setImmediate(async () => {
+          try {
+            await (strapi.documents('api::audit-log.audit-log' as any) as any).create({
+              data: {
+                content_type: uid,
+                target_document_id: params?.documentId || (result as any)?.documentId || 'unknown',
+                action,
+                actor_id: actorId,
+                actor_name: actorName,
+                before_data: beforeData,
+                after_data: result,
+              } as any,
+            });
+          } catch (err: any) {
+            strapi.log.error(`[AuditLog Middleware Error]: ${err.message}`);
+          }
+        });
+      } catch (err: any) {
+        strapi.log.error(`[AuditLog State Error]: ${err.message}`);
+      }
+
+      return result;
+    });
+  },
 
   async bootstrap({ strapi }: { strapi: Core.Strapi }) {
     // 1. Setup RBAC Roles & Permissions
@@ -40,6 +97,9 @@ export default {
 
     // 4. Ensure all seeded documents are published for REST API
     await publishExistingDrafts(strapi);
+
+    // 4b. Seed Partner entries if empty
+    await seedPartnerData(strapi);
 
     // 5. Schedule database sync if running on MySQL (main)
     const dbClient = strapi.config.get('database.connection.client');
@@ -67,6 +127,7 @@ async function setupRBAC(strapi: Core.Strapi) {
     'api::edufest-member.edufest-member',
     'api::edufest-timeline.edufest-timeline',
     'api::edufest-config.edufest-config',
+    'api::partner.partner',
   ];
 
   const contributorContentTypes = [
@@ -226,6 +287,7 @@ async function setupPublicPermissions(strapi: Core.Strapi) {
     'edufest-member',
     'edufest-timeline',
     'edufest-config',
+    'partner',
   ];
   const permissions: any = {};
   for (const apiName of publicContentTypes) {
@@ -574,6 +636,49 @@ async function seedInitialData(strapi: Core.Strapi) {
 }
 
 async function seedHalamanUtama(strapi: Core.Strapi) {
+  try {
+    const existingMediaSosial = await (strapi.documents as any)('api::halaman.halaman').findMany({
+      filters: { slug: 'media-sosial' }
+    });
+
+    const defaultMetadata = {
+      social_accounts: {
+        instagram: { name: 'Osis SMAIT FI', handle: '@osissmaitfi', followers: '1,203', link: 'https://www.instagram.com/osissmaitfi' },
+        tiktok: { name: 'Osis SMAIT FI', handle: '@osissmaitfi', followers: '144', link: 'https://www.tiktok.com/@osissmaitfi' },
+        youtube: { name: 'SMAIT Fithrah Insani', handle: '@osissmaitfithrahinsani9481', followers: '267', link: 'https://www.youtube.com/@osissmaitfithrahinsani9481' },
+        spotify: { name: 'Agora Talk', handle: 'OSIS Podcast', followers: '436', link: 'https://spotify.com' }
+      },
+      embeds: {
+        youtube: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        spotify: 'https://open.spotify.com/episode/3Zg0z8C6f1z',
+        tiktok: '',
+        instagram: ''
+      }
+    };
+
+    if (existingMediaSosial && existingMediaSosial.length > 0) {
+      const target = existingMediaSosial[0];
+      if (!target.metadata_json) {
+        await (strapi.documents as any)('api::halaman.halaman').update({
+          documentId: target.documentId,
+          data: {
+            metadata_json: defaultMetadata,
+            embed_youtube: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+            embed_spotify: 'https://open.spotify.com/episode/3Zg0z8C6f1z',
+            link_instagram: 'https://www.instagram.com/osissmaitfi',
+            link_tiktok: 'https://www.tiktok.com/@osissmaitfi',
+            link_youtube: 'https://www.youtube.com/@osissmaitfithrahinsani9481',
+            link_spotify: 'https://spotify.com',
+          }
+        });
+        await (strapi.documents as any)('api::halaman.halaman').publish({ documentId: target.documentId });
+        strapi.log.info('  ✅ Restored metadata_json and social links for Halaman Media Sosial');
+      }
+    }
+  } catch (err: any) {
+    strapi.log.warn('⚠️ Error updating Media Sosial entry: ' + err.message);
+  }
+
   const countHalaman = await (strapi.documents as any)('api::halaman.halaman').count({});
   if (countHalaman > 0) {
     return;
@@ -581,6 +686,16 @@ async function seedHalamanUtama(strapi: Core.Strapi) {
 
   strapi.log.info('🌱 Seeding Halaman Utama entries...');
   const halamanData = [
+    {
+      nama_halaman: 'Partners & Contributors',
+      slug: 'partners',
+      judul_hero: 'Partners & Contributors',
+      sub_judul: 'Sinergi, Kolaborasi & Mitra Strategis OSIS Agora Acta',
+      deskripsi: 'Wadah apreasiasi bagi seluruh mitra, sponsor, dan kontributor yang bergerak bersama mendukung setiap program dan inisiatif OSIS SMAIT Fithrah Insani.',
+      seo_title: 'Partners & Contributors | OSIS SMAIT Fithrah Insani',
+      seo_description: 'Mitra strategis, sponsor, dan kontributor pendukung OSIS SMAIT Fithrah Insani Agora Acta.',
+      is_active: true,
+    },
     {
       nama_halaman: 'Beranda Utama',
       slug: 'home',
@@ -684,6 +799,7 @@ async function publishExistingDrafts(strapi: Core.Strapi) {
     'api::edufest-division.edufest-division',
     'api::edufest-member.edufest-member',
     'api::edufest-timeline.edufest-timeline',
+    'api::partner.partner',
   ];
 
   for (const uid of contentTypes) {
@@ -1017,6 +1133,44 @@ async function seedEdufestData(strapi: Core.Strapi) {
     }
   } catch (err: any) {
     strapi.log.warn('⚠️ Error seeding Edufest data: ' + err.message);
+  }
+}
+
+async function seedPartnerData(strapi: Core.Strapi) {
+  try {
+    const count = await (strapi.documents as any)('api::partner.partner').count({});
+    if (count === 0) {
+      const samplePartners = [
+        {
+          nama: 'SMAIT Fithrah Insani',
+          role: 'Pembina & Instansi Utama',
+          deskripsi: 'Sekolah Menengah Atas Islam Terpadu Fithrah Insani Bandung Barat.',
+          urutan: 1,
+          is_active: true,
+          tags: ['Sekolah', 'Pembina'],
+        },
+        {
+          nama: 'Komite Sekolah SMAIT FI',
+          role: 'Mitra Orang Tua & Pendukung',
+          deskripsi: 'Komite Orang Tua Murid SMAIT Fithrah Insani.',
+          urutan: 2,
+          is_active: true,
+          tags: ['Komite', 'Sponsor'],
+        },
+      ];
+
+      for (const p of samplePartners) {
+        const createdP = await (strapi.documents as any)('api::partner.partner').create({
+          data: p as any,
+        });
+        if (createdP && createdP.documentId) {
+          await (strapi.documents as any)('api::partner.partner').publish({ documentId: createdP.documentId });
+        }
+      }
+      strapi.log.info('  ✅ Seeded Partner entries');
+    }
+  } catch (err: any) {
+    strapi.log.warn('⚠️ Error seeding Partner data: ' + err.message);
   }
 }
 

@@ -55,6 +55,9 @@
         "none"
       ]
     },
+    "highlight_label": {
+      "type": "string"
+    },
     "highlight_title": {
       "type": "string"
     },

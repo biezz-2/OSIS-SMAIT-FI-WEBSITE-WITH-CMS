@@ -1,17 +1,18 @@
 # 🏛️ Arsitektur Sistem & Panduan Teknis
 ## Portal Web OSIS SMAIT Fithrah Insani (Agora Acta 2025)
 
-> **Versi Dokumen**: 2.2.0
-> **Terakhir Diperbarui**: 11 Agustus 2026
+> **Versi Dokumen**: 3.0.0
+> **Terakhir Diperbarui**: 06 September 2026
 
-Dokumen ini mendokumentasikan keputusan arsitektural, tata letak kode, sistem styling, integrasi **Strapi Headless CMS v5**, arsitektur rendering 3D, serta mekanisme *caching* untuk portal web **OSIS SMAIT Fithrah Insani (Agora Acta 2025)**.
+Dokumen ini mendokumentasikan keputusan arsitektural, tata letak kode, sistem styling, integrasi **Strapi Headless CMS v5 (PostgreSQL 16)**, **Sistem MUBES Dual-Layer (Clerk + BFF)**, arsitektur rendering 3D, serta mekanisme *caching* untuk portal web **OSIS SMAIT Fithrah Insani (Agora Acta 2025)**.
 
 ---
 
 ## 📌 Daftar Isi
 - [Ikhtisar Arsitektur](#-ikhtisar-arsitektur)
+- [Arsitektur MUBES Dual-Layer](#-arsitektur-mubes-dual-layer-v2---clerk--postgresql)
 - [Struktur Direktori Lengkap](#-struktur-direktori-lengkap)
-- [Arsitektur Integrasi Strapi v5 CMS](#-arsitektur-integrasi-strapi-v5-cms)
+- [Arsitektur Integrasi Strapi v5 CMS & PostgreSQL](#-arsitektur-integrasi-strapi-v5-cms)
 - [Sistem Caching Galeri Infinity 2D](#-sistem-caching-galeri-infinity-2d)
 - [Sistem Kompresi Gambar Dinamis](#-sistem-kompresi-gambar-dinamis)
 - [Arsitektur Immersive 3D & Animasi](#-arsitektur-immersive-3d--animasi)
@@ -21,9 +22,9 @@ Dokumen ini mendokumentasikan keputusan arsitektural, tata letak kode, sistem st
 
 ---
 
-## 🌐 Ikhtisar Arsitektur
+## 🌐 Ikhtisar Arsitektur & Alur Pengguna (User Flow)
 
-Aplikasi ini mengadopsi arsitektur **decoupled** dengan pemisahan peran antara **Next.js 16 (App Router)** sebagai *Presentation Layer* dan **Strapi v5** sebagai *Content Management Layer*.
+### 1. Arsitektur Sistem High-Level
 
 ```mermaid
 graph TD
@@ -37,13 +38,200 @@ graph TD
     NextJS -->|Rute /program-kerja/[slug]| ProkerDetail[Detail Proker - SSR]
     NextJS -->|Rute /edufest-infinity| Edufest[Portal Edufest - SSR]
     NextJS -->|Rute /galeri/...| Gal[Galeri Infinity - CSR]
+    NextJS -->|BFF /api/mubes/lpj/[slug]| BFF[BFF Route Handler]
     
     NextJS -->|REST API Fetch| Strapi
+    BFF -->|Elevated Bearer Token| Strapi
     NextJS -->|API Route /api/compress-image| CompressAPI[Image Compression API]
-    Strapi -->|SQLite / Media Assets| DB[(Database & Media Store)]
+    Strapi -->|PostgreSQL 16 :5433| DB[(Database mubes-postgres)]
+    Strapi -->|Public Uploads /uploads| MediaStore[(Media Store)]
     Admin[Admin OSIS / Pembina] -->|Dashboard Management| Strapi
     PM2[PM2 Process Manager] -->|Process Monitoring| NextJS
     PM2 -->|Process Monitoring| Strapi
+```
+
+---
+
+## 🛡️ Arsitektur MUBES Dual-Layer (v2 - Clerk + PostgreSQL)
+
+```mermaid
+flowchart TB
+    subgraph Client [Browser Client - Zero Layout Shift]
+        PublicViewer[Publik: Program Kerja Biasa]
+        OperatorViewer[Operator Sidang: Ctrl+Shift+M]
+    end
+
+    subgraph NextServer [Next.js 16 BFF Server - Port 3002]
+        ClerkAuth[Clerk Auth & Session Claim]
+        SvixHook[/api/webhooks/clerk - Webhook Handler]
+        BFFRoute[/api/mubes/lpj/[slug] - BFF Handler]
+    end
+
+    subgraph StrapiPostgres [Strapi v5 CMS & PostgreSQL 16]
+        RosterCol[(api::anggota-osis)]
+        AksesCol[(api::akses-user)]
+        LPJCol[(api::mubes-lpj - 403 Public)]
+        AuditMW[Document Service Middleware]
+        AuditCol[(api::audit-log)]
+    end
+
+    OperatorViewer -->|Login Modal| ClerkAuth
+    ClerkAuth -.->|user.created/updated| SvixHook
+    SvixHook -->|Fuzzy Match Nama| RosterCol
+    SvixHook -->|Update Status & Role| AksesCol
+    
+    OperatorViewer -->|Fetch LPJ In-Place| BFFRoute
+    BFFRoute -->|Validate Clerk Claim| ClerkAuth
+    BFFRoute -->|STRAPI_ELEVATED_TOKEN| LPJCol
+    StrapiPostgres -->|Setiap Operasi CUD| AuditMW --> AuditCol
+```
+
+---
+
+## 🔄 Flowchart Alur Pengguna & Sistem OSIS SMAIT Fithrah Insani
+
+Flowchart komprehensif ini disempurnakan berdasarkan 2 node Figma (`node-id=1255-2000` & `node-id=1255-2022`) serta kebutuhan arsitektur nyata portal web **OSIS SMAIT Fithrah Insani (Agora Acta - Bhaskara)** dan Strapi v5 CMS.
+
+### 📊 Legend Diagram Flowchart
+
+| Bentuk Shape | Tipe Node | Fungsi |
+| :--- | :--- | :--- |
+| `((Start / Exit))` | **Terminal Node** | Titik Awal (Start) atau Titik Akhir (Exit) alur |
+| `[Proses / Halaman]` | **Process Node** | Eksekusi langkah, pemanggilan API, atau perpindahan halaman |
+| `{Kondisi?}` | **Decision Node** | Cabang keputusan berdasarkan validasi/status |
+| `[(Database)]` | **Data Node** | Penyimpanan / Fetch data dari Strapi CMS & SQLite/DB |
+
+---
+
+### 1. Alur Akses Pengunjung & Pengguna Terverifikasi (Guest vs Verified User Journey)
+
+Diagram ini menggabungkan dan menyempurnakan **Flow 1 (Guest View)** dan **Flow 2 (Verified User View)** dengan titik Start/Exit yang eksplisit serta *decision node* yang jelas.
+
+```mermaid
+flowchart TD
+    %% Start Points (Terminal)
+    StartSEO((Start: SEO / Google)) --> EntryPoint[Buka Website OSIS]
+    StartDirect((Start: Direct URL)) --> EntryPoint
+    StartSosmed((Start: Instagram / Link Bio)) --> EntryPoint
+
+    EntryPoint --> CheckAuth{Status Autentikasi / Sesi?}
+
+    %% Branch 1: Guest / Unverified User (Flow 1 - Minimal View)
+    CheckAuth -->|Guest / Belum Login| GuestHome[Beranda Guest - ISR 60s]
+    GuestHome --> GuestNav{Pilih Menu Navigasi}
+    
+    GuestNav -->|Tentang OSIS| GuestAbout[Halaman About / Profil OSIS]
+    GuestNav -->|Program Kerja| GuestProker[Daftar Program Kerja - View Minimal]
+    GuestNav -->|Edufest Event| GuestEdufest[Portal Edufest Infinity]
+    GuestNav -->|Galeri Foto| GuestGaleri[Galeri 2D Physics - High Compression]
+    GuestNav -->|Media Sosial| GuestSosmed[Social Media Hub & Form Inbox]
+
+    GuestProker --> GuestSekbid[Seksi Bidang 1 - 8]
+    GuestSekbid --> GuestRutinan[Program Rutinan]
+    GuestSekbid --> GuestInsidental[Program Insidental]
+
+    GuestAbout --> NavReturnCheck{Navigasi Lanjutan?}
+    GuestRutinan --> NavReturnCheck
+    GuestInsidental --> NavReturnCheck
+    GuestEdufest --> NavReturnCheck
+    GuestGaleri --> NavReturnCheck
+    GuestSosmed --> NavReturnCheck
+
+    NavReturnCheck -->|Kembali ke Beranda| GuestHome
+    NavReturnCheck -->|Keluar Situs| ExitGuest((Exit Website))
+
+    %% Branch 2: Verified User / Anggota OSIS (Flow 2 - Full Detailed View)
+    CheckAuth -->|Terverifikasi / Logged In| UserHome[Beranda Utama Anggota OSIS]
+    UserHome --> UserNav{Pilih Menu Navigasi Utuh}
+
+    UserNav -->|Profil Lengkap| UserAbout[Halaman About & Struktur Organisasi]
+    UserNav -->|Proker Detail| UserProker[Program Kerja - View Detail & Dokumen]
+    UserNav -->|Seksi Bidang| UserSekbid[Detail Seksi Bidang 1 - 8]
+    UserNav -->|Event Control| UserEdufest[Edufest Portal: Timeline, Peta 3D & Panitia]
+    UserNav -->|Galeri Infinity| UserGaleri[Galeri 2D Inertial Physics - Original Quality]
+    UserNav -->|Pusat Informasi| UserSosmed[Social Media Hub, Broadcast & Spotify RSS]
+
+    UserSekbid --> UserRutinan[Detail Program Rutinan Sekbid]
+    UserSekbid --> UserInsidental[Detail Program Insidental Sekbid]
+
+    UserAbout --> UserReturnCheck{Navigasi Lanjutan?}
+    UserRutinan --> UserReturnCheck
+    UserInsidental --> UserReturnCheck
+    UserEdufest --> UserReturnCheck
+    UserGaleri --> UserReturnCheck
+    UserSosmed --> UserReturnCheck
+
+    UserReturnCheck -->|Kembali ke Beranda| UserHome
+    UserReturnCheck -->|Logout Sesi| LogoutProcess[Hapus Token Sesi]
+    LogoutProcess --> GuestHome
+    UserReturnCheck -->|Keluar Situs| ExitUser((Exit Website))
+```
+
+---
+
+### 2. Alur Pendaftaran Pengurus, Autentikasi & Akses CMS (Admin & Editor Flow)
+
+Flowchart ini merapikan bagian **"bagian sign up"** dan **"CMS"** dengan menghubungkan alur verifikasi peran, penanganan sesi invalid, serta integrasi manajemen konten Strapi v5.
+
+```mermaid
+flowchart TD
+    %% Entry point Sign Up / Auth Process
+    StartAuth((Start: Akses Login/Register CMS)) --> FormAuth[Form Sign Up / Login Pengurus]
+    FormAuth --> RoleCheck[Pemeriksaan Peran: Admin / Editor / Pembina]
+    
+    RoleCheck --> AdminApproval{Disetujui Administrator?}
+
+    %% Reject Path
+    AdminApproval -->|Tidak / Rejected| RejectNotif[Proses Penolakan Akses]
+    RejectNotif --> SendReason[Kirim Email / Notifikasi Alasan Reject]
+    SendReason --> ErrorDisplay[Tampilkan Error: Akses Ditolak]
+    ErrorDisplay --> RedirectRegister[Redirect ke Halaman Utama / Form Sign Up]
+    RedirectRegister --> FormAuth
+
+    %% Accept Path
+    AdminApproval -->|Ya / Accepted| CreateSession[Buat Token Sesi JWT & Auto-Login]
+    CreateSession --> CMSConnect[Hubungkan ke Dashboard Strapi CMS]
+
+    %% Session Validation Flow
+    CMSConnect --> SessionCheck{Sesi Valid & Belum Expired?}
+    
+    SessionCheck -->|Sesi Kadaluarsa / Invalid| SessionFailed[GET Failed: Session Expired]
+    SessionFailed --> RedirectLogin[Redirect ke Halaman Login]
+    RedirectLogin --> FormAuth
+
+    SessionCheck -->|Valid| FetchCMSData[(GET Data dari Database SQLite/MySQL)]
+    FetchCMSData --> CMSDashboard[Dashboard Utama Strapi v5 CMS]
+
+    %% CMS Operations
+    CMSDashboard --> CMSAction{Pilih Kelola Konten}
+
+    CMSAction -->|Beranda & Banner| EditHome[Kelola Komponen Beranda & Hero]
+    CMSAction -->|Program Kerja| EditProker[Kelola Data Proker & Sub-kegiatan]
+    CMSAction -->|Seksi Bidang| EditSekbid[Update Informasi Sekbid 1-8]
+    CMSAction -->|Event & Edufest| EditEvent[Update Timeline, Lokasi & Panitia]
+    CMSAction -->|Galeri Media| EditMedia[Upload & Optimasi Foto Galeri]
+    CMSAction -->|Pengguna & Peran| EditUsers[Kelola Akun & Hak Akses Pengurus]
+
+    %% Save & Webhook Revalidation
+    EditHome --> SaveChanges[Simpan Perubahan Konten]
+    EditProker --> SaveChanges
+    EditSekbid --> SaveChanges
+    EditEvent --> SaveChanges
+    EditMedia --> SaveChanges
+    EditUsers --> SaveChanges
+
+    SaveChanges --> SaveType{Mode Simpan?}
+    SaveType -->|Draft| LivePreview[API /api/preview -> Mode Preview Live]
+    SaveType -->|Publish| TriggerWebhook[Strapi Webhook: entry.publish]
+
+    TriggerWebhook --> RevalidateAPI[Next.js API /api/strapi-webhook]
+    RevalidateAPI --> PurgeCDN[Purge Cloudflare CDN Cache & Revalidate ISR]
+    PurgeCDN --> WebUpdated[Website Terupdate Secara Real-Time]
+
+    %% Logout Flow
+    CMSDashboard --> AdminLogout{Ingin Keluar?}
+    AdminLogout -->|Ya: Logout| TerminateSession[Hapus Sesi Admin & Clear Cookies]
+    TerminateSession --> ExitCMS((Exit: Selesai / Logout))
 ```
 
 ---

@@ -24,7 +24,7 @@ const defaultIcon = (
 );
 
 const ProgramCard = ({ item, sekbidNumber }: { item: ProgramItem; sekbidNumber: number | string }) => {
-  const targetUrl = item.category 
+  const targetUrl = item.category
     ? `/sekbid/sekbid-${sekbidNumber}/${item.category}/${item.slug}`
     : `/sekbid/sekbid-${sekbidNumber}/${item.slug}`;
 
@@ -38,8 +38,8 @@ const ProgramCard = ({ item, sekbidNumber }: { item: ProgramItem; sekbidNumber: 
         <p className="text-[#6A7282] text-sm leading-relaxed mb-6 font-normal">{item.desc}</p>
       </div>
 
-      <Link 
-        href={targetUrl} 
+      <Link
+        href={targetUrl}
         className="flex items-center gap-1.5 text-[#D32F2F] font-bold text-sm hover:gap-2 transition-all duration-200 w-fit"
       >
         <span>Lihat detail</span>
@@ -180,13 +180,13 @@ export default function SekbidDetail({ number, initialData }: { number: number |
           </p>
         </div>
 
-        {/* Right Hero Image / Gradient Banner */}
-        <div className="w-full md:w-1/2 bg-[#2C3E50] relative min-h-[350px] md:min-h-full flex items-center justify-center overflow-hidden">
+        {/* Right Hero Image Section - Single Clean Frame */}
+        <div className="w-full md:w-1/2 bg-[#1E293B] relative min-h-[350px] md:min-h-full flex items-center justify-center overflow-hidden">
           {data.bannerImg ? (
             <img
               src={getOptimizedImageUrl(data.bannerImg, quality, compress)}
               alt={`Banner Sekbid ${numKey}`}
-              className="w-full h-full object-cover absolute inset-0"
+              className="w-full h-full object-cover"
             />
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-[#1E293B] via-[#334155] to-[#0F172A] flex items-center justify-center">

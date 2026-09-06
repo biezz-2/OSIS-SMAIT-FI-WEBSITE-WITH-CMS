@@ -96,7 +96,7 @@ export function GooeyInput({
   classNames,
   collapsedWidth = 115,
   expandedWidth = 200,
-  expandedOffset = 50,
+  expandedOffset = 45,
   gooeyBlur = 5,
   value: valueProp,
   defaultValue = "",
@@ -165,7 +165,7 @@ export function GooeyInput({
         setIsLoading(false);
         setFocusedIndex(-1);
       }
-    }, 250);
+    }, 200);
 
     return () => clearTimeout(timer);
   }, [searchText, isExpanded]);
@@ -208,7 +208,6 @@ export function GooeyInput({
   );
 
   const handleBlur = useCallback(() => {
-    // Delay collapse to allow click on result dropdown
     if (!searchText) setExpanded(false);
   }, [searchText, setExpanded]);
 
@@ -250,6 +249,15 @@ export function GooeyInput({
     [isExpanded, results, focusedIndex, setExpanded, handleSelectResult]
   );
 
+  const handleClear = useCallback(
+    (e: MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation();
+      setSearchText("");
+      inputRef.current?.focus();
+    },
+    [setSearchText]
+  );
+
   const surfaceClass = "bg-white text-gray-900 shadow-sm ring-1 ring-white/30";
 
   return (
@@ -272,7 +280,7 @@ export function GooeyInput({
             disabled={disabled}
             onClick={handleExpand}
             className={cn(
-              "flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-full px-4 text-sm font-medium outline-none transition-[color,box-shadow] focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+              "flex h-10 w-full cursor-pointer items-center justify-between gap-2 rounded-full px-4 text-sm font-medium outline-none transition-[color,box-shadow] focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
               surfaceClass,
               classNames?.trigger
             )}
@@ -291,13 +299,25 @@ export function GooeyInput({
               disabled={disabled || !isExpanded}
               placeholder={placeholder}
               className={cn(
-                "h-full min-w-0 flex-1 bg-transparent text-sm text-gray-900 outline-none",
+                "h-full min-w-0 flex-1 bg-transparent text-sm text-gray-900 outline-none [&::-webkit-search-cancel-button]:hidden",
                 isExpanded
                   ? "placeholder:text-gray-400"
                   : "pointer-events-none placeholder:text-gray-500",
                 classNames?.input
               )}
             />
+            {isExpanded && searchText ? (
+              <button
+                type="button"
+                onClick={handleClear}
+                className="text-gray-400 hover:text-gray-600 focus:outline-none p-0.5 rounded-full"
+                aria-label="Clear search"
+              >
+                <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            ) : null}
           </button>
         </motion.div>
 
@@ -331,7 +351,7 @@ export function GooeyInput({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.96 }}
             transition={{ duration: 0.15 }}
-            className="absolute top-full right-0 mt-2 w-72 max-h-80 overflow-y-auto rounded-2xl border border-gray-100 bg-white p-2 shadow-xl backdrop-blur-md z-50 text-left"
+            className="absolute top-full right-0 mt-2 w-72 sm:w-80 max-h-80 overflow-y-auto rounded-2xl border border-gray-100 bg-white p-2 shadow-xl backdrop-blur-md z-50 text-left"
           >
             {isLoading ? (
               <div className="flex items-center justify-center py-6 text-xs text-gray-400">
@@ -345,7 +365,7 @@ export function GooeyInput({
                     <button
                       key={item.id}
                       type="button"
-                      onMouseDown={(e) => e.preventDefault()} // Prevent blur collapse before router trigger
+                      onMouseDown={(e) => e.preventDefault()}
                       onClick={() => handleSelectResult(item)}
                       onMouseEnter={() => setFocusedIndex(idx)}
                       className={cn(
@@ -353,7 +373,7 @@ export function GooeyInput({
                         isFocused ? "bg-blue-50 text-blue-900" : "hover:bg-gray-50 text-gray-800"
                       )}
                     >
-                      <div className="flex items-center justify-between text-xs font-semibold">
+                      <div className="flex items-center justify-between gap-2 text-xs font-semibold">
                         <span className="truncate">{item.title}</span>
                         <span className="shrink-0 rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-medium text-blue-700">
                           {item.category}

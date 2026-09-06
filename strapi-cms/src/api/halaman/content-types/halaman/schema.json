@@ -48,6 +48,12 @@
         "files"
       ]
     },
+    "embed_youtube": {
+      "type": "string"
+    },
+    "cta_url": {
+      "type": "string"
+    },
     "seo_title": {
       "type": "string"
     },
@@ -156,6 +162,63 @@
       "type": "string"
     },
     "link_spotify": {
+      "type": "string"
+    },
+    "rss_spotify": {
+      "type": "string"
+    },
+    "max_rss_episodes": {
+      "type": "integer",
+      "default": 5,
+      "min": 1,
+      "max": 50
+    },
+    "stat_reach_label": {
+      "type": "string",
+      "default": "ESTIMASI JANGKAUAN"
+    },
+    "stat_reach_value": {
+      "type": "string",
+      "default": "2.5K+"
+    },
+    "stat_reach_trend": {
+      "type": "string",
+      "default": "+12% Bulan ini"
+    },
+    "ig_handle": {
+      "type": "string"
+    },
+    "ig_name": {
+      "type": "string"
+    },
+    "ig_followers": {
+      "type": "string"
+    },
+    "tiktok_handle": {
+      "type": "string"
+    },
+    "tiktok_name": {
+      "type": "string"
+    },
+    "tiktok_followers": {
+      "type": "string"
+    },
+    "youtube_handle": {
+      "type": "string"
+    },
+    "youtube_name": {
+      "type": "string"
+    },
+    "youtube_subscribers": {
+      "type": "string"
+    },
+    "spotify_handle": {
+      "type": "string"
+    },
+    "spotify_name": {
+      "type": "string"
+    },
+    "spotify_listeners": {
       "type": "string"
     }
   }

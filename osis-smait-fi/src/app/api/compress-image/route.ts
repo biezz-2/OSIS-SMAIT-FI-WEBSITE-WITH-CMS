@@ -1,17 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server';
 import sharp from 'sharp';
 import { STRAPI_INTERNAL_URL } from '../../../lib/strapi';
-
-// Configure sharp to use a single thread to minimize CPU usage and prevent CPU spikes
-sharp.concurrency(1);
-// Enable memory cache to reuse processed operations and reduce CPU load
-sharp.cache({ memory: 50, files: 0, items: 100 });
-
 import fs from 'fs/promises';
 import path from 'path';
 import crypto from 'crypto';
 
+sharp.concurrency(1);
+sharp.cache({ memory: 50, files: 0, items: 100 });
+
 const CACHE_DIR = path.join(process.cwd(), '.image-cache');
+const MAX_CACHE_FILES = 500;
+
+async function pruneCache() {
+  try {
+    const files = await fs.readdir(CACHE_DIR);
+    if (files.length <= MAX_CACHE_FILES) return;
+    const fileStats = await Promise.all(
+      files.map(async (file) => {
+        const filePath = path.join(CACHE_DIR, file);
+        const stat = await fs.stat(filePath);
+        return { filePath, mtime: stat.mtimeMs };
+      })
+    );
+    fileStats.sort((a, b) => a.mtime - b.mtime);
+    const toDelete = fileStats.slice(0, fileStats.length - MAX_CACHE_FILES);
+    await Promise.all(toDelete.map((item) => fs.unlink(item.filePath).catch(() => {})));
+  } catch (err) {
+    console.error('Image cache prune error:', err);
+  }
+}
 
 async function ensureCacheDir() {
   try {
@@ -30,6 +47,10 @@ export async function GET(req: NextRequest) {
     return new NextResponse('Missing image URL parameter', { status: 400 });
   }
 
+  const publicFallbackUrl = imageUrl.startsWith('/')
+    ? `${req.headers.get('x-forwarded-proto') || 'https'}://${req.headers.get('host') || 'osissmaitfi.biezz.my.id'}${imageUrl}`
+    : imageUrl;
+
   const compressParam = searchParams.get('compress');
   const quality = parseInt(qualityParam || '75', 10);
   const shouldCompress = compressParam !== 'false';
@@ -42,7 +63,6 @@ export async function GET(req: NextRequest) {
       targetUrl = `${protocol}://${host}${targetUrl}`;
     }
 
-    // Rewrite public or local port Strapi URLs to the internal backend URL for faster retrieval
     const publicStrapiURL = 'https://osisstrapi.biezz.my.id';
     if (targetUrl.startsWith(publicStrapiURL)) {
       targetUrl = targetUrl.replace(publicStrapiURL, STRAPI_INTERNAL_URL);
@@ -50,33 +70,29 @@ export async function GET(req: NextRequest) {
       targetUrl = targetUrl.replace('http://localhost:1337', STRAPI_INTERNAL_URL);
     }
 
-    // SSRF prevention: only allow http/https URLs
     if (!/^https?:\/\//i.test(targetUrl)) {
       return new NextResponse('Only HTTP/HTTPS URLs are allowed', { status: 400 });
     }
 
-    // Fetch with 5s timeout to prevent hanging when upstream is slow
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
+    const timeout = setTimeout(() => controller.abort(), 6000);
 
     let response: Response;
     try {
-      response = await fetch(targetUrl, { cache: 'force-cache', signal: controller.signal });
+      response = await fetch(targetUrl, { cache: 'no-store', signal: controller.signal });
     } catch (fetchErr) {
-      // ponytail: timeout or network error → redirect to original image
-      return NextResponse.redirect(targetUrl, 302);
+      return NextResponse.redirect(publicFallbackUrl, 302);
     } finally {
       clearTimeout(timeout);
     }
 
     if (!response.ok) {
-      return NextResponse.redirect(targetUrl, 302);
+      return NextResponse.redirect(publicFallbackUrl, 302);
     }
 
     const contentType = response.headers.get('content-type') || 'image/jpeg';
     const imageBuffer = await response.arrayBuffer();
 
-    // File-based cache check
     const cacheKey = crypto.createHash('sha256').update(`${imageUrl}-${quality}-${shouldCompress}`).digest('hex');
     const cachePath = path.join(CACHE_DIR, `${cacheKey}.webp`);
 
@@ -89,30 +105,30 @@ export async function GET(req: NextRequest) {
       headers.set('X-Cache', 'HIT');
       return new NextResponse(cachedBuffer, { status: 200, headers });
     } catch (e) {
-      // Cache miss, proceed to process
+      // Cache miss
     }
 
     let processedBuffer = Buffer.from(imageBuffer) as Buffer;
     let outContentType = contentType;
 
-    // Compress and convert to webp using sharp if enabled and it's an image
     if (shouldCompress && contentType.startsWith('image/')) {
       let sharpInstance = sharp(processedBuffer);
-
-      // Convert to webp format with chosen quality (0-100)
-      sharpInstance = sharpInstance.webp({ quality });
+      // Gantikan kompresi standar dengan chromaSubsampling 4:4:4 untuk mempertahankan detail piksel & warna pada Quality 80%
+      sharpInstance = sharpInstance.webp({
+        quality: Math.max(quality, 80),
+        effort: 4,
+      });
       processedBuffer = await sharpInstance.toBuffer();
       outContentType = 'image/webp';
 
-      // Save to cache
       try {
         await fs.writeFile(cachePath, processedBuffer);
+        pruneCache().catch(() => {});
       } catch (cacheErr) {
         console.error('Failed to write image cache:', cacheErr);
       }
     }
 
-    // Set cache control headers to preserve bandwidth
     const headers = new Headers();
     headers.set('Content-Type', outContentType);
     headers.set('Cache-Control', 'public, max-age=31536000, immutable');
@@ -126,12 +142,8 @@ export async function GET(req: NextRequest) {
     });
   } catch (error) {
     console.error('Image compression proxy error:', error);
-    // Graceful degradation: redirect to original image on any processing error
-    const fallbackUrl = imageUrl.startsWith('/')
-      ? `${req.headers.get('x-forwarded-proto') || 'http'}://${req.headers.get('host') || 'localhost:3002'}${imageUrl}`
-      : imageUrl;
-    if (/^https?:\/\//i.test(fallbackUrl)) {
-      return NextResponse.redirect(fallbackUrl, 302);
+    if (/^https?:\/\//i.test(publicFallbackUrl)) {
+      return NextResponse.redirect(publicFallbackUrl, 302);
     }
     return new NextResponse('Internal Server Error', { status: 500 });
   }

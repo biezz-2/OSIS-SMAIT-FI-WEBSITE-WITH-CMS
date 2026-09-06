@@ -1,40 +1,8 @@
 import path from 'path';
 import type { Core } from '@strapi/strapi';
-import { execSync } from 'child_process';
-
-function isPortOpen(host: string, port: number): boolean {
-  try {
-    const code = `const net = require('net'); const client = net.createConnection(${port}, '${host}', () => { client.end(); process.exit(0); }); client.on('error', () => process.exit(1)); setTimeout(() => process.exit(1), 1000);`;
-    execSync(`"${process.execPath}" -e "${code}"`, { stdio: 'ignore', timeout: 1500 });
-    return true;
-  } catch (e) {
-    console.error(`[isPortOpen] Connection check to ${host}:${port} failed:`, e instanceof Error ? e.message : e);
-    return false;
-  }
-}
 
 const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Database => {
-  let client = env('DATABASE_CLIENT', 'sqlite');
-
-  if (client === 'mysql') {
-    const host = env('DATABASE_HOST', 'localhost');
-    const port = env.int('DATABASE_PORT', 3306);
-    console.log(`Checking connection to main database (MySQL) at ${host}:${port}...`);
-    
-    const isProd = env('NODE_ENV') === 'production';
-    if (!isPortOpen(host, port)) {
-      if (isProd) {
-        console.warn(`\n⚠️  WARNING: Main MySQL database at ${host}:${port} is UNREACHABLE!`);
-        console.warn(`⚠️  Production mode active: NOT falling back to SQLite. Attempting to use MySQL directly.\n`);
-      } else {
-        console.warn(`\n⚠️  WARNING: Main MySQL database at ${host}:${port} is UNREACHABLE!`);
-        console.warn(`⚠️  Falling back to local backup SQLite database.\n`);
-        client = 'sqlite';
-      }
-    } else {
-      console.log(`✅ Main database (MySQL) is reachable. Using MySQL.`);
-    }
-  }
+  const client = env('DATABASE_CLIENT', 'mysql');
 
   const validClients = ['postgres', 'mysql', 'sqlite'];
   if (!validClients.includes(client)) {
@@ -87,9 +55,19 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Database 
     sqlite: {
       client: 'sqlite',
       connection: {
-        filename: path.resolve(env('DATABASE_FILENAME') || 'C:/Users/attab/.gemini/antigravity/strapi_data.db'),
+        filename: path.resolve(env('DATABASE_FILENAME') || '.tmp/data.db'),
       },
       useNullAsDefault: true,
+      pool: {
+        afterCreate: (conn: any, done: (err: Error | null, conn?: any) => void) => {
+          try {
+            conn.pragma('journal_mode = WAL');
+            done(null, conn);
+          } catch (err: any) {
+            done(err, conn);
+          }
+        },
+      },
     },
   };
 

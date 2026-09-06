@@ -9,7 +9,7 @@ const TimelineOrchestrator = dynamic(
 
 export default function TimelinePage() {
     return (
-        <main className="w-full min-h-screen bg-black text-white">
+        <main className="w-full min-h-screen bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300">
             <TimelineOrchestrator />
         </main>
     );

@@ -17,7 +17,6 @@
     "db:sync": "node scripts/sync-db.js"
   },
   "dependencies": {
-    "@strapi-community/plugin-better-auth": "^1.0.0-beta.6",
     "@strapi/admin": "5.51.0",
     "@strapi/data-transfer": "5.51.0",
     "@strapi/database": "5.51.0",
@@ -25,7 +24,6 @@
     "@strapi/plugin-users-permissions": "5.51.0",
     "@strapi/strapi": "5.51.0",
     "@swc/core": "^1.15.47",
-    "better-auth": "^1.6.25",
     "better-sqlite3": "12.8.0",
     "mysql2": "^3.23.2",
     "pg": "^8.22.0",

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Lenis from "lenis";
+import { ScrollTrigger } from "@/lib/gsap";
 
 export const useSmoothScroll = () => {
     const [lenis, setLenis] = useState<Lenis | null>(null);
@@ -19,19 +20,21 @@ export const useSmoothScroll = () => {
 
         setLenis(lenisInstance);
 
+        // Sync with ScrollTrigger synchronously on each scroll frame
+        lenisInstance.on("scroll", ScrollTrigger.update);
+
+        let rafId: number;
         function raf(time: number) {
             lenisInstance.raf(time);
-            requestAnimationFrame(raf);
+            rafId = requestAnimationFrame(raf);
         }
 
-        requestAnimationFrame(raf);
+        rafId = requestAnimationFrame(raf);
 
-        // Sync with ScrollTrigger
-        lenisInstance.on("scroll", () => {
-            import("gsap/ScrollTrigger").then(({ ScrollTrigger }) => {
-                ScrollTrigger.update();
-            });
-        });
+        return () => {
+            cancelAnimationFrame(rafId);
+            lenisInstance.destroy();
+        };
     }, []);
 
     return lenis;

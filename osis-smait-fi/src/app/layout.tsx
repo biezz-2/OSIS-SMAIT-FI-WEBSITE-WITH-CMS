@@ -68,6 +68,7 @@ export const metadata: Metadata = {
 import { ImageQualityProvider } from "@/context/ImageQualityContext";
 import { fetchBgTextureConfig } from "@/lib/strapi";
 import GlobalBgTexture from "@/components/ui/GlobalBgTexture";
+import { ClerkProvider } from "@clerk/nextjs";
 
 export default async function RootLayout({
   children,
@@ -102,11 +103,13 @@ export default async function RootLayout({
         <meta name="theme-color" content="#2E90FA" />
       </head>
       <body className="min-h-full flex flex-col">
-        <ImageQualityProvider>
-          <LivePreviewListener />
-          {bgTextureConfig && <GlobalBgTexture config={bgTextureConfig} />}
-          {children}
-        </ImageQualityProvider>
+        <ClerkProvider>
+          <ImageQualityProvider>
+            <LivePreviewListener />
+            {bgTextureConfig && <GlobalBgTexture config={bgTextureConfig} />}
+            {children}
+          </ImageQualityProvider>
+        </ClerkProvider>
         <script
           dangerouslySetInnerHTML={{
             __html: `

@@ -1,0 +1,34 @@
+{
+  "kind": "singleType",
+  "collectionName": "navbar_configs",
+  "info": {
+    "singularName": "navbar-config",
+    "pluralName": "navbar-configs",
+    "displayName": "Konfigurasi Navbar",
+    "description": "Pengaturan nama brand, logo, dan menu navigasi website OSIS"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "brand_name": {
+      "type": "string",
+      "default": "OSIS SMAIT FITHRAH INSANI"
+    },
+    "brand_name_mobile": {
+      "type": "string",
+      "default": "OSIS SMAIT FI"
+    },
+    "logo": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "metadata_json": {
+      "type": "json"
+    }
+  }
+}

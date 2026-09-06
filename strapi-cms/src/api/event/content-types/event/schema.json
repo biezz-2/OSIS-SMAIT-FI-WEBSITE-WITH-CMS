@@ -5,7 +5,7 @@
     "singularName": "event",
     "pluralName": "events",
     "displayName": "Event",
-    "description": ""
+    "description": "Pengaturan event, agenda kegiatan, dan landing page event OSIS SMAIT Fithrah Insani"
   },
   "options": {
     "draftAndPublish": true
@@ -21,11 +21,45 @@
       "targetField": "nama",
       "required": true
     },
+    "tagline": {
+      "type": "string"
+    },
+    "sub_judul": {
+      "type": "string"
+    },
+    "tema": {
+      "type": "string"
+    },
+    "kategori": {
+      "type": "enumeration",
+      "enum": [
+        "internal",
+        "eksternal"
+      ]
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "draft",
+        "published",
+        "archived"
+      ],
+      "default": "draft"
+    },
+    "tanggal_mulai": {
+      "type": "datetime"
+    },
+    "tanggal_selesai": {
+      "type": "datetime"
+    },
     "tanggal": {
       "type": "datetime"
     },
     "lokasi": {
       "type": "string"
+    },
+    "ringkasan": {
+      "type": "text"
     },
     "deskripsi": {
       "type": "richtext"
@@ -49,40 +83,6 @@
         "videos",
         "audios"
       ]
-    },
-    "kategori": {
-      "type": "enumeration",
-      "enum": [
-        "internal",
-        "eksternal"
-      ]
-    },
-    "status": {
-      "type": "enumeration",
-      "enum": [
-        "draft",
-        "published",
-        "archived"
-      ],
-      "default": "draft"
-    },
-    "tema": {
-      "type": "string"
-    },
-    "tagline": {
-      "type": "string"
-    },
-    "ringkasan": {
-      "type": "text"
-    },
-    "sub_judul": {
-      "type": "string"
-    },
-    "tanggal_mulai": {
-      "type": "datetime"
-    },
-    "tanggal_selesai": {
-      "type": "datetime"
     },
     "cta_url": {
       "type": "string"

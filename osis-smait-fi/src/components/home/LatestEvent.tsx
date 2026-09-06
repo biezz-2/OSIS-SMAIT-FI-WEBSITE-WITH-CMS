@@ -29,13 +29,16 @@ function getYouTubeEmbedUrl(url?: string): string | null {
   return null;
 }
 
-const LatestEvent = () => {
+const LatestEvent = ({ initialHalamanData }: { initialHalamanData?: any }) => {
   const [eventData, setEventData] = useState<EventData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadLatestEvent() {
       try {
+        const halamanAttrs = initialHalamanData ? (initialHalamanData.attributes || initialHalamanData) : null;
+        const halamanYoutubeUrl = halamanAttrs?.embed_youtube || halamanAttrs?.metadata_json?.embed_youtube || '';
+
         let json: any;
         try {
           json = await fetchStrapiAPI('/api/events?sort[0]=tanggal_mulai:desc&sort[1]=createdAt:desc&populate=*');
@@ -50,14 +53,14 @@ const LatestEvent = () => {
 
           const title = attrs.nama || attrs.tema || '';
           const bannerUrl = getStrapiMediaUrl(attrs.banner || attrs.gambar, '');
-          const youtubeUrl = attrs.youtube_url || attrs.youtubeUrl || '';
+          const youtubeUrl = attrs.youtube_url || attrs.youtubeUrl || halamanYoutubeUrl || '';
           const description = attrs.deskripsi || '';
           const secondaryText = attrs.tagline
             ? `Tagline: "${attrs.tagline}". ${attrs.ringkasan || ''}`
             : (attrs.ringkasan || attrs.sub_judul || '');
           const slug = attrs.slug || '';
-          // cta_url dari Strapi diutamakan, fallback ke /{slug}, fallback ke /edufest-infinity
-          const ctaHref = attrs.cta_url || (slug ? `/${slug}` : '/edufest-infinity');
+          // cta_url dari Strapi diutamakan, fallback ke /events/{slug} (atau /edufest-infinity jika slug edufest)
+          const ctaHref = attrs.cta_url || (slug === 'edufest-infinity' ? '/edufest-infinity' : (slug ? `/events/${slug}` : '/edufest-infinity'));
 
           if (title) {
             setEventData({

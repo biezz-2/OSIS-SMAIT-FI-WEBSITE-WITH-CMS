@@ -19,7 +19,12 @@ export default function SceneSelayang() {
 
     useEffect(() => {
         getEdufestConfig().then((cfg) => {
-            if (cfg.selayangText) setSelayangText(cfg.selayangText);
+            if (cfg.selayangText) {
+                setSelayangText(cfg.selayangText);
+                import("@/lib/gsap").then(({ ScrollTrigger }) => {
+                    ScrollTrigger.refresh();
+                });
+            }
         });
     }, []);
 
@@ -28,37 +33,34 @@ export default function SceneSelayang() {
             scrollTrigger: {
                 trigger: containerRef.current,
                 start: "top top",
-                end: "+=500%",
+                end: "+=180%",
                 scrub: 1,
                 pin: true,
+                anticipatePin: 1,
             }
         });
 
         // 1. Title Entrance: Slide in and fade
         tl.fromTo(titleRef.current,
-            { y: 100, opacity: 0, filter: "blur(10px)" },
-            { y: 0, opacity: 1, filter: "blur(0px)", duration: 1.5, ease: "power3.out" }
+            { y: 60, opacity: 0, filter: "blur(8px)" },
+            { y: 0, opacity: 1, filter: "blur(0px)", duration: 1, ease: "power3.out" }
         )
-            // 2. Hold title
-            .to({}, { duration: 0.5 })
-            // 3. Content Entrance
+            // 2. Content Entrance
             .fromTo(contentRef.current,
-                { y: 80, opacity: 0 },
-                { y: 0, opacity: 1, duration: 1.5, ease: "power2.out" },
-                "-=0.3"
+                { y: 50, opacity: 0 },
+                { y: 0, opacity: 1, duration: 1, ease: "power2.out" },
+                "-=0.4"
             )
-            // 4. Hold for reading
-            .to({}, { duration: 2 })
-            // 5. Exit: Fade out everything
+            // 3. Short hold for reading comfort
+            .to({}, { duration: 0.8 })
+            // 4. Smooth exit
             .to([titleRef.current, contentRef.current], {
                 opacity: 0,
-                y: -50,
-                duration: 1,
+                y: -30,
+                duration: 0.8,
                 ease: "power2.in",
-                stagger: 0.1
-            })
-            // 6. Buffer
-            .to({}, { duration: 0.5 });
+                stagger: 0.05
+            });
 
     }, []);
 
@@ -73,10 +75,10 @@ export default function SceneSelayang() {
             <div className="max-w-5xl w-full flex flex-col items-center text-center gap-12 relative z-10">
                 {/* Title */}
                 <div ref={titleRef} className="flex flex-col items-center gap-2">
-                    <h2 className="text-6xl md:text-8xl font-extrabold uppercase tracking-tighter text-black leading-[0.9]">
+                    <h2 className="text-6xl md:text-8xl font-extrabold uppercase tracking-tighter text-[var(--foreground)] leading-[0.9]">
                         Selayang
                     </h2>
-                    <h2 className="text-6xl md:text-8xl font-extrabold uppercase tracking-tighter text-black leading-[0.9]">
+                    <h2 className="text-6xl md:text-8xl font-extrabold uppercase tracking-tighter text-[var(--foreground)] leading-[0.9]">
                         Pandang
                     </h2>
                     <div className="w-20 h-1 bg-[#78a0d4] mt-6 rounded-full" />
@@ -84,12 +86,12 @@ export default function SceneSelayang() {
 
                 {/* Content */}
                 <div ref={contentRef} className="flex flex-col gap-8 max-w-4xl">
-                    <p className="text-lg md:text-2xl font-normal leading-relaxed text-black/80 tracking-wide">
+                    <p className="text-lg md:text-2xl font-normal leading-relaxed text-[var(--foreground)]/80 tracking-wide">
                         Kegiatan yang merupakan kelanjutan dari <strong className="text-[#78a0d4]">FI EDUFEST 1, 2, 3, 4, 5, 6 dan 7</strong> yang sudah berjalan sukses di tahun-tahun sebelumnya.
                     </p>
 
-                    <div className="bg-black/5 backdrop-blur-sm rounded-2xl p-6 md:p-10 border border-black/10">
-                        <p className="text-lg md:text-xl font-medium leading-relaxed text-black/90">
+                    <div className="bg-black/5 dark:bg-white/10 backdrop-blur-sm rounded-2xl p-6 md:p-10 border border-black/10 dark:border-white/10">
+                        <p className="text-lg md:text-xl font-medium leading-relaxed text-[var(--foreground)]/90">
                             <span className="text-[#78a0d4] font-bold">The Eighth Annual Fithrah Insani Education Festival</span> mengangkat tema{" "}
                             <em className="font-semibold">&ldquo;Ketakterbatasan Potensi Bakat Remaja&rdquo;</em> dengan judul{" "}
                             <strong className="text-2xl md:text-3xl font-extrabold tracking-tight">&ldquo;INFINITY&rdquo;</strong> dan tagline{" "}
@@ -97,7 +99,7 @@ export default function SceneSelayang() {
                         </p>
                     </div>
 
-                    <p className="text-base md:text-xl font-light leading-relaxed text-black/70 tracking-wide">
+                    <p className="text-base md:text-xl font-light leading-relaxed text-[var(--foreground)]/70 tracking-wide">
                         {selayangText}
                     </p>
                 </div>

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'osis-v2';
+const CACHE_NAME = 'osis-v3';
 const ASSETS_TO_CACHE = [
   '/',
   '/favicon.ico',
@@ -44,7 +44,7 @@ self.addEventListener('fetch', (event) => {
             caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
           }
           return networkResponse;
-        });
+        }).catch(() => new Response('', { status: 404, statusText: 'Not Found' }));
       })
     );
     return;
@@ -73,20 +73,22 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 3. HTML Pages: Stale-while-revalidate
+  // 3. HTML Pages: Network-first (selalu ambil terbaru, fallback cache jika offline)
   if (url.origin === location.origin) {
     event.respondWith(
-      caches.match(event.request).then((cachedResponse) => {
-        const fetchPromise = fetch(event.request).then((networkResponse) => {
+      fetch(event.request)
+        .then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             const copy = networkResponse.clone();
             caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
           }
           return networkResponse;
-        }).catch(() => { });
-
-        return cachedResponse || fetchPromise;
-      })
+        })
+        .catch(() => {
+          return caches.match(event.request).then((cachedResponse) => {
+            return cachedResponse || new Response('Offline', { status: 503, statusText: 'Service Unavailable' });
+          });
+        })
     );
   }
 });

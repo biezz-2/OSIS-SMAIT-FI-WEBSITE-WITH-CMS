@@ -1,0 +1,48 @@
+{
+  "kind": "collectionType",
+  "collectionName": "audit_logs",
+  "info": {
+    "singularName": "audit-log",
+    "pluralName": "audit-logs",
+    "displayName": "Audit Log",
+    "description": "Global change trail captured via Document Service Middleware"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "content_type": {
+      "type": "string",
+      "required": true
+    },
+    "target_document_id": {
+      "type": "string",
+      "required": true
+    },
+    "action": {
+      "type": "enumeration",
+      "enum": [
+        "create",
+        "update",
+        "delete",
+        "publish",
+        "unpublish"
+      ],
+      "required": true
+    },
+    "actor_id": {
+      "type": "string",
+      "default": "system"
+    },
+    "actor_name": {
+      "type": "string",
+      "default": "system"
+    },
+    "before_data": {
+      "type": "json"
+    },
+    "after_data": {
+      "type": "json"
+    }
+  }
+}

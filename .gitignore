@@ -1,5 +1,6 @@
 # Dependencies
 node_modules/
+strapi-cms/node_modules/
 
 # Build outputs
 .next/
@@ -11,12 +12,27 @@ build/
 .env
 .env.local
 .env.*.local
+strapi-cms/.env
 
-# IDE / Editor
+# IDE / Editor / AI tooling
 .vscode/
 .idea/
 *.swp
 *.swo
+.cursor/
+.claude/
+.openclaude/
+.tieline/
+.windsurf/
+.devin/
+.mcp.json
+
+# Temporary design assets & large dumps
+Desain_Sementara/
+*.tar.gz
+*.tar
+*.sql
+*.bak
 
 # Roo/Kilo AI context
 .kilo/

@@ -8,7 +8,7 @@ const PATH_MAP: Record<string, string[]> = {
   'media-asset': ['/media-sosial', '/galeri', '/'],
   halaman: ['/about', '/privacy-policy', '/'],
   'galeri-foto': ['/galeri', '/'],
-  event: ['/'],
+  event: ['/', '/events'],
   'artikel-mading': ['/sekbid'],
   'edufest-division': ['/edufest-infinity', '/edufest-infinity/panitia'],
   'edufest-member': ['/edufest-infinity', '/edufest-infinity/panitia'],
@@ -102,7 +102,12 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const model = body.model || body.entry?.contentType || body.event?.split('.')[0];
-    const targetPaths = (model && PATH_MAP[model]) || ['/'];
+    const targetPaths = [...((model && PATH_MAP[model]) || ['/'])];
+
+    // Jika model adalah event dan memiliki slug, revalidate juga halaman detailnya
+    if (model === 'event' && body.entry?.slug) {
+      targetPaths.push(`/events/${body.entry.slug}`);
+    }
 
     targetPaths.forEach((path: string) => {
       try {

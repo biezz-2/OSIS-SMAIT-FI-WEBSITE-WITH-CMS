@@ -1,8 +1,8 @@
 import { MetadataRoute } from 'next';
-import { fetchAllSekbidsFromStrapi, fetchAllProgramKerjaForSitemap } from '@/lib/strapi';
+import { fetchAllSekbidsFromStrapi, fetchAllProgramKerjaForSitemap, fetchAllEventsForPage } from '@/lib/strapi';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://osissmaitfithrahinsani.sch.id';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://osissmaitfi.biezz.my.id';
 
   const staticRoutes: MetadataRoute.Sitemap = [
     {
@@ -16,6 +16,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/events`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.9,
     },
     {
       url: `${baseUrl}/program-kerja`,
@@ -79,5 +85,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error('Failed to fetch program kerjas for sitemap', e);
   }
 
-  return [...staticRoutes, ...sekbidRoutes, ...prokerRoutes];
+  let eventRoutes: MetadataRoute.Sitemap = [];
+  try {
+    const events = await fetchAllEventsForPage();
+    if (events && Array.isArray(events)) {
+      eventRoutes = events
+        .map((e: any) => e?.attributes || e)
+        .filter((item: any) => item.slug && item.slug !== 'edufest-infinity')
+        .map((item: any) => ({
+          url: `${baseUrl}/events/${item.slug}`,
+          lastModified: item.updatedAt ? new Date(item.updatedAt) : new Date(),
+          changeFrequency: 'weekly',
+          priority: 0.8,
+        }));
+    }
+  } catch (e) {
+    console.error('Failed to fetch events for sitemap', e);
+  }
+
+  return [...staticRoutes, ...sekbidRoutes, ...prokerRoutes, ...eventRoutes];
 }
