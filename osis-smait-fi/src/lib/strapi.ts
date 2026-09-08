@@ -555,6 +555,7 @@ export async function fetchFooterConfigFromStrapi(): Promise<FooterConfig | null
       { label: 'Home', href: '/' },
       { label: 'About Us', href: '/about' },
       { label: 'Program Kerja', href: '/program-kerja' },
+      { label: 'Portal Mubes', href: '/portal-mubes' },
       { label: 'Social Media', href: '/media-sosial' },
       { label: 'Foto Anggota', href: '/anggota' },
       { label: 'Partners', href: '/partners' }
@@ -565,3 +566,6 @@ export async function fetchFooterConfigFromStrapi(): Promise<FooterConfig | null
     copyright_text: attrs.copyright_text || metadata.copyright_text || 'OSIS SMAIT Fithrah Insani. All rights reserved.'
   };
 }
+
+export * from './mubes-proker';
+

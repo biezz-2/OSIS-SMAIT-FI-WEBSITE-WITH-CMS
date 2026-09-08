@@ -19,6 +19,7 @@ const defaultFooterConfig: FooterConfig = {
     { label: 'Home', href: '/' },
     { label: 'About Us', href: '/about' },
     { label: 'Program Kerja', href: '/program-kerja' },
+    { label: 'Portal Mubes', href: '/portal-mubes' },
     { label: 'Social Media', href: '/media-sosial' },
     { label: 'Foto Anggota', href: '/anggota' },
     { label: 'Partners', href: '/partners' }

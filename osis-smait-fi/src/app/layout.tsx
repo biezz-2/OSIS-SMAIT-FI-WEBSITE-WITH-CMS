@@ -82,6 +82,7 @@ import { fetchBgTextureConfig } from "@/lib/strapi";
 import GlobalBgTexture from "@/components/ui/GlobalBgTexture";
 import { ClerkProvider } from "@clerk/nextjs";
 import MubesSessionBanner from "@/components/mubes/MubesSessionBanner";
+import TelemetryTracker from "@/components/telemetry/TelemetryTracker";
 
 export default async function RootLayout({
   children,
@@ -118,6 +119,7 @@ export default async function RootLayout({
       <body className="min-h-full flex flex-col">
         <ClerkProvider>
           <MubesSessionBanner />
+          <TelemetryTracker />
           <ImageQualityProvider>
             <LivePreviewListener />
             {bgTextureConfig && <GlobalBgTexture config={bgTextureConfig} />}

@@ -6,6 +6,22 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.5] - 2026-09-08
+
+### 🚀 Ditambahkan & Dioptimasi
+- **Navigasi Kembali ke Beranda Utama pada Edufest Infinity (`/edufest-infinity`)**:
+  - Penambahan komponen `EdufestBackHomeNav` (`src/components/ui/EdufestBackHomeNav.tsx`) berupa floating glass pill di pojok kiri atas yang mengarahkan langsung ke Beranda Utama OSIS (`/`).
+  - Penambahan tautan `Beranda OSIS` (`/`) dengan ikon globe ke dalam menu dropdown `LiquidGlassNav` dan penyesuaian label home edufest menjadi `Edufest Home`.
+  - Pembersihan duplikasi instansiasi `<LiquidGlassNav />` di subhalaman `panitia` dan `timeline` agar terpusat pada layout portal.
+
+### 🎨 Tampilan & Dark Mode (Bug Fix)
+- **Perbaikan Responsivitas Dark/Light Mode pada Halaman Timeline Edufest (`/edufest-infinity/timeline`)**:
+  - Mengubah elemen pembungkus dan kartu dari warna statis hardcoded `bg-[#0a0a0a]` menjadi dinamis `bg-[var(--background)] text-[var(--foreground)]` dan `bg-black/5 dark:bg-white/5`.
+  - Memperbaiki kontras teks judul, deskripsi, tanggal, dan guest stars agar otomatis adaptif saat beralih antara tema terang dan gelap.
+  - Menghilangkan `bg-[#0a0a0a]` pada komponen dasar `Timeline` (`src/components/ui/timeline.tsx`) menjadi `bg-transparent`.
+
+---
+
 ## [2.1.4] - 2026-09-08
 
 ### 🚀 Ditambahkan & Dioptimasi

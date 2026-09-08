@@ -34,6 +34,7 @@ const defaultNavItems = [
     { name: 'HOME', path: '/' },
     { name: 'ABOUT', path: '/about' },
     { name: 'EVENTS', path: '/events' },
+    { name: 'MUBES', path: '/portal-mubes' },
     { name: 'ANGGOTA', path: '/anggota' },
     { name: 'MEDIA SOSIAL', path: '/media-sosial' },
     { name: 'PARTNERS', path: '/partners' },

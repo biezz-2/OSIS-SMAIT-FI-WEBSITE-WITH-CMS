@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import LiquidGlassNav from "@/components/ui/LiquidGlassNav";
+import EdufestBackHomeNav from "@/components/ui/EdufestBackHomeNav";
 import PageTransitionLoader from "@/components/ui/PageTransitionLoader";
 
 const IntroOrchestrator = dynamic(() => import("@/components/intro/IntroOrchestrator"), {
@@ -41,6 +42,7 @@ export default function EdufestLayout({
         />
       ) : (
         <>
+          <EdufestBackHomeNav />
           <LiquidGlassNav />
           {children}
         </>

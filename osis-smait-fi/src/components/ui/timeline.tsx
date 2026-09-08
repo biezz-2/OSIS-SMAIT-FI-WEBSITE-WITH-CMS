@@ -33,7 +33,7 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
 
   return (
     <div
-      className="w-full bg-[#0a0a0a] font-sans md:px-10"
+      className="w-full bg-transparent font-sans md:px-10"
       ref={containerRef}
     >
       <div ref={ref} className="relative max-w-7xl mx-auto pb-20">
@@ -43,7 +43,7 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
             className="flex justify-start pt-10 md:pt-40 md:gap-10"
           >
             <div className="sticky flex flex-col md:flex-row z-40 items-center top-40 self-start max-w-xs lg:max-w-sm md:w-full">
-              <div className="h-10 absolute left-3 md:left-3 w-10 rounded-full bg-black/80 backdrop-blur-md flex items-center justify-center border border-white/10">
+              <div className="h-10 absolute left-3 md:left-3 w-10 rounded-full bg-white/80 dark:bg-black/80 backdrop-blur-md flex items-center justify-center border border-black/10 dark:border-white/10 shadow-sm">
                 <div className="h-4 w-4 rounded-full bg-purple-500/20 border border-purple-500/60" />
               </div>
               <h3 className="hidden md:block text-xl md:pl-20 md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-blue-400">
@@ -63,7 +63,7 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
           style={{
             height: height + "px",
           }}
-          className="absolute md:left-8 left-8 top-0 overflow-hidden w-[2px] bg-white/10 [mask-image:linear-gradient(to_bottom,transparent_0%,black_10%,black_90%,transparent_100%)]"
+          className="absolute md:left-8 left-8 top-0 overflow-hidden w-[2px] bg-black/10 dark:bg-white/10 [mask-image:linear-gradient(to_bottom,transparent_0%,black_10%,black_90%,transparent_100%)]"
         >
           <motion.div
             style={{

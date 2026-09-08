@@ -3,7 +3,6 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import LiquidGlassNav from "@/components/ui/LiquidGlassNav";
 import { committeeData as fallbackCommitteeData, findDivisionByMember, getMainPhoto, type Member, type Division } from "@/data/committee";
 import { getEdufestCommittee } from "@/lib/edufest-api";
 
@@ -579,9 +578,6 @@ export default function PanitiaPage() {
 
   return (
     <main className="relative w-full min-h-screen overflow-x-hidden">
-      {/* Navigation */}
-      <LiquidGlassNav />
-
       {/* Background - Dynamic adaptive gradient */}
       <div className="fixed inset-0 bg-[var(--background)] transition-colors duration-300">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-500/5 via-[var(--background)] to-[var(--background)]" />

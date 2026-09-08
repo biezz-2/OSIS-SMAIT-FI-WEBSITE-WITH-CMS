@@ -4,7 +4,7 @@
   "info": {
     "singularName": "login-event",
     "pluralName": "login-events",
-    "displayName": "Login Event",
+    "displayName": "🏛️ [MUBES] Log Presensi & Login",
     "description": "Telemetry and rate-limiting store"
   },
   "options": {

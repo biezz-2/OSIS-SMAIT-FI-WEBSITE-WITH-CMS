@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { Calendar, Users, Music } from "lucide-react";
-import LiquidGlassNav from "@/components/ui/LiquidGlassNav";
 import { Timeline, TimelineEntry } from "@/components/ui/timeline";
 import { getEdufestTimeline, type TimelineItemData } from "@/lib/edufest-api";
 
@@ -103,31 +102,31 @@ export default function TimelineOrchestrator() {
     const formattedData: TimelineEntry[] = timelineItems.map((item) => ({
         title: item.year,
         content: (
-            <div className="bg-white/5 backdrop-blur-md p-6 rounded-2xl border border-white/10 hover:border-purple-500/30 transition-colors duration-300 relative overflow-hidden group">
+            <div className="bg-black/5 dark:bg-white/5 backdrop-blur-md p-6 rounded-2xl border border-black/10 dark:border-white/10 hover:border-purple-500/40 dark:hover:border-purple-500/30 transition-colors duration-300 relative overflow-hidden group">
                 <div className="flex flex-col mb-4">
-                    <span className="inline-flex items-center gap-2 text-sm text-purple-300 bg-purple-900/20 px-3 py-1 rounded-full border border-purple-500/20 w-fit mb-3">
+                    <span className="inline-flex items-center gap-2 text-sm text-purple-700 dark:text-purple-300 bg-purple-100 dark:bg-purple-900/20 px-3 py-1 rounded-full border border-purple-500/20 w-fit mb-3">
                         <Calendar className="w-3.5 h-3.5" />
                         {item.date}
                     </span>
-                    <h3 className="text-xl font-semibold text-white mb-2 italic">
+                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2 italic">
                         "{item.theme}"
                     </h3>
-                    <div className="flex items-center gap-2 text-white/60 text-sm">
+                    <div className="flex items-center gap-2 text-gray-600 dark:text-white/60 text-sm">
                         <Users className="w-4 h-4" />
                         {item.participants}
                     </div>
                 </div>
 
                 <div className="mt-6">
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-purple-400 mb-3 flex items-center gap-2">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 mb-3 flex items-center gap-2">
                         <Music className="w-3.5 h-3.5" />
                         Guest Stars
                     </h4>
                     <div className="flex flex-wrap gap-4">
                         {item.guests.map((guest, idx) => (
-                            <div key={idx} className="flex flex-col items-center gap-3 bg-white/5 p-4 rounded-2xl border border-white/5 hover:bg-white/10 transition-colors group/guest w-32 md:w-40 flex-shrink-0">
+                            <div key={idx} className="flex flex-col items-center gap-3 bg-black/[0.03] dark:bg-white/5 p-4 rounded-2xl border border-black/5 dark:border-white/5 hover:bg-black/[0.06] dark:hover:bg-white/10 transition-colors group/guest w-32 md:w-40 flex-shrink-0">
                                 {guest.src ? (
-                                    <div className="relative w-[110px] h-[110px] md:w-[130px] md:h-[130px] rounded-full overflow-hidden bg-white/10 shadow-lg group-hover/guest:scale-105 transition-transform duration-300">
+                                    <div className="relative w-[110px] h-[110px] md:w-[130px] md:h-[130px] rounded-full overflow-hidden bg-black/5 dark:bg-white/10 shadow-md group-hover/guest:scale-105 transition-transform duration-300">
                                         <Image
                                             src={guest.src}
                                             alt={guest.name}
@@ -137,17 +136,17 @@ export default function TimelineOrchestrator() {
                                         />
                                     </div>
                                 ) : (
-                                    <div className="w-[110px] h-[110px] md:w-[130px] md:h-[130px] rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-3xl font-bold shadow-lg group-hover/guest:scale-105 transition-transform duration-300">
+                                    <div className="w-[110px] h-[110px] md:w-[130px] md:h-[130px] rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-3xl font-bold text-white shadow-md group-hover/guest:scale-105 transition-transform duration-300">
                                         {guest.name.charAt(0)}
                                     </div>
                                 )}
-                                <span className="text-xs text-white/80 font-medium text-center leading-tight line-clamp-2 min-h-[2.5em] flex items-center justify-center">
+                                <span className="text-xs text-gray-800 dark:text-white/80 font-medium text-center leading-tight line-clamp-2 min-h-[2.5em] flex items-center justify-center">
                                     {guest.name}
                                 </span>
                             </div>
                         ))}
                         {item.guests.length === 0 && (
-                            <span className="text-xs text-white/40 italic">To Be Announced</span>
+                            <span className="text-xs text-gray-500 dark:text-white/40 italic">To Be Announced</span>
                         )}
                     </div>
                 </div>
@@ -156,23 +155,21 @@ export default function TimelineOrchestrator() {
     }));
 
     return (
-        <div className="relative w-full min-h-screen overflow-hidden bg-[#0a0a0a]">
+        <div className="relative w-full min-h-screen overflow-hidden bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300">
             {/* Background Elements */}
             <div className="fixed inset-0 z-0 pointer-events-none">
-                <div className="absolute top-0 left-0 w-full h-full bg-[url('/assets/noise.png')] opacity-10 bg-repeat" />
-                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-900/20 rounded-full blur-3xl filter" />
-                <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-900/20 rounded-full blur-3xl filter" />
+                <div className="absolute top-0 left-0 w-full h-full bg-[url('/assets/noise.png')] opacity-5 dark:opacity-10 bg-repeat" />
+                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 dark:bg-purple-900/20 rounded-full blur-3xl filter" />
+                <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 dark:bg-blue-900/20 rounded-full blur-3xl filter" />
             </div>
 
             <div className="relative z-10 container mx-auto px-4 py-20">
-                <LiquidGlassNav />
-
                 {/* Header */}
                 <div className="flex flex-col items-center mb-12">
                     <motion.h1
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-white to-blue-400 text-center"
+                        className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-gray-900 to-blue-600 dark:from-purple-400 dark:via-white dark:to-blue-400 text-center"
                     >
                         Our Journey
                     </motion.h1>
@@ -188,7 +185,7 @@ export default function TimelineOrchestrator() {
                 <Timeline data={formattedData} />
 
                 {/* Footer Filler */}
-                <div className="h-48 flex items-center justify-center text-white/30 text-center">
+                <div className="h-48 flex items-center justify-center text-gray-500 dark:text-white/30 text-center text-sm">
                     <p>Building the future, one event at a time.</p>
                 </div>
             </div>
