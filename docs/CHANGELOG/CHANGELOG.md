@@ -6,6 +6,15 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.4] - 2026-09-08
+
+### 🚀 Ditambahkan & Dioptimasi
+- **Integrasi Navbar & Footer Situs Utama pada Detail Event (`/events/[slug]`)**:
+  - Menghubungkan komponen global `<Navbar />` dan `<Footer />` ke dalam `EventDetailLayout` (`src/app/events/[slug]/layout.tsx`).
+  - Mengembalikan akses navigasi utama situs (Home, About, Events, Anggota, Media Sosial, Partners, MegaMenu Program Kerja, Auth Clerk, dan Dark/Light Toggler) di seluruh subhalaman event seperti `/events/gema-merdeka`.
+
+---
+
 ## [2.1.3] - 2026-09-08
 
 ### 🚀 Ditambahkan & Dioptimasi
@@ -173,4 +182,4 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 ## [1.0.0] - 2026-07-25
 
 ### 🚀 Ditambahkan
-- Rilis perdana **Portal Web OSIS SMAIT Fithrah Insani (Agora Acta 2025 - Bhaskara)**.
+- Rilis perdana **Portal Web OSIS SMAIT Fithrah Insani (Agora Acta 2025)**.

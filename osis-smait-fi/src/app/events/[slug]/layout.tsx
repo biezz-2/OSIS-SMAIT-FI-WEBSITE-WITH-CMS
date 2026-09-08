@@ -1,5 +1,7 @@
 import { Space_Mono } from "next/font/google";
 import { EventThemeProvider } from "@/components/event-detail/theme-provider";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 const spaceMono = Space_Mono({
   variable: "--font-space-mono",
@@ -13,8 +15,10 @@ export default function EventDetailLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className={`${spaceMono.variable} font-mono w-full min-h-screen`}>
+    <div className={`${spaceMono.variable} font-mono w-full min-h-screen flex flex-col`}>
+      <Navbar />
       <EventThemeProvider>{children}</EventThemeProvider>
+      <Footer />
     </div>
   );
 }
