@@ -6,6 +6,19 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.3] - 2026-09-08
+
+### 🚀 Ditambahkan & Dioptimasi
+- **Peningkatan Visual Hero Section Event Detail (`/events/[slug]`)**:
+  - Penambahan scrim `linear-gradient(to top, #0B0F17 0%, rgba(11, 15, 23, 0.8) 40%, transparent 100%)` pada container hero bawah untuk transisi yang lebih mulus dan soft.
+  - Harmonisasi warna background event detail dark mode ke `#0B0F17` untuk menghilangkan color banding.
+  - Implementasi **Liquid Glassmorphism** khas iOS pada header badge (`.liquid-glass`) dengan `backdrop-filter: blur(20px) saturate(180%)`, border semi-transparan, dan inner glow.
+- **Sistem Sesi MUBES XXI & Telemetri**:
+  - Penambahan `MubesSessionBanner` responsif pada root layout untuk menampilkan status sesi dan navigasi LPJ.
+  - Integrasi API skema Strapi CMS untuk telemetri kunjungan.
+
+---
+
 ## [2.1.2] - 2026-09-08
 
 ### 🔒 Keamanan (Security Hardening & Remidiasi Vulnerability)

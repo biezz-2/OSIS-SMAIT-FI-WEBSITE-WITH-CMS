@@ -1,0 +1,61 @@
+{
+  "kind": "collectionType",
+  "collectionName": "telemetri_kunjungans",
+  "info": {
+    "singularName": "telemetri-kunjungan",
+    "pluralName": "telemetri-kunjungans",
+    "displayName": "Telemetri Kunjungan",
+    "description": "Log aktivitas pengunjung, spesifikasi perangkat, transisi halaman, dan dwell-time"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "device_id": {
+      "type": "string",
+      "required": true
+    },
+    "clerk_user_id": {
+      "type": "string"
+    },
+    "user_email": {
+      "type": "string"
+    },
+    "user_role": {
+      "type": "string"
+    },
+    "is_mubes_session": {
+      "type": "boolean",
+      "default": false
+    },
+    "page_path": {
+      "type": "string",
+      "required": true
+    },
+    "referrer": {
+      "type": "string"
+    },
+    "dwell_time_seconds": {
+      "type": "integer",
+      "default": 0
+    },
+    "device_type": {
+      "type": "string"
+    },
+    "browser": {
+      "type": "string"
+    },
+    "os": {
+      "type": "string"
+    },
+    "screen_resolution": {
+      "type": "string"
+    },
+    "ip_address": {
+      "type": "string"
+    },
+    "user_agent": {
+      "type": "text"
+    }
+  }
+}

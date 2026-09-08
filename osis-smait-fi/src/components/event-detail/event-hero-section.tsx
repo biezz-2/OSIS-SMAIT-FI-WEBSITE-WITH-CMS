@@ -53,7 +53,7 @@ export default function EventHeroSection({
       />
 
       <div className="absolute top-[20px] md:top-[32px] left-1/2 -translate-x-1/2 w-[calc(100%-32px)] md:w-[calc(100%-64px)] max-w-[1400px] min-h-[60px] md:h-[76px] z-10">
-        <div className="absolute inset-0 rounded-[20px] md:rounded-[33px] bg-[#6E6456]/30 backdrop-blur-sm shadow-[0px_25px_37.7px_16px_rgba(0,0,0,0.25)]" />
+        <div className="absolute inset-0 rounded-[20px] md:rounded-[33px] liquid-glass" />
         <div
           className="relative h-full font-mono text-[10px] md:text-[12px] tracking-[0.57px] flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-0 px-6 md:px-12 py-3 md:py-0"
           style={{ color: tokens.heroBannerText }}
@@ -67,7 +67,13 @@ export default function EventHeroSection({
         </div>
       </div>
 
-      <div className="absolute inset-x-0 bottom-0 z-20">
+      <div
+        className="absolute inset-x-0 bottom-0 z-20"
+        style={{
+          background:
+            "linear-gradient(to top, #0B0F17 0%, rgba(11, 15, 23, 0.8) 40%, transparent 100%)",
+        }}
+      >
         <div className="w-full max-w-[1400px] mx-auto flex flex-col md:flex-row items-start md:items-end justify-between gap-8 md:gap-10 px-6 md:px-12 lg:px-16 pb-10 md:pb-14">
           <div className="relative w-full md:max-w-[760px] shrink-0">
             <h1

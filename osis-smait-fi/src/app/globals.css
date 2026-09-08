@@ -241,14 +241,20 @@ html[data-magicui-theme-vt="active"]::view-transition-group(root) {
 .event-hero-radial-dark {
   background-image: radial-gradient(
     circle at 55% 22%,
-    #b6ab97 0%,
-    #928776 13%,
-    #6d6355 26%,
-    #504a40 40.5%,
-    #33302a 55%,
-    #1b1a17 78%,
-    #14130f 100%
+    rgba(182, 171, 151, 0.45) 0%,
+    rgba(110, 100, 86, 0.3) 30%,
+    rgba(27, 26, 23, 0.8) 65%,
+    #0B0F17 100%
   );
+}
+
+.liquid-glass {
+  background: rgba(255, 255, 255, 0.05);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  border-radius: 33px;
 }
 
 .event-hero-radial-light {

@@ -2,11 +2,11 @@ export type Theme = "dark" | "light";
 
 export const eventDetailThemeTokens = {
   dark: {
-    pageBg: "#0D0C0D",
-    sectionBg: "#0D0C0D",
-    heroBg: "#16150F",
+    pageBg: "#0B0F17",
+    sectionBg: "#0B0F17",
+    heroBg: "#0B0F17",
     heroGradient:
-      "linear-gradient(180deg, rgba(20, 19, 15, 0) 55%, rgba(20, 19, 15, 0.85) 85%, #16150F 100%)",
+      "linear-gradient(180deg, rgba(11, 15, 23, 0) 55%, rgba(11, 15, 23, 0.85) 85%, #0B0F17 100%)",
     introText: "rgba(255, 255, 255, 0.9)",
     navLink: "#EFECE4",
     navLinkHover: "#FFFFFF",

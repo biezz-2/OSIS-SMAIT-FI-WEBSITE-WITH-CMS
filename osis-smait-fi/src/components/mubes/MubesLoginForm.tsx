@@ -31,7 +31,7 @@ export default function MubesLoginForm({ onSwitchToSignUp, onOpenHelp }: MubesLo
       await signIn.authenticateWithRedirect({
         strategy: 'oauth_google',
         redirectUrl: '/sso-callback',
-        redirectUrlComplete: '/portal-mubes',
+        redirectUrlComplete: '/',
       });
     } catch (err: any) {
       const msg =
@@ -57,7 +57,7 @@ export default function MubesLoginForm({ onSwitchToSignUp, onOpenHelp }: MubesLo
 
       if (result.status === 'complete') {
         await setActive({ session: result.createdSessionId });
-        router.push('/portal-mubes');
+        router.push('/');
       } else {
         setErrorMessage('Verifikasi lanjutan diperlukan. Silakan cek email Anda.');
       }
