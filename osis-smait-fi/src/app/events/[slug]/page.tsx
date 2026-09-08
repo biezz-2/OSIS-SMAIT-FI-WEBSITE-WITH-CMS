@@ -67,9 +67,20 @@ export default async function EventDetailPage({ params }: PageProps) {
 
   const introText = attrs?.deskripsi || attrs?.sub_judul;
 
-  // Galeri / Dome Images dari dokumentasi atau galeri event
+  // Teks khusus bagian galeri / dome
+  const domeHeading = attrs?.nama || attrs?.tema || title;
+  const domeBodyUpper = attrs?.galeri_teks_utama || attrs?.tagline || undefined;
+  const domeBodyLower = attrs?.galeri_deskripsi || attrs?.ringkasan || undefined;
+
+  // Galeri / Dome Images dari highlights, dokumentasi, atau galeri event
   let domeImages: { src: string; alt: string }[] = [];
-  const mediaList = attrs?.dokumentasi?.data || attrs?.galeri?.data || attrs?.dokumentasi || attrs?.galeri;
+  const mediaList =
+    attrs?.highlights?.data ||
+    attrs?.highlights ||
+    attrs?.dokumentasi?.data ||
+    attrs?.galeri?.data ||
+    attrs?.dokumentasi ||
+    attrs?.galeri;
   if (Array.isArray(mediaList) && mediaList.length > 0) {
     domeImages = mediaList.map((m: any, idx: number) => ({
       src: getStrapiMediaUrl(m, "/images/dome-photo.png"),
@@ -111,7 +122,9 @@ export default async function EventDetailPage({ params }: PageProps) {
         ctaUrl,
       }}
       introText={introText}
-      domeHeading={title}
+      domeHeading={domeHeading}
+      domeBodyUpper={domeBodyUpper}
+      domeBodyLower={domeBodyLower}
       domeImages={domeImages.length > 0 ? domeImages : undefined}
       otherEvents={otherEvents.length > 0 ? otherEvents : undefined}
     />

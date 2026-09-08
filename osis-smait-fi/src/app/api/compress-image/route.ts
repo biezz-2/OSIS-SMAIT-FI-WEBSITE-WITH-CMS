@@ -11,6 +11,26 @@ sharp.cache({ memory: 50, files: 0, items: 100 });
 const CACHE_DIR = path.join(process.cwd(), '.image-cache');
 const MAX_CACHE_FILES = 500;
 
+// Whitelist domain resmi yang diperbolehkan untuk image compression
+const ALLOWED_HOSTS = [
+  'osisstrapi.biezz.my.id',
+  'osissmaitfi.biezz.my.id',
+  'localhost',
+  '127.0.0.1',
+  '100.100.68.83',
+];
+
+function isHostAllowed(hostname: string): boolean {
+  const host = hostname.toLowerCase();
+  return ALLOWED_HOSTS.some((allowed) => host === allowed || host.endsWith('.' + allowed));
+}
+
+// 1x1 transparent PNG fallback buffer
+const TRANSPARENT_PNG = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=',
+  'base64'
+);
+
 async function pruneCache() {
   try {
     const files = await fs.readdir(CACHE_DIR);
@@ -47,10 +67,6 @@ export async function GET(req: NextRequest) {
     return new NextResponse('Missing image URL parameter', { status: 400 });
   }
 
-  const publicFallbackUrl = imageUrl.startsWith('/')
-    ? `${req.headers.get('x-forwarded-proto') || 'https'}://${req.headers.get('host') || 'osissmaitfi.biezz.my.id'}${imageUrl}`
-    : imageUrl;
-
   const compressParam = searchParams.get('compress');
   const quality = parseInt(qualityParam || '75', 10);
   const shouldCompress = compressParam !== 'false';
@@ -63,15 +79,27 @@ export async function GET(req: NextRequest) {
       targetUrl = `${protocol}://${host}${targetUrl}`;
     }
 
+    if (!/^https?:\/\//i.test(targetUrl)) {
+      return new NextResponse('Only HTTP/HTTPS URLs are allowed', { status: 400 });
+    }
+
+    let parsedUrl: URL;
+    try {
+      parsedUrl = new URL(targetUrl);
+    } catch {
+      return new NextResponse('Invalid target image URL', { status: 400 });
+    }
+
+    // SSRF Protection: validasi allowlist host
+    if (!isHostAllowed(parsedUrl.hostname)) {
+      return new NextResponse('Forbidden host', { status: 403 });
+    }
+
     const publicStrapiURL = 'https://osisstrapi.biezz.my.id';
     if (targetUrl.startsWith(publicStrapiURL)) {
       targetUrl = targetUrl.replace(publicStrapiURL, STRAPI_INTERNAL_URL);
     } else if (targetUrl.startsWith('http://localhost:1337')) {
       targetUrl = targetUrl.replace('http://localhost:1337', STRAPI_INTERNAL_URL);
-    }
-
-    if (!/^https?:\/\//i.test(targetUrl)) {
-      return new NextResponse('Only HTTP/HTTPS URLs are allowed', { status: 400 });
     }
 
     const controller = new AbortController();
@@ -80,14 +108,21 @@ export async function GET(req: NextRequest) {
     let response: Response;
     try {
       response = await fetch(targetUrl, { cache: 'no-store', signal: controller.signal });
-    } catch (fetchErr) {
-      return NextResponse.redirect(publicFallbackUrl, 302);
+    } catch {
+      // Hilangkan redirect 302 ke URL eksternal (mencegah Open Redirect)
+      return new NextResponse(TRANSPARENT_PNG, {
+        status: 200,
+        headers: { 'Content-Type': 'image/png', 'Cache-Control': 'no-store' },
+      });
     } finally {
       clearTimeout(timeout);
     }
 
     if (!response.ok) {
-      return NextResponse.redirect(publicFallbackUrl, 302);
+      return new NextResponse(TRANSPARENT_PNG, {
+        status: 200,
+        headers: { 'Content-Type': 'image/png', 'Cache-Control': 'no-store' },
+      });
     }
 
     const contentType = response.headers.get('content-type') || 'image/jpeg';
@@ -142,9 +177,9 @@ export async function GET(req: NextRequest) {
     });
   } catch (error) {
     console.error('Image compression proxy error:', error);
-    if (/^https?:\/\//i.test(publicFallbackUrl)) {
-      return NextResponse.redirect(publicFallbackUrl, 302);
-    }
-    return new NextResponse('Internal Server Error', { status: 500 });
+    return new NextResponse(TRANSPARENT_PNG, {
+      status: 200,
+      headers: { 'Content-Type': 'image/png', 'Cache-Control': 'no-store' },
+    });
   }
 }

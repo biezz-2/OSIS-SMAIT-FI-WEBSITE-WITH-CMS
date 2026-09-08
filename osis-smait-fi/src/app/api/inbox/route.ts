@@ -1,6 +1,32 @@
 import { NextResponse } from 'next/server';
 import { STRAPI_INTERNAL_URL } from '@/lib/strapi';
 
+// In-memory rate limiting: max 3 requests per 10 minutes per IP
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
+const MAX_REQUESTS_PER_WINDOW = 3;
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const entry = rateLimitMap.get(ip);
+
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return true;
+  }
+
+  if (entry.count >= MAX_REQUESTS_PER_WINDOW) {
+    return false;
+  }
+
+  entry.count += 1;
+  return true;
+}
+
+function escapeTelegramMarkdown(text: string): string {
+  return text.replace(/([_*\[\]()~`>#+\-=|{}.!\\])/g, '\\$1');
+}
+
 async function sendTelegramNotification(data: { name: string; kelas?: string; category?: string; suggestion: string }) {
   // Strictly use Feedback Bot (@OSISSMAITFIADMIN_bot)
   const token = process.env.TELEGRAM_FEEDBACK_BOT_TOKEN;
@@ -11,11 +37,16 @@ async function sendTelegramNotification(data: { name: string; kelas?: string; ca
     return;
   }
 
+  const safeName = escapeTelegramMarkdown(data.name);
+  const safeKelas = escapeTelegramMarkdown(data.kelas || '-');
+  const safeCategory = escapeTelegramMarkdown(data.category || 'instagram');
+  const safeSuggestion = escapeTelegramMarkdown(data.suggestion);
+
   const text = `💡 *Saran & Masukan Baru Received*\n\n` +
-    `👤 *Nama:* ${data.name}\n` +
-    `🏫 *Kelas:* ${data.kelas || '-'}\n` +
-    `🏷️ *Kategori:* \`${data.category || 'instagram'}\`\n\n` +
-    `📝 *Saran/Ide:*\n${data.suggestion}\n\n` +
+    `👤 *Nama:* ${safeName}\n` +
+    `🏫 *Kelas:* ${safeKelas}\n` +
+    `🏷️ *Kategori:* \`${safeCategory}\`\n\n` +
+    `📝 *Saran/Ide:*\n${safeSuggestion}\n\n` +
     `🕒 *Waktu:* ${new Date().toLocaleString('id-ID')}`;
 
   try {
@@ -25,7 +56,7 @@ async function sendTelegramNotification(data: { name: string; kelas?: string; ca
       body: JSON.stringify({
         chat_id: chatId,
         text,
-        parse_mode: 'Markdown',
+        parse_mode: 'MarkdownV2',
       }),
     });
   } catch (err) {
@@ -35,6 +66,16 @@ async function sendTelegramNotification(data: { name: string; kelas?: string; ca
 
 export async function POST(request: Request) {
   try {
+    const forwardedFor = request.headers.get('x-forwarded-for');
+    const clientIp = forwardedFor ? forwardedFor.split(',')[0].trim() : '127.0.0.1';
+
+    if (!checkRateLimit(clientIp)) {
+      return NextResponse.json(
+        { error: 'Terlalu banyak permintaan. Silakan coba lagi dalam beberapa menit.' },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json();
     const { name, kelas, category, suggestion } = body;
 
@@ -43,6 +84,14 @@ export async function POST(request: Request) {
         { error: 'Nama dan Saran Ide wajib diisi' },
         { status: 400 }
       );
+    }
+
+    if (typeof name !== 'string' || name.length > 100) {
+      return NextResponse.json({ error: 'Nama terlalu panjang (maksimal 100 karakter)' }, { status: 400 });
+    }
+
+    if (typeof suggestion !== 'string' || suggestion.length > 2000) {
+      return NextResponse.json({ error: 'Saran ide terlalu panjang (maksimal 2000 karakter)' }, { status: 400 });
     }
 
     // Always send direct Telegram notification so feedback is never lost

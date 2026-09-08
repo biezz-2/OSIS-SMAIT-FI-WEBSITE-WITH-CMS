@@ -6,6 +6,28 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.2] - 2026-09-08
+
+### 🔒 Keamanan (Security Hardening & Remidiasi Vulnerability)
+- **Mitigasi Server-Side Request Forgery (SSRF) & Open Redirect (`/api/compress-image`)**:
+  - Validasi ketat allowlist hostname resmi (`osisstrapi.biezz.my.id`, `osissmaitfi.biezz.my.id`, `localhost`, `127.0.0.1`, `100.100.68.83`). Host di luar allowlist ditolak dengan `403 Forbidden`.
+  - Penghapusan redirect HTTP 302 ke URL eksternal untuk mencegah open redirect; diganti dengan fallback 1x1 transparent PNG.
+- **Pencegahan Privilege Escalation pada Webhook Clerk (`/api/webhooks/clerk`)**:
+  - Mengubah fuzzy matching nama anggota menjadi exact match terstandarisasi untuk mencegah bypass verifikasi identitas anggota OSIS.
+  - Penegasan default status `pending` bagi pengguna baru tanpa peran terverifikasi.
+- **Perlindungan Denial of Service & Spam Sanitasi (`/api/inbox`)**:
+  - Penambahan in-memory rate limiting per alamat IP (maksimal 3 request per 10 menit) dengan respons status `429 Too Many Requests`.
+  - Validasi panjang payload dan sanitasi karakter MarkdownV2 untuk mencegah injeksi parsing pada notifikasi Telegram feedback bot.
+- **Automated Security Pipeline**:
+  - Penambahan GitHub Actions workflow `.github/workflows/security-scan.yml` untuk audit dependensi frontend (`npm audit`) dan build verification berkala.
+
+### 🚀 Ditambahkan & Dioptimasi
+- **Peningkatan Rendering Detail Event (`/events/[slug]`) & Skema CMS**:
+  - Integrasi field `galeri_teks_utama` dan `galeri_deskripsi` pada skema Strapi CMS Event.
+  - Peningkatan fallback sumber visual galeri event (`highlights` -> `dokumentasi` -> `galeri`).
+
+---
+
 ## [2.1.1] - 2026-09-06
 
 ### 🚀 Ditambahkan & Dioptimasi

@@ -87,6 +87,12 @@
     "cta_url": {
       "type": "string"
     },
+    "galeri_teks_utama": {
+      "type": "text"
+    },
+    "galeri_deskripsi": {
+      "type": "text"
+    },
     "youtube_url": {
       "type": "string"
     },

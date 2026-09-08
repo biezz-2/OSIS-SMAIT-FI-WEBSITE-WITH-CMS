@@ -65,11 +65,11 @@ export async function POST(req: Request) {
         const anggotaData = await anggotaRes.json();
         const members: any[] = anggotaData?.data || [];
 
-        // Fuzzy match: exact match atau contains
+        // Strict match: nama lengkap harus cocok persis (exact match), tidak menggunakan substring/includes
         const matched = members.find((m: any) => {
           const target = (m.nama_lengkap || '').trim().toLowerCase().replace(/\s+/g, ' ');
           if (!target || !normalizedInputName) return false;
-          return target === normalizedInputName || normalizedInputName.includes(target) || target.includes(normalizedInputName);
+          return target === normalizedInputName;
         });
 
         if (matched) {
@@ -77,6 +77,7 @@ export async function POST(req: Request) {
         }
       }
 
+      // Default ke pending untuk mencegah privilege escalation otomatis
       const isApproved = Boolean(matchedMemberId);
       const assignedStatus = isApproved ? 'approved' : 'pending';
       const assignedRole = isApproved ? 'member' : null;
