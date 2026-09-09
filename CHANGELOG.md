@@ -6,6 +6,16 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.8] - 2026-09-10
+
+### 🎨 Tampilan, Aksesibilitas & UI/UX (Bug Fix)
+- **Refactor MUBES Session Banner ke Floating Toast Notification**:
+  - Mengubah `MubesSessionBanner` (`src/components/mubes/MubesSessionBanner.tsx`) dari `sticky top-0 w-full` menjadi floating notification card (`fixed bottom-6 left-6 z-50`).
+  - Mengatasi masalah tumpang tindih visual antara navbar atas di halaman Edufest (`EdufestBackHomeNav` & `LiquidGlassNav`) dengan status bar sesi MUBES.
+  - Menambahkan toggle collapsible/minimize (`ChevronUp`/`ChevronDown`) agar pengguna dapat menciutkan kartu sesi saat menjelajahi halaman tanpa terhalang.
+
+---
+
 ## [2.1.7] - 2026-09-09
 
 ### 🚀 Ditambahkan & Dioptimasi
