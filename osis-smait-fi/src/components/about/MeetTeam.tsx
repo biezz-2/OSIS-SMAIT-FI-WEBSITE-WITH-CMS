@@ -25,7 +25,7 @@ export function formatBPHMembers(strapiMembers: any[]): TeamMember[] {
   if (!strapiMembers || !Array.isArray(strapiMembers)) return [];
   return strapiMembers.map((item: any) => {
     const attrs = item.attributes || item;
-    const imgUrl = getStrapiMediaUrl(attrs.foto, '');
+    const imgUrl = getStrapiMediaUrl(attrs.foto, '', 'medium');
     return {
       role: attrs.jabatan || 'PENGURUS OSIS',
       name: attrs.nama_lengkap || '',

@@ -68,7 +68,8 @@ export async function GET(req: NextRequest) {
   }
 
   const compressParam = searchParams.get('compress');
-  const quality = parseInt(qualityParam || '75', 10);
+  const parsedQuality = parseInt(qualityParam || '85', 10);
+  const quality = Math.min(Math.max(isNaN(parsedQuality) ? 85 : parsedQuality, 1), 100);
   const shouldCompress = compressParam !== 'false';
 
   try {
@@ -148,10 +149,11 @@ export async function GET(req: NextRequest) {
 
     if (shouldCompress && contentType.startsWith('image/')) {
       let sharpInstance = sharp(processedBuffer);
-      // Gantikan kompresi standar dengan chromaSubsampling 4:4:4 untuk mempertahankan detail piksel & warna pada Quality 80%
+      // Kompresi WebP mempertahankan ketajaman HD dengan smartSubsample
       sharpInstance = sharpInstance.webp({
-        quality: Math.max(quality, 80),
+        quality,
         effort: 4,
+        smartSubsample: true,
       });
       processedBuffer = await sharpInstance.toBuffer();
       outContentType = 'image/webp';

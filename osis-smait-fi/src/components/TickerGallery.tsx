@@ -34,7 +34,7 @@ export default function TickerGallery() {
                     const items = json?.data || [];
                     formatted = items.map((item: any) => {
                         const attrs = item.attributes || item;
-                        const src = getStrapiMediaUrl(attrs.foto || attrs.gambar, '');
+                        const src = getStrapiMediaUrl(attrs.foto || attrs.gambar, '', 'medium');
                         return {
                             src,
                             alt: attrs.judul || attrs.title || 'Galeri Foto',

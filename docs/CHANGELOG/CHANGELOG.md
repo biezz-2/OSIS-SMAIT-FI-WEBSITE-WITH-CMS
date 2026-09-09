@@ -6,6 +6,18 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.10] - 2026-09-10
+
+### 🚀 Ditambahkan & Dioptimasi
+
+- **Resolusi Gambar HD & Optimasi Kompresi WebP**:
+  - **Root Cause Gambar Buram**: Fungsi `getStrapiMediaUrl` sebelumnya memprioritaskan thumbnail `formats.medium` (750px) sebelum file original. Saat dirender pada hero/banner layar penuh, gambar terdistorsi dan low-resolution.
+  - Memperbarui `getStrapiMediaUrl` (`src/lib/strapi.ts`) dengan parameter `preferredFormat: StrapiImageFormat = 'original'`, sehingga hero/banner event dan galeri secara default mengambil file beresolusi penuh (HD).
+  - Menetapkan resolusi `'medium'` dan `'small'` secara selektif pada kartu anggota (`MeetTeam`, `AnggotaList`), icon (`Navbar`), dan ticker (`TickerGallery`).
+  - Memperbarui `/api/compress-image` (`src/app/api/compress-image/route.ts`) agar nilai kompresi pengguna (0-100%) diterapkan dinamis ke Sharp WebP dengan opsi `smartSubsample: true` untuk menjaga ketajaman detail dan warna.
+
+---
+
 ## [2.1.9] - 2026-09-10
 
 ### 🐛 Diperbaiki

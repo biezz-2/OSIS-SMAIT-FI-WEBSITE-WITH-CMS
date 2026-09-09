@@ -81,7 +81,7 @@ const AnggotaList: React.FC<AnggotaListProps> = ({
         rawItems.forEach((item: any) => {
           const attrs = item.attributes || item;
           const divKey = attrs.divisi || 'BPH';
-          const imgUrl = getStrapiMediaUrl(attrs.foto, '');
+          const imgUrl = getStrapiMediaUrl(attrs.foto, '', 'medium');
 
           const member: Member = {
             name: attrs.nama_lengkap || '',

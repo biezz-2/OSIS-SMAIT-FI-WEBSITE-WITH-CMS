@@ -1,9 +1,18 @@
 export const STRAPI_URL = (process.env.NEXT_PUBLIC_STRAPI_URL || 'https://osisstrapi.biezz.my.id').replace(/\/$/, '');
 
+export type StrapiImageFormat = 'original' | 'large' | 'medium' | 'small' | 'thumbnail';
+
 /**
  * Resolves a Strapi media object or path into a full absolute URL with fallback.
+ * @param preferredFormat - Resolusi yang diinginkan. Default 'original' (file penuh HD).
+ *   Gunakan 'large'/'medium'/'small' hanya untuk thumbnail/card kecil.
+ *   File HD kemudian dikompres oleh /api/compress-image sesuai setting kualitas dari Strapi.
  */
-export function getStrapiMediaUrl(media: any, fallbackUrl: string = ''): string {
+export function getStrapiMediaUrl(
+  media: any,
+  fallbackUrl: string = '',
+  preferredFormat: StrapiImageFormat = 'original'
+): string {
   if (!media) return fallbackUrl;
 
   const sanitizeUrl = (urlStr: string) => {
@@ -30,7 +39,24 @@ export function getStrapiMediaUrl(media: any, fallbackUrl: string = ''): string 
   // Case 3: Strapi uploaded media object (v4, v5, formats)
   const fileData = media.file || media.url ? media : (media.data?.attributes || media.attributes || media.data);
   const formats = fileData?.formats || media?.formats || media?.attributes?.formats;
-  const rawUrl = formats?.medium?.url || formats?.large?.url || fileData?.url || media?.url || media?.attributes?.url;
+  const originalUrl = fileData?.url || media?.url || media?.attributes?.url;
+
+  // Pilih URL berdasarkan preferredFormat. Urutan fallback selalu naik ke resolusi lebih tinggi
+  // agar gambar tidak pernah lebih buram dari yang diminta.
+  let rawUrl = '';
+  if (preferredFormat === 'thumbnail') {
+    rawUrl = formats?.thumbnail?.url || formats?.small?.url || formats?.medium?.url || formats?.large?.url || originalUrl;
+  } else if (preferredFormat === 'small') {
+    rawUrl = formats?.small?.url || formats?.medium?.url || formats?.large?.url || originalUrl;
+  } else if (preferredFormat === 'medium') {
+    rawUrl = formats?.medium?.url || formats?.large?.url || originalUrl;
+  } else if (preferredFormat === 'large') {
+    rawUrl = formats?.large?.url || originalUrl;
+  } else {
+    // 'original' — default. Ambil file asli HD untuk hero/banner/galeri.
+    // Next.js <Image /> dan /api/compress-image menangani kompresi on-the-fly.
+    rawUrl = originalUrl || formats?.large?.url || formats?.medium?.url;
+  }
 
   if (rawUrl) {
     let url = sanitizeUrl(rawUrl);
@@ -351,7 +377,7 @@ export function formatBPHMembers(strapiMembers: any[]): TeamMember[] {
   if (!strapiMembers || !Array.isArray(strapiMembers)) return [];
   return strapiMembers.map((item: any) => {
     const attrs = item.attributes || item;
-    const imgUrl = getStrapiMediaUrl(attrs.foto, '');
+    const imgUrl = getStrapiMediaUrl(attrs.foto, '', 'medium');
     return {
       role: attrs.jabatan || 'PENGURUS OSIS',
       name: attrs.nama_lengkap || '',
@@ -446,7 +472,7 @@ export async function fetchPartnersFromStrapi(): Promise<PartnerData[]> {
     return items.map((item: any) => {
       const attrs = item.attributes || item;
       const avatarMedia = attrs.avatar;
-      const resolvedAvatar = getStrapiMediaUrl(avatarMedia, attrs.avatar_url || `https://github.com/${attrs.nama}.png`);
+      const resolvedAvatar = getStrapiMediaUrl(avatarMedia, attrs.avatar_url || `https://github.com/${attrs.nama}.png`, 'medium');
 
       return {
         id: item.id,

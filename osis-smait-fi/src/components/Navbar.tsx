@@ -186,7 +186,7 @@ const Navbar = () => {
                         }
 
                         const iconMedia = attrs.icon || attrs.banner || attrs.gambar;
-                        const resolvedIcon = getStrapiMediaUrl(iconMedia, '');
+                        const resolvedIcon = getStrapiMediaUrl(iconMedia, '', 'small');
                         if (resolvedIcon) {
                             iconNode = resolvedIcon;
                         }
