@@ -6,6 +6,17 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.11] - 2026-09-10
+
+### 🐛 Diperbaiki & Dioptimasi
+
+- **Audit & Pembersihan Bug Sistem & Komponen**:
+  - **TelemetryTracker (`TelemetryTracker.tsx`)**: Menghilangkan error impure function saat render React Compiler dengan menginisialisasi `startTimeRef = useRef<number>(0)` dan menetapkan `Date.now()` secara murni di dalam `useEffect`.
+  - **Edufest Panitia (`edufest-infinity/panitia/page.tsx`)**: Membungkus perhitungan array `photos` ke dalam `useMemo` agar dependency stabil dan tidak membatalkan optimasi kompilasi memoization React Compiler.
+  - **Database Sync Guard (`strapi-cms/src/index.ts`)**: Menambahkan pemeriksaan `fs.existsSync(syncScript)` pada `setupDatabaseSync()` agar proses background fork aman dan tidak melempar uncaught exception saat file script sinkronisasi tidak ada di filesystem.
+
+---
+
 ## [2.1.10] - 2026-09-10
 
 ### 🚀 Ditambahkan & Dioptimasi

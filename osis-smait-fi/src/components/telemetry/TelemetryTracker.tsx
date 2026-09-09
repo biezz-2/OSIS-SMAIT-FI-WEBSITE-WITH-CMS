@@ -52,7 +52,7 @@ function parseDeviceSpecs() {
 
 export default function TelemetryTracker() {
   const pathname = usePathname();
-  const startTimeRef = useRef<number>(Date.now());
+  const startTimeRef = useRef<number>(0);
   const currentPathRef = useRef<string>(pathname);
   const referrerRef = useRef<string>('');
 

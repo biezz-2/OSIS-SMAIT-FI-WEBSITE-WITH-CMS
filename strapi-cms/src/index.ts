@@ -1,9 +1,14 @@
 import type { Core } from '@strapi/strapi';
 import { fork } from 'child_process';
 import path from 'path';
+import fs from 'fs';
 
 function setupDatabaseSync() {
   const syncScript = path.join(__dirname, '../../scripts/sync-db.js');
+  if (!fs.existsSync(syncScript)) {
+    console.warn(`[Sync] Warning: Database sync script not found at ${syncScript}. Skipping sync scheduling.`);
+    return;
+  }
 
   // Run sync immediately on startup
   console.log('[Sync] Spawning initial database sync process...');

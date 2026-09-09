@@ -103,7 +103,10 @@ interface IdCardModalProps {
 function IdCardModal({ member, division, isOpen, onClose }: IdCardModalProps) {
   const name = typeof member === "string" ? member : member.name;
   const role = typeof member === "string" ? undefined : member.role;
-  const photos = typeof member === "string" ? undefined : (member.photos || (member.photo ? [member.photo] : undefined));
+  const photos = useMemo(() => {
+    if (!member || typeof member === "string") return undefined;
+    return member.photos || (member.photo ? [member.photo] : undefined);
+  }, [member]);
   const initials = getInitials(name);
   const gradientClass = getRoleAccentColor(role);
   const borderClass = getRoleBorderColor(role);
