@@ -16,6 +16,7 @@ export const useSmoothScroll = () => {
             smoothWheel: true,
             wheelMultiplier: 1,
             touchMultiplier: 2,
+            autoRaf: false,
         });
 
         setLenis(lenisInstance);
@@ -31,7 +32,15 @@ export const useSmoothScroll = () => {
 
         rafId = requestAnimationFrame(raf);
 
+        // Auto resize on window dimension changes
+        const handleResize = () => {
+            lenisInstance.resize();
+            ScrollTrigger.refresh();
+        };
+        window.addEventListener("resize", handleResize);
+
         return () => {
+            window.removeEventListener("resize", handleResize);
             cancelAnimationFrame(rafId);
             lenisInstance.destroy();
         };
@@ -39,3 +48,4 @@ export const useSmoothScroll = () => {
 
     return lenis;
 };
+

@@ -6,6 +6,19 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.9] - 2026-09-10
+
+### 🐛 Diperbaiki
+
+- **Perbaikan Scroll Lock Halaman Edufest (`/edufest-infinity`)**:
+  - **Root Cause**: `useSmoothScroll()` (Lenis) diinisialisasi saat `introComplete: false` ketika DOM hanya berisi `IntroOrchestrator` (`h-screen`). Saat intro selesai dan `children` (scene multi-ribu piksel) di-mount, dimensi Lenis basi (`maxScroll = 0`) menyebabkan semua scroll event dikonsumsi dan dibatalkan.
+  - Menambahkan `useEffect` di `src/app/edufest-infinity/layout.tsx` yang menyaksikan `introComplete` dan memanggil `lenis.resize()` + `ScrollTrigger.refresh()` setelah delay 150ms (DOM paint) dan 500ms (animasi mount selesai).
+  - Mengubah `useSmoothScroll()` di `src/lib/lenis.ts` agar mengembalikan `Lenis instance`, menambahkan `autoRaf: false`, dan listener `window.resize` otomatis untuk `lenis.resize()` + `ScrollTrigger.refresh()`.
+  - Menambahkan override CSS `html.lenis { scroll-behavior: auto !important; }` di `src/app/globals.css` untuk menghilangkan konflik antara native `scroll-behavior: smooth` browser dengan virtual smooth scroll Lenis berbasis `requestAnimationFrame`.
+  - Menyertakan standard Lenis CSS (`.lenis`, `.lenis.lenis-stopped`, `[data-lenis-prevent]`) secara inline di `globals.css` agar tidak bergantung pada import eksternal yang bisa dilewati bundler.
+
+---
+
 ## [2.1.8] - 2026-09-10
 
 ### 🎨 Tampilan, Aksesibilitas & UI/UX (Bug Fix)
