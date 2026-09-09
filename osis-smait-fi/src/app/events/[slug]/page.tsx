@@ -54,14 +54,24 @@ export default async function EventDetailPage({ params }: PageProps) {
     fetchAllEventsForPage(),
   ]);
 
+  if (!eventData) {
+    notFound();
+  }
+
   const attrs = eventData?.attributes || eventData;
 
   // Judul & Banner fallback ke desain prototipe jika event belum ada di Strapi atau dibuka langsung
   const title = attrs?.nama || attrs?.tema || slug.replace(/-/g, " ").toUpperCase();
   const bannerMedia = attrs?.banner || attrs?.gambar;
   const bannerUrl = getStrapiMediaUrl(bannerMedia, "/images/hero-photo.png");
-  const tagline = attrs?.tagline || attrs?.ringkasan || "Perayaan Semangat Kebangsaan & Kebersamaan Generasi Muda";
-  const categoryBanner = attrs?.kategori || "LOMBA & FESTIVAL / PANGGUNG SENI / ALL DAY";
+  const tagline = attrs?.tagline || attrs?.ringkasan || "Agenda Resmi OSIS SMAIT Fithrah Insani";
+  const rawKategori = attrs?.kategori;
+  const categoryBanner =
+    rawKategori === "internal"
+      ? "PROGRAM INTERNAL / OSIS SMAIT FITHRAH INSANI"
+      : rawKategori === "eksternal"
+      ? "PROGRAM & FESTIVAL EKSTERNAL / ALL DAY"
+      : rawKategori || "KEGIATAN & PERAYAAN / ALL DAY";
   const dateStr = formatDate(attrs?.tanggal_mulai || attrs?.tanggal);
   const ctaUrl = attrs?.cta_url || "#dome";
 

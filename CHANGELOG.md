@@ -6,6 +6,17 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.7] - 2026-09-09
+
+### 🚀 Ditambahkan & Dioptimasi
+- **Sinkronisasi Data Dinamis Halaman Detail Event (`/events/[slug]`)**:
+  - Memperbaiki ketidakcocokan nilai slug pada database Strapi (MySQL dan backup SQLite) dari `event` menjadi `gema-merdeka` sehingga data query `/api/events?filters[slug][$eq]=...` berhasil ditemukan dan di-populate.
+  - Memperbarui `src/app/events/[slug]/page.tsx` dengan penanganan `notFound()` eksplisit saat event tidak ditemukan di CMS alih-alih me-render mock data statis yang menyesatkan.
+  - Menambahkan mapping label dinamis untuk enum kategori (`internal` dan `eksternal`) agar proporsional dengan header banner acara.
+  - Mengintegrasikan parser Markdown (`ReactMarkdown`, `remark-gfm`, `remark-breaks`) pada komponen `EventIntroSection` (`src/components/event-detail/event-intro-section.tsx`) agar format teks kaya (RichText) dari Strapi dirender dengan rapi.
+
+---
+
 ## [2.1.6] - 2026-09-09
 
 ### 🚀 Ditambahkan & Dioptimasi
