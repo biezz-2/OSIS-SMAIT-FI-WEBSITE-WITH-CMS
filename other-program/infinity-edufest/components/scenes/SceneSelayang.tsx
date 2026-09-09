@@ -65,10 +65,10 @@ export default function SceneSelayang() {
             <div className="max-w-5xl w-full flex flex-col items-center text-center gap-12 relative z-10">
                 {/* Title */}
                 <div ref={titleRef} className="flex flex-col items-center gap-2">
-                    <h2 className="text-6xl md:text-8xl font-extrabold uppercase tracking-tighter text-black leading-[0.9]">
+                    <h2 className="text-6xl md:text-8xl font-extrabold uppercase tracking-tighter text-[var(--foreground)] leading-[0.9]">
                         Selayang
                     </h2>
-                    <h2 className="text-6xl md:text-8xl font-extrabold uppercase tracking-tighter text-black leading-[0.9]">
+                    <h2 className="text-6xl md:text-8xl font-extrabold uppercase tracking-tighter text-[var(--foreground)] leading-[0.9]">
                         Pandang
                     </h2>
                     <div className="w-20 h-1 bg-[#78a0d4] mt-6 rounded-full" />
@@ -76,12 +76,12 @@ export default function SceneSelayang() {
 
                 {/* Content */}
                 <div ref={contentRef} className="flex flex-col gap-8 max-w-4xl">
-                    <p className="text-lg md:text-2xl font-normal leading-relaxed text-black/80 tracking-wide">
+                    <p className="text-lg md:text-2xl font-normal leading-relaxed text-[var(--foreground)]/80 tracking-wide">
                         Kegiatan yang merupakan kelanjutan dari <strong className="text-[#78a0d4]">FI EDUFEST 1, 2, 3, 4, 5, 6 dan 7</strong> yang sudah berjalan sukses di tahun-tahun sebelumnya.
                     </p>
 
-                    <div className="bg-black/5 backdrop-blur-sm rounded-2xl p-6 md:p-10 border border-black/10">
-                        <p className="text-lg md:text-xl font-medium leading-relaxed text-black/90">
+                    <div className="bg-[var(--foreground)]/5 backdrop-blur-sm rounded-2xl p-6 md:p-10 border border-[var(--foreground)]/10">
+                        <p className="text-lg md:text-xl font-medium leading-relaxed text-[var(--foreground)]/90">
                             <span className="text-[#78a0d4] font-bold">The Eighth Annual Fithrah Insani Education Festival</span> mengangkat tema{" "}
                             <em className="font-semibold">&ldquo;Ketakterbatasan Potensi Bakat Remaja&rdquo;</em> dengan judul{" "}
                             <strong className="text-2xl md:text-3xl font-extrabold tracking-tight">&ldquo;INFINITY&rdquo;</strong> dan tagline{" "}
@@ -89,7 +89,7 @@ export default function SceneSelayang() {
                         </p>
                     </div>
 
-                    <p className="text-base md:text-xl font-light leading-relaxed text-black/70 tracking-wide">
+                    <p className="text-base md:text-xl font-light leading-relaxed text-[var(--foreground)]/70 tracking-wide">
                         Tema ketakterbatasan ini diambil karena kekhawatiran mengenai remaja-remaja Indonesia yang takut untuk mencoba hal-hal baru, keluar dari zona nyamannya, dan malu untuk peduli dengan lingkungan sekitar.
                     </p>
                 </div>

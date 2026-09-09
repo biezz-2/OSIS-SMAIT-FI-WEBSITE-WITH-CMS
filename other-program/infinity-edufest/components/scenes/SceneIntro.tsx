@@ -3,12 +3,6 @@
 import { useRef } from "react";
 import { useGSAP } from "@/lib/gsap";
 import Image from "next/image";
-import { Audiowide } from "next/font/google";
-
-const audiowide = Audiowide({
-    weight: "400",
-    subsets: ["latin"],
-});
 
 export default function SceneIntro() {
     const containerRef = useRef<HTMLDivElement>(null);

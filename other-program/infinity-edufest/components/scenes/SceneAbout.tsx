@@ -48,11 +48,11 @@ export default function SceneAbout() {
     return (
         <section ref={containerRef} className={`h-screen w-full bg-[var(--background)] flex items-center justify-center relative overflow-hidden px-6 ${poppins.variable} font-sans`}>
             <div ref={contentRef} className="max-w-7xl text-center flex flex-col items-center pointer-events-none">
-                <h2 className="text-5xl md:text-8xl font-extrabold uppercase tracking-tighter mb-12 text-black leading-none">
+                <h2 className="text-5xl md:text-8xl font-extrabold uppercase tracking-tighter mb-12 text-[var(--foreground)] leading-none">
                     About Edufest
                 </h2>
-                <div className="w-24 h-1 bg-black mb-1 opacity-0"></div>
-                <p className="text-xl md:text-3xl font-normal leading-relaxed text-black tracking-wide max-w-4xl">
+                <div className="w-24 h-1 bg-[var(--foreground)] mb-1 opacity-0"></div>
+                <p className="text-xl md:text-3xl font-normal leading-relaxed text-[var(--foreground)]/90 tracking-wide max-w-4xl">
                     Edufest merupakan event rutin yang dilaksanakan oleh SMA IT Fithrah Insani dan SMK Informatika Fithrah Insani yang berisi kegiatan perlombaan untuk mewadahi bakat kreatif Siswa/i SMP/MTs sederajat dalam bidang Pendidikan dan Teknologi, serta melatih meningkatkan kepedulian terhadap sesama manusia melalui kegiatan amal.
                 </p>
             </div>

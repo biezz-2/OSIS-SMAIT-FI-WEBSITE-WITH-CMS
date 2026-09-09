@@ -105,6 +105,7 @@ export default function LocationPage() {
                       allowFullScreen
                       loading="lazy"
                       referrerPolicy="no-referrer-when-downgrade"
+                      sandbox="allow-scripts allow-same-origin allow-popups"
                       title="Lokasi Edufest"
                     />
                   </div>

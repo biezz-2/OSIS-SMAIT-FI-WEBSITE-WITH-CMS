@@ -41,7 +41,7 @@ export default function RootLayout({
         {isHomePage && !introComplete ? (
           <IntroOrchestrator
             onComplete={() => setIntroComplete(true)}
-            skipOnRevisit={false}
+            skipOnRevisit={true}
           />
         ) : (
           <>

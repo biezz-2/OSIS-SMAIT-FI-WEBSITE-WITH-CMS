@@ -66,6 +66,14 @@ export default function IntroOrchestrator({
 
     return (
         <>
+            <button
+                type="button"
+                onClick={handleComplete}
+                className="fixed bottom-6 right-6 z-[120] px-4 py-2 text-xs uppercase tracking-widest text-white/70 hover:text-white bg-black/40 hover:bg-black/70 border border-white/20 rounded-full backdrop-blur-md transition"
+                aria-label="Skip Intro Animation"
+            >
+                Skip Intro ✕
+            </button>
             <AnimatePresence mode="wait">
                 {stage === "loading" && (
                     <LoaderStage

@@ -22,12 +22,11 @@ export default function LiquidGlassNav() {
   `;
 
     const navItems = [
-        { label: "Home", href: "/", icon: Home },
-        { label: "Timeline", href: "/timeline", icon: Clock },
-        { label: "Location", href: "/location", icon: MapPin },
-        { label: "Panitia", href: "/panitia", icon: Users },
-        { label: "About", href: "#", icon: Settings },
-        { label: "More Info", href: "https://edufestbio.biezz.my.id", icon: InfoIcon },
+        { label: "Home", href: "/", icon: Home, isExternal: false },
+        { label: "Timeline", href: "/timeline", icon: Clock, isExternal: false },
+        { label: "Location", href: "/location", icon: MapPin, isExternal: false },
+        { label: "Panitia", href: "/panitia", icon: Users, isExternal: false },
+        { label: "More Info", href: "https://edufestbio.biezz.my.id", icon: InfoIcon, isExternal: true },
     ];
 
     return (
@@ -42,7 +41,7 @@ export default function LiquidGlassNav() {
                     x.set(e.clientX - rect.left);
                     y.set(e.clientY - rect.top);
                 }}
-                className="relative overflow-hidden flex items-center gap-3 px-6 py-3 rounded-full bg-white/5 backdrop-blur-[24px] border border-white/20 shadow-[0_10px_40px_rgba(0,0,0,0.45)] transition group"
+                className="relative overflow-hidden flex items-center gap-3 px-6 py-3 rounded-full bg-slate-900/80 dark:bg-white/10 backdrop-blur-[24px] border border-white/20 shadow-[0_10px_40px_rgba(0,0,0,0.45)] text-white transition group"
             >
                 {/* liquid reflection layer */}
                 <motion.span
@@ -99,7 +98,7 @@ export default function LiquidGlassNav() {
                             stiffness: 300,
                             mass: 0.8
                         }}
-                        className="relative w-64 rounded-[32px] bg-white/5 backdrop-blur-[32px] border border-white/20 shadow-[0_20px_60px_rgba(0,0,0,0.6)] overflow-hidden"
+                        className="relative w-64 rounded-[32px] bg-slate-950/90 dark:bg-black/80 backdrop-blur-[32px] border border-white/20 shadow-[0_20px_60px_rgba(0,0,0,0.6)] overflow-hidden"
                     >
                         {/* liquid overlay */}
                         <motion.span
@@ -120,7 +119,9 @@ export default function LiquidGlassNav() {
                                 >
                                     <Link
                                         href={item.href}
-                                        className="flex items-center gap-4 px-6 py-4 rounded-2xl text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300 group"
+                                        target={item.isExternal ? "_blank" : undefined}
+                                        rel={item.isExternal ? "noopener noreferrer" : undefined}
+                                        className="flex items-center gap-4 px-6 py-4 rounded-2xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-300 group"
                                         onClick={() => setOpen(false)}
                                     >
                                         <item.icon size={18} className="opacity-50 group-hover:opacity-100 transition-opacity" />

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Lenis from "lenis";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 export const useSmoothScroll = () => {
     const [lenis, setLenis] = useState<Lenis | null>(null);
@@ -9,7 +10,7 @@ export const useSmoothScroll = () => {
     useEffect(() => {
         const lenisInstance = new Lenis({
             duration: 1.2,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // standard ease
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
             orientation: "vertical",
             gestureOrientation: "vertical",
             smoothWheel: true,
@@ -19,20 +20,23 @@ export const useSmoothScroll = () => {
 
         setLenis(lenisInstance);
 
+        let rafId: number;
         function raf(time: number) {
             lenisInstance.raf(time);
-            requestAnimationFrame(raf);
+            rafId = requestAnimationFrame(raf);
         }
 
-        requestAnimationFrame(raf);
+        rafId = requestAnimationFrame(raf);
 
-        // Sync with ScrollTrigger
-        lenisInstance.on("scroll", () => {
-            import("gsap/ScrollTrigger").then(({ ScrollTrigger }) => {
-                ScrollTrigger.update();
-            });
-        });
+        // Sync with ScrollTrigger without dynamic import per frame
+        lenisInstance.on("scroll", ScrollTrigger.update);
+
+        return () => {
+            cancelAnimationFrame(rafId);
+            lenisInstance.destroy();
+        };
     }, []);
 
     return lenis;
 };
+

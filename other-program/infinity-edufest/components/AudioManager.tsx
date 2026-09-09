@@ -49,27 +49,23 @@ export default function AudioManager({ isLoading = false }: AudioManagerProps) {
         const handleInteraction = () => {
             if (hasInteracted) return;
 
-            // CRITICAL: We MUST call play() directly inside the event handler 
-            // to "unlock" audio for mobile browsers.
             if (audioRef.current) {
                 const audio = audioRef.current;
                 audio.muted = false;
-                // If still loading, we play silently to unlock the context
                 audio.volume = isLoading ? 0 : volume;
 
                 audio.play()
                     .then(() => {
-                        console.log("Audio unlocked successfully on interaction");
                         setHasInteracted(true);
                     })
-                    .catch(e => console.log("Audio unlock failed on interaction", e));
+                    .catch(() => {});
             }
 
-            const events = ['click', 'touchstart', 'mousedown', 'keydown', 'touchend', 'pointerdown', 'scroll'];
+            const events = ['click', 'touchstart', 'mousedown', 'keydown', 'touchend', 'pointerdown'];
             events.forEach(e => window.removeEventListener(e, handleInteraction));
         };
 
-        const events = ['click', 'touchstart', 'mousedown', 'keydown', 'touchend', 'pointerdown', 'scroll'];
+        const events = ['click', 'touchstart', 'mousedown', 'keydown', 'touchend', 'pointerdown'];
         events.forEach(e => window.addEventListener(e, handleInteraction, { passive: true }));
 
         return () => {

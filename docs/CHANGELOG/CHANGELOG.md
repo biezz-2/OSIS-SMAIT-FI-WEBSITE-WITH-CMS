@@ -6,6 +6,30 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.6] - 2026-09-09
+
+### 🚀 Ditambahkan & Dioptimasi
+- **Optimasi Kinerja Scroll & Animasi Edufest (`other-program/infinity-edufest`)**:
+  - Menghilangkan microtask dynamic import `import("gsap/ScrollTrigger")` per frame scroll di `lib/lenis.ts` dan menambahkan lifecycle cleanup (`cancelAnimationFrame` & `lenisInstance.destroy()`).
+  - Menghapus artificial delay 2500ms pada tombol navigasi di `components/scenes/SceneInteractive.tsx` dan menggantinya dengan semantik `<Link>` Next.js.
+  - Memperbaiki event listener audio di `components/AudioManager.tsx` agar tidak mendaftarkan ulang listener pada event scroll atau perubahan volume.
+  - Menambahkan tombol interaktif `Skip Intro ✕` di `components/intro/IntroOrchestrator.tsx` serta mengaktifkan `skipOnRevisit={true}` di `app/layout.tsx`.
+
+### 🛡️ Keamanan & Hardening
+- **Penerapan HTTP Security Headers & Sandboxing (`next.config.ts`, `app/location/page.tsx`)**:
+  - Menambahkan header `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, dan `Referrer-Policy: strict-origin-when-cross-origin` pada `next.config.ts`.
+  - Menambahkan atribut protektif `sandbox="allow-scripts allow-same-origin allow-popups"` pada iframe Google Maps di `app/location/page.tsx`.
+  - Menerapkan `target="_blank"` dan `rel="noopener noreferrer"` untuk link eksternal di `components/ui/LiquidGlassNav.tsx`.
+
+### 🎨 Tampilan, Aksesibilitas & UI/UX (Bug Fix)
+- **Perbaikan Kontras & Konsistensi Tema Edufest**:
+  - Memperbaiki kontras `LiquidGlassNav.tsx` dengan penyesuaian background badge solid transparan gelap (`bg-slate-900/80` & `bg-slate-950/90`) agar terbaca jelas di atas kanvas terang (#f8f9fd).
+  - Mengubah teks hardcoded `text-black` di `components/scenes/SceneAbout.tsx` dan `components/scenes/SceneSelayang.tsx` menjadi variabel dinamis `text-[var(--foreground)]`.
+  - Memperbaiki tautan aset rusak `hover-3.HEIC` (404) di `components/TickerGallery.tsx`.
+  - Membersihkan dead import `Audiowide` di `components/scenes/SceneIntro.tsx` dan memperbarui teks copyright di `components/Footer.tsx`.
+
+---
+
 ## [2.1.5] - 2026-09-08
 
 ### 🚀 Ditambahkan & Dioptimasi

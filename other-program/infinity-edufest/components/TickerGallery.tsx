@@ -22,7 +22,7 @@ const tickers: TickerItem[][] = [
         { src: 'https://picsum.photos/seed/edu11/600/800', alt: 'Placeholder 11' },
     ],
     [
-        { src: '/images/hover-3.HEIC', alt: 'Documentation 3' },
+        { src: '/images/hover-1.JPG', alt: 'Documentation 3' },
         { src: 'https://picsum.photos/seed/edu6/600/800', alt: 'Placeholder 6' },
         { src: 'https://picsum.photos/seed/edu9/600/800', alt: 'Placeholder 9' },
         { src: 'https://picsum.photos/seed/edu12/600/800', alt: 'Placeholder 12' },
