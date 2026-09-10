@@ -376,7 +376,7 @@ export const FALLBACK_MUBES_PROKER: MubesProgramKerja[] = [
   {
     id: 118549,
     judul: 'Raga dan Nada',
-    slug: 'program-kerja',
+    slug: 'raga-dan-nada',
     kategori: 'rutin',
     tujuan: 'Membantu meningkatkan pemahaman siswa/i mengenai materi yang berkaitan dalam bidang olahraga dan seni.',
     teknis_pelaksanaan: 'Menyiarkan materi kesenian melalui radio TU dan juga membuat video edukasi seni/olahraga.',

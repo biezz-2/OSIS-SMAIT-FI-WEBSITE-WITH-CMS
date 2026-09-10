@@ -77,10 +77,11 @@ export async function POST(req: Request) {
         }
       }
 
-      // Default ke pending untuk mencegah privilege escalation otomatis
-      const isApproved = Boolean(matchedMemberId);
-      const assignedStatus = isApproved ? 'approved' : 'pending';
-      const assignedRole = isApproved ? 'member' : null;
+      // Keamanan MUBES: Untuk mencegah spoofing nama publik, pencocokan nama di roster
+      // hanya mencatat matched_anggota namun status akun tetap 'pending'
+      // agar diverifikasi manual oleh presidium/BPH MUBES.
+      const assignedStatus = 'pending';
+      const assignedRole = matchedMemberId ? 'member' : null;
 
       // 2. Query apakah entri akses-user sudah ada untuk clerkUserId ini
       const existingRes = await fetch(

@@ -26,9 +26,13 @@ export async function GET(
     );
   }
 
+  const normalizedSlug = slug.trim();
+  const slugLower = normalizedSlug.toLowerCase();
+
   try {
+    const filterQuery = `filters[$or][0][program_kerja][slug][$eq]=${encodeURIComponent(normalizedSlug)}&filters[$or][1][program_kerja][slug][$eq]=${encodeURIComponent(slugLower)}`;
     const res = await fetch(
-      `${strapiBaseUrl}/api/mubes-lpjs?filters[program_kerja][slug][$eq]=${encodeURIComponent(slug)}&populate=*`,
+      `${strapiBaseUrl}/api/mubes-lpjs?${filterQuery}&populate=*`,
       {
         headers: {
           Authorization: `Bearer ${elevatedToken}`,

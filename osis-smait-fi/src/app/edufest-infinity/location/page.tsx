@@ -1,18 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
+import { getEdufestConfig } from "@/lib/edufest-api";
 
 const GlobeToMapTransform = dynamic(
   () => import("@/components/globe/GlobeToMapTransform").then(mod => mod.GlobeToMapTransform),
   { ssr: false }
 );
 
+const DEFAULT_MAPS_EMBED_URL = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2984.2941894147434!2d107.52111289259334!3d-6.8650087692923354!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e68e489587729b1%3A0xa3166256027d8007!2sSMA%20dan%20SMK%20Fithrah%20Insani!5e1!3m2!1sid!2sid!4v1767604243358!5m2!1sid!2sid";
+const DEFAULT_LOCATION_NAME = "SMA dan SMK Fithrah Insani";
+
+function isSafeMapsUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return (
+      parsed.protocol === "https:" &&
+      (parsed.hostname === "www.google.com" || parsed.hostname === "maps.google.com") &&
+      parsed.pathname.startsWith("/maps/embed")
+    );
+  } catch {
+    return false;
+  }
+}
+
 export default function LocationPage() {
   const [showMap, setShowMap] = useState(false);
+  const [locationName, setLocationName] = useState(DEFAULT_LOCATION_NAME);
+  const [mapsEmbedUrl, setMapsEmbedUrl] = useState(DEFAULT_MAPS_EMBED_URL);
 
-  const googleMapsEmbedUrl = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2984.2941894147434!2d107.52111289259334!3d-6.8650087692923354!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e68e489587729b1%3A0xa3166256027d8007!2sSMA%20dan%20SMK%20Fithrah%20Insani!5e1!3m2!1sid!2sid!4v1767604243358!5m2!1sid!2sid";
+  useEffect(() => {
+    getEdufestConfig().then((cfg) => {
+      if (cfg.locationName) setLocationName(cfg.locationName);
+      if (cfg.mapsEmbedUrl && isSafeMapsUrl(cfg.mapsEmbedUrl)) {
+        setMapsEmbedUrl(cfg.mapsEmbedUrl);
+      }
+    });
+  }, []);
 
   return (
     <main className="w-full min-h-screen bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300">
@@ -23,7 +49,7 @@ export default function LocationPage() {
             Lokasi Edufest
           </h1>
           <p className="text-gray-600 dark:text-gray-400 text-lg">
-            SMA dan SMK Fithrah Insani
+            {locationName}
           </p>
         </div>
 
@@ -107,7 +133,7 @@ export default function LocationPage() {
                 {/* Google Maps iframe */}
                 <div className="rounded-2xl overflow-hidden shadow-2xl border border-gray-700">
                   <iframe
-                    src={googleMapsEmbedUrl}
+                    src={mapsEmbedUrl}
                     width="100%"
                     height="450"
                     style={{ border: 0 }}

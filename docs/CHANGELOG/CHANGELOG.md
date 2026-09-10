@@ -6,6 +6,30 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.12] - 2026-09-10
+
+### 🛡️ Keamanan & Akses Kontrol
+- **Proteksi Akses Sidang MUBES (`/portal-mubes`)**:
+  - Mengubah halaman `PortalMubesPage` (`src/app/portal-mubes/page.tsx`) menjadi `dynamic = 'force-dynamic'` dan menambahkan pemeriksaan `getMubesAccess()`. Jika pengguna belum login atau belum disetujui, langsung me-render `MubesPortalView` (mode login) guna mencegah kebocoran data draft LPJ sebelum diautentikasi.
+  - **Hardening Webhook Clerk (`src/app/api/webhooks/clerk/route.ts`)**: Penetapan status akun baru default ke `'pending'` meskipun ada pencocokan nama di roster untuk mencegah eskalasi hak akses / spoofing nama publik tanpa verifikasi manual presidium/BPH.
+  - **CSP & Iframe Security (`next.config.ts`)**: Memperbarui Content Security Policy pada `connect-src` (`https://cdn.jsdelivr.net`) dan `frame-src` (`https://www.google.com`, `https://maps.google.com`) untuk integrasi peta interaktif.
+  - **Validasi URL Iframe Maps (`src/app/edufest-infinity/location/page.tsx`)**: Menambahkan fungsi sanitasi `isSafeMapsUrl()` untuk memvalidasi skema HTTPS dan hostname Google Maps sebelum disematkan ke dalam iframe.
+
+### 🐛 Diperbaiki & Dioptimasi
+- **Pencarian LPJ MUBES Case-Insensitive (`src/app/api/mubes/lpj/[slug]/route.ts`)**:
+  - Menambahkan filter `$or` pada query Strapi untuk mencocokkan slug asli maupun slug lowercase agar slug dengan kapitalisasi berbeda tetap dapat ditemukan.
+- **Perbaikan Typo Slug Program Kerja (`src/lib/mubes-proker.ts`)**:
+  - Memperbaiki slug program kerja "Raga dan Nada" dari `'program-kerja'` menjadi `'raga-dan-nada'` agar sinkron dengan routing detail program.
+- **Navigasi & Pengalihan Login MUBES (`src/components/mubes/MubesLoginForm.tsx`)**:
+  - Memperbaiki redirect setelah login sukses dari `/` langsung menuju `/portal-mubes`.
+- **Integrasi Lokasi Dinamis Edufest (`src/app/edufest-infinity/location/page.tsx`)**:
+  - Mengambil data nama lokasi dan URL Google Maps secara dinamis dari Strapi via `getEdufestConfig()` dengan fallback default aman.
+- **Edufest Intro & Footer Branding**:
+  - Mengaktifkan `skipOnRevisit={true}` pada `IntroOrchestrator` (`src/app/edufest-infinity/layout.tsx`) agar pengunjung berulang tidak terblokir intro berulang kali.
+  - Memperbarui teks copyright pada `EdufestFooter` (`src/components/EdufestFooter.tsx`) dengan tahun dinamis dan nama resmi OSIS SMA IT Fithrah Insani.
+
+---
+
 ## [2.1.11] - 2026-09-10
 
 ### 🐛 Diperbaiki & Dioptimasi

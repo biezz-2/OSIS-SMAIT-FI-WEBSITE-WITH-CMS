@@ -4,10 +4,12 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import MubesPresentationHero from '@/components/mubes/MubesPresentationHero';
 import MubesPresentationViewer from '@/components/mubes/MubesPresentationViewer';
+import MubesPortalView from '@/components/mubes/MubesPortalView';
 import { fetchHalamanFromStrapi } from '@/lib/strapi';
 import { fetchMubesProkerData } from '@/lib/mubes-proker';
+import { getMubesAccess } from '@/lib/mubes-access';
 
-export const revalidate = 60; // ISR 60 seconds
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata(): Promise<Metadata> {
   const mubesPage = await fetchHalamanFromStrapi('portal-mubes');
@@ -28,6 +30,14 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function PortalMubesPage() {
+  const access = await getMubesAccess();
+
+  // Proteksi akses Sidang MUBES: Jika pengguna belum login atau belum disetujui,
+  // tampilkan portal autentikasi (MubesPortalView) tanpa membocorkan data LPJ
+  if (!access.allowed) {
+    return <MubesPortalView initialMode="login" />;
+  }
+
   const [mubesConfig, prokerGroups] = await Promise.all([
     fetchHalamanFromStrapi('portal-mubes'),
     fetchMubesProkerData(),

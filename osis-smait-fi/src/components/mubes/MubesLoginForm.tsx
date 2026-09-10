@@ -57,7 +57,7 @@ export default function MubesLoginForm({ onSwitchToSignUp, onOpenHelp }: MubesLo
 
       if (result.status === 'complete') {
         await setActive({ session: result.createdSessionId });
-        router.push('/');
+        router.push('/portal-mubes');
       } else {
         setErrorMessage('Verifikasi lanjutan diperlukan. Silakan cek email Anda.');
       }
