@@ -6,6 +6,17 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.13] - 2026-09-10
+
+### 🚨 Darurat & Stabilitas Sistem
+- **Pemulihan Krisis Website (Next.js Build Cache Corruption)**:
+  - **Root Cause**: Directory `.next` mengalami korupsi cache menyebabkan error fatal `InvariantError: The client reference manifest for route "/" does not exist` yang berakibat pada 502 Bad Gateway dan 305+ restart PM2.
+  - **Resolusi**: Menghapus seluruh directory `.next` dan melakukan fresh build ulang (`npm run build`) untuk regenerasi semua static assets dan chunks.
+  - **Verifikasi**: Website kembali normal dengan status 200 OK, PM2 process stabil, dan semua 84 routes berhasil digenerate dengan ISR configuration yang benar.
+  - **Build Results**: TypeScript compilation (13.4s), static page generation (84/84 pages in 4.1s), semua routes dengan revalidate 1m dan expire 1y.
+
+---
+
 ## [2.1.12] - 2026-09-10
 
 ### 🛡️ Keamanan & Akses Kontrol
