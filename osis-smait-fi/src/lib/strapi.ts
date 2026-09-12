@@ -36,10 +36,11 @@ export function getStrapiMediaUrl(
     return media.url_external;
   }
 
-  // Case 3: Strapi uploaded media object (v4, v5, formats)
-  const fileData = media.file || media.url ? media : (media.data?.attributes || media.attributes || media.data);
-  const formats = fileData?.formats || media?.formats || media?.attributes?.formats;
-  const originalUrl = fileData?.url || media?.url || media?.attributes?.url;
+  // Case 3: Strapi uploaded media object (v4, v5, formats, and nested file relation)
+  const target = media.file || media;
+  const fileData = target.data?.attributes || target.attributes || target.data || target;
+  const formats = fileData?.formats || target?.formats || media?.formats;
+  const originalUrl = fileData?.url || target?.url || media?.url;
 
   // Pilih URL berdasarkan preferredFormat. Urutan fallback selalu naik ke resolusi lebih tinggi
   // agar gambar tidak pernah lebih buram dari yang diminta.

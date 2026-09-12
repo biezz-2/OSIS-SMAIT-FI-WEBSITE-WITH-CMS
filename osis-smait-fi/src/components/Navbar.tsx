@@ -119,7 +119,7 @@ const initialGaleriCards = (): MegaMenuCard[] => [
 ];
 
 const Navbar = () => {
-    const [logoUrl, setLogoUrl] = useState<string>('');
+    const [logoUrl, setLogoUrl] = useState<string>('/images/logo-osis.jpg');
     const [brandName, setBrandName] = useState<string>('OSIS SMAIT FITHRAH INSANI');
     const [brandNameMobile, setBrandNameMobile] = useState<string>('OSIS SMAIT FI');
     const [navItems, setNavItems] = useState(defaultNavItems);
@@ -254,13 +254,14 @@ const Navbar = () => {
                 const homeData = await fetchHalamanFromStrapi('home');
                 if (homeData) {
                     const attrs = homeData.attributes || homeData;
-                    const url = getStrapiMediaUrl(attrs.logo, '');
+                    const url = getStrapiMediaUrl(attrs.logo, '/images/logo-osis.jpg');
                     if (url) { setLogoUrl(url); return; }
                 }
-                const logoAsset = await fetchMediaAssetByKey('logo', '');
+                const logoAsset = await fetchMediaAssetByKey('logo', '/images/logo-osis.jpg');
                 if (logoAsset?.src) setLogoUrl(logoAsset.src);
             } catch (err) {
                 console.warn('Failed to load logo in Navbar:', err);
+                setLogoUrl('/images/logo-osis.jpg');
             }
         }
         loadLogo();
@@ -293,18 +294,15 @@ const Navbar = () => {
             >
                 {/* Logo + nama */}
                 <Link href="/" className="flex items-center gap-3 no-underline shrink-0">
-                    {logoUrl ? (
-                        <Image
-                            src={logoUrl}
-                            alt="Logo OSIS"
-                            width={32}
-                            height={32}
-                            priority
-                            style={{ objectFit: 'contain', borderRadius: '50%' }}
-                        />
-                    ) : (
-                        <div className="w-8 h-8 rounded-full bg-black" />
-                    )}
+                    <Image
+                        src={logoUrl || '/images/logo-osis.jpg'}
+                        alt="Logo OSIS"
+                        width={32}
+                        height={32}
+                        priority
+                        onError={() => setLogoUrl('/images/logo-osis.jpg')}
+                        style={{ objectFit: 'contain', borderRadius: '50%' }}
+                    />
                     <span className="text-white text-sm font-bold font-[Roboto,sans-serif] leading-[17px] hidden min-[420px]:inline">
                         {brandName}
                     </span>

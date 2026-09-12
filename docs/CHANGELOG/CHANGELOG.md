@@ -6,6 +6,20 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.17] - 2026-09-12
+
+### 🐛 Perbaikan Bug & Optimasi UI (Pemulihan Logo Navbar OSIS)
+- **Media Asset Resolver (`osis-smait-fi/src/lib/strapi.ts`)**:
+  - Memperbaiki parser `getStrapiMediaUrl` agar mengekstrak relasi berkas bersarang `media.file` (Strapi single-relation payload) dengan membaca `target.url` atau `target.formats`.
+  - Mencegah kegagalan parsing yang sebelumnya mengembalikan string kosong saat mengambil media asset `logo` dari endpoint `/api/media-assets`.
+- **Komponen Navbar & Fallback Statis (`osis-smait-fi/src/components/Navbar.tsx`)**:
+  - Menetapkan fallback statis `/images/logo-osis.jpg` pada inisialisasi state `logoUrl`, handler error `loadLogo()`, serta `onError` pada komponen `<Image />`.
+  - Mengganti elemen pengganti kotak hitam (`bg-black`) dengan rendering aset gambar fallback `/images/logo-osis.jpg`.
+- **Penyediaan Aset Statis Lokal (`osis-smait-fi/public/images/logo-osis.jpg`)**:
+  - Menyalin dan mengoptimalkan berkas logo resmi OSIS dari media penyimpanan Strapi ke direktori publik frontend.
+
+---
+
 ## [2.1.16] - 2026-09-12
 
 ### 🎨 Tampilan & UI (Pembersihan Header Dokumentasi)
