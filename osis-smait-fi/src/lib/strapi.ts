@@ -327,9 +327,12 @@ export async function fetchAllEventsForPage() {
 
 /**
  * Fetch single Event by slug from Strapi API
+ * Supports dual-lookup: matching `slug` or `cta_url` substring
  */
 export async function fetchEventBySlug(slug: string) {
-  const json: any = await fetchStrapiAPI(`/api/events?filters[slug][$eq]=${slug}&populate=*`);
+  const json: any = await fetchStrapiAPI(
+    `/api/events?filters[$or][0][slug][$eq]=${encodeURIComponent(slug)}&filters[$or][1][cta_url][$contains]=${encodeURIComponent(slug)}&populate=*`
+  );
   const items = json?.data || [];
   if (items.length > 0) {
     return items[0];

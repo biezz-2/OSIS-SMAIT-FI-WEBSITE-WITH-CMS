@@ -58,7 +58,16 @@ export default function EventCard({
 }: EventCardProps) {
     const embedUrl = getYouTubeEmbedUrl(youtubeUrl);
     const { day, month } = parseEventDate(date);
-    const targetUrl = ctaUrl || (slug === 'edufest-infinity' ? '/edufest-infinity' : (slug ? `/events/${slug}` : '#'));
+
+    // Normalize target URL: use internal path if pointing to own domain
+    let resolvedTarget = ctaUrl || (slug === 'edufest-infinity' ? '/edufest-infinity' : (slug ? `/events/${slug}` : '#'));
+    if (resolvedTarget.startsWith('https://osissmaitfi.biezz.my.id/')) {
+        resolvedTarget = resolvedTarget.replace('https://osissmaitfi.biezz.my.id', '');
+    } else if (resolvedTarget.startsWith('http://osissmaitfi.biezz.my.id/')) {
+        resolvedTarget = resolvedTarget.replace('http://osissmaitfi.biezz.my.id', '');
+    }
+    const targetUrl = resolvedTarget;
+
     const glassRef = useRef<HTMLDivElement>(null);
     const reflectionRef = useRef<HTMLDivElement>(null);
 

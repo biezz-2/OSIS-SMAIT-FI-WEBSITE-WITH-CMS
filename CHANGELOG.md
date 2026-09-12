@@ -6,6 +6,21 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.21] - 2026-09-12
+
+### 🐛 Perbaikan Bug & Routing (Standardisasi URL Event & Sinkronisasi CTA Strapi)
+- **Strapi CMS Lifecycles Hook (`strapi-cms/src/api/event/content-types/event/lifecycles.ts`)**:
+  - Menambahkan lifecycles hook `beforeCreate` dan `beforeUpdate` pada collection `event`.
+  - Mengotomatiskan standardisasi path `cta_url` dengan format `https://osissmaitfi.biezz.my.id/events/[nama-event]` dan melakukan sinkronisasi dua arah dengan field `slug`.
+  - Mendukung ekstraksi nama event secara otomatis apabila admin memasukkan link full URL pada kolom CTA di admin panel Strapi.
+- **Frontend Next.js Event Routing Resilience (`osis-smait-fi/src/lib/strapi.ts` & `EventCard.tsx`)**:
+  - Memperbarui fungsi `fetchEventBySlug` dengan filter `$or` pada Strapi API untuk mencocokkan `slug` maupun substring `cta_url`.
+  - Menormalisasi URL target pada `EventCard.tsx` agar link yang merujuk domain sendiri tetap menggunakan client-side navigation internal (`/events/[slug]`).
+- **Penyelarasan Data Database**:
+  - Memperbaiki data event `Guidelight` di database MySQL Strapi dari `slug: "event"` menjadi `slug: "guidelight"`, menuntaskan issue 404 pada rute `https://osissmaitfi.biezz.my.id/events/guidelight`.
+
+---
+
 ## [2.1.20] - 2026-09-12
 
 ### 🛡️ Keamanan, Integritas Data & CMS Hardening (Pencegahan Data Loss Konfigurasi Strapi)
