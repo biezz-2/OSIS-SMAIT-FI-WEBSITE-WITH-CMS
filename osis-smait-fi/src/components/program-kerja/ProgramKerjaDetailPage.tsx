@@ -551,20 +551,11 @@ export default function ProgramKerjaDetailPage({ slug, initialData }: { slug: st
             </div>
 
             {isSplitLayout ? (
-              <div className="w-full flex flex-col gap-10">
+              <div className="w-full">
                 {landscapeDocs.length > 0 && portraitDocs.length > 0 ? (
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full items-start">
                     {/* Sisi Kiri: Foto Landscape / Horizontal */}
-                    <div className="lg:col-span-7 flex flex-col gap-5 w-full">
-                      <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100">
-                        <span className="w-3 h-3 rounded-full bg-blue-500 shadow-xs" />
-                        <h4 className="text-sm font-bold uppercase tracking-wider text-slate-700">
-                          Foto Landscape / Horizontal
-                        </h4>
-                        <span className="ml-auto text-xs font-semibold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-100">
-                          {landscapeDocs.length} Media
-                        </span>
-                      </div>
+                    <div className="lg:col-span-7 w-full">
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full">
                         {landscapeDocs.map((item, index) =>
                           renderMediaCard(
@@ -578,16 +569,7 @@ export default function ProgramKerjaDetailPage({ slug, initialData }: { slug: st
                     </div>
 
                     {/* Sisi Kanan: Foto Portrait / Vertikal */}
-                    <div className="lg:col-span-5 flex flex-col gap-5 w-full">
-                      <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100">
-                        <span className="w-3 h-3 rounded-full bg-emerald-500 shadow-xs" />
-                        <h4 className="text-sm font-bold uppercase tracking-wider text-slate-700">
-                          Foto Portrait / Vertikal & Poster
-                        </h4>
-                        <span className="ml-auto text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100">
-                          {portraitDocs.length} Media
-                        </span>
-                      </div>
+                    <div className="lg:col-span-5 w-full">
                       <div className="grid grid-cols-2 gap-4 w-full">
                         {portraitDocs.map((item, index) =>
                           renderMediaCard(
@@ -602,49 +584,27 @@ export default function ProgramKerjaDetailPage({ slug, initialData }: { slug: st
                   </div>
                 ) : landscapeDocs.length > 0 ? (
                   /* Fallback: Hanya Foto Landscape */
-                  <div className="flex flex-col gap-5 w-full">
-                    <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100">
-                      <span className="w-3 h-3 rounded-full bg-blue-500 shadow-xs" />
-                      <h4 className="text-sm font-bold uppercase tracking-wider text-slate-700">
-                        Foto Landscape / Horizontal
-                      </h4>
-                      <span className="ml-auto text-xs font-semibold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-100">
-                        {landscapeDocs.length} Media
-                      </span>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full">
-                      {landscapeDocs.map((item, index) =>
-                        renderMediaCard(
-                          item,
-                          index,
-                          'relative aspect-[16/10] rounded-[24px] overflow-hidden shadow-xs bg-slate-100 group border border-slate-200 transition-all duration-300 flex items-center justify-center',
-                          'w-full h-full object-cover transition-transform duration-300 group-hover:scale-105'
-                        )
-                      )}
-                    </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full">
+                    {landscapeDocs.map((item, index) =>
+                      renderMediaCard(
+                        item,
+                        index,
+                        'relative aspect-[16/10] rounded-[24px] overflow-hidden shadow-xs bg-slate-100 group border border-slate-200 transition-all duration-300 flex items-center justify-center',
+                        'w-full h-full object-cover transition-transform duration-300 group-hover:scale-105'
+                      )
+                    )}
                   </div>
                 ) : (
                   /* Fallback: Hanya Foto Portrait */
-                  <div className="flex flex-col gap-5 w-full">
-                    <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100">
-                      <span className="w-3 h-3 rounded-full bg-emerald-500 shadow-xs" />
-                      <h4 className="text-sm font-bold uppercase tracking-wider text-slate-700">
-                        Foto Portrait / Vertikal & Poster
-                      </h4>
-                      <span className="ml-auto text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100">
-                        {portraitDocs.length} Media
-                      </span>
-                    </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5 w-full">
-                      {portraitDocs.map((item, index) =>
-                        renderMediaCard(
-                          item,
-                          index,
-                          'relative aspect-[3/4] rounded-[24px] overflow-hidden shadow-xs bg-slate-100 group border border-slate-200 transition-all duration-300 flex items-center justify-center',
-                          'w-full h-full object-cover transition-transform duration-300 group-hover:scale-105'
-                        )
-                      )}
-                    </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5 w-full">
+                    {portraitDocs.map((item, index) =>
+                      renderMediaCard(
+                        item,
+                        index,
+                        'relative aspect-[3/4] rounded-[24px] overflow-hidden shadow-xs bg-slate-100 group border border-slate-200 transition-all duration-300 flex items-center justify-center',
+                        'w-full h-full object-cover transition-transform duration-300 group-hover:scale-105'
+                      )
+                    )}
                   </div>
                 )}
               </div>

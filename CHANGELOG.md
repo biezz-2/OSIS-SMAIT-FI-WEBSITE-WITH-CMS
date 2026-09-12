@@ -6,6 +6,15 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.16] - 2026-09-12
+
+### 🎨 Tampilan & UI (Pembersihan Header Dokumentasi)
+- **Penyederhanaan Grid Dokumentasi (`src/components/program-kerja/ProgramKerjaDetailPage.tsx`)**:
+  - Menghapus label header teks orientasi ("Foto Landscape / Horizontal" dan "Foto Portrait / Vertikal & Poster") beserta badge hitungan media.
+  - Tampilan frame dokumentasi kini tampil bersih, minimalis, dan langsung menyajikan galeri foto tanpa teks pemisah.
+
+---
+
 ## [2.1.15] - 2026-09-12
 
 ### 🎨 Tampilan & UI (Split Layout Frame Dokumentasi Program Kerja)
