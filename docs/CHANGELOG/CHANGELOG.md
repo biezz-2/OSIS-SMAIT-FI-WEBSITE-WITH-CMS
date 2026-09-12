@@ -6,6 +6,24 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.23] - 2026-09-13
+
+### 🚀 Fitur & CMS (Multi-Image Ticker Gallery Terpusat & Sanitasi Media)
+- **Strapi CMS Content-Type Media Asset (`strapi-cms/src/api/media-asset/content-types/media-asset/schema.json`)**:
+  - Menambahkan atribut `files` dengan relasi `multiple: true` dan `allowedTypes: ["images"]` pada Content-Type `media-asset`.
+  - Memungkinkan pengelolaan seluruh foto berjalan di galeri ticker (`/edufest-infinity`) terpusat dalam 1 entri Strapi saja.
+  - Membatasi tipe berkas khusus gambar guna mencegah masuknya file video/audio yang memicu card kosong.
+- **Frontend Fetcher & Gallery Ticker (`osis-smait-fi/src/lib/strapi.ts` & `TickerGallery.tsx`)**:
+  - Memperbarui `fetchMediaAssetsByCategory` untuk mengekstrak array multi-image dari `files` secara dinamis.
+  - Menambahkan filter ketat `isImageFile` untuk menyaring dan mengabaikan file non-gambar (seperti video `.MOV`/`.mp4`) dari pipeline render Next.js `<Image />`.
+  - Mengoptimalkan circular array repeat padding pada `TickerGallery.tsx` agar 3 kolom marquee berputar mulus tanpa gap/slot kosong.
+- **Penyelarasan & Migrasi Data Strapi**:
+  - Mengonsolidasikan seluruh foto dokumentasi ke dalam 1 entri utama `edufest-ticker-gallery` (kategori: `ticker`).
+  - Menghapus entri individual lama (`ticker-1` s/d `ticker-5`) serta menonaktifkan re-seeder lama di `strapi-cms/src/index.ts`.
+  - Membersihkan file video non-gambar (`IMG_7665.MOV`) dari entri ticker sehingga seluruh 26 foto ter-render sempurna (HTTP 200).
+
+---
+
 ## [2.1.22] - 2026-09-13
 
 ### 💄 Desain & UI/UX (Pembersihan Header & Grid Badge Media Sosial)

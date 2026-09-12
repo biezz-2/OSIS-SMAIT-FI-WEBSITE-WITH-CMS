@@ -4,7 +4,7 @@
   "info": {
     "singularName": "media-asset",
     "pluralName": "media-assets",
-    "displayName": "🌐 [VISITOR] Media Asset",
+    "displayName": "\ud83c\udf10 [VISITOR] Media Asset",
     "description": "Pengelolaan foto, video, audio, dan link media eksternal website"
   },
   "options": {
@@ -60,10 +60,7 @@
       "multiple": true,
       "required": false,
       "allowedTypes": [
-        "images",
-        "files",
-        "videos",
-        "audios"
+        "images"
       ]
     },
     "url_external": {

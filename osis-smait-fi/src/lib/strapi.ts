@@ -185,12 +185,20 @@ export async function fetchMediaAssetsByCategory(
       const attrs = item.attributes || item;
       const multiFiles = attrs.files?.data || attrs.files;
 
+      // Helper to check valid image extension / mime
+      const isImageFile = (urlStr: string, mime?: string) => {
+        if (mime && !mime.startsWith('image/')) return false;
+        const clean = (urlStr || '').split('?')[0].toLowerCase();
+        return !clean.endsWith('.mov') && !clean.endsWith('.mp4') && !clean.endsWith('.webm') && !clean.endsWith('.mkv');
+      };
+
       // 1. Handle multi-image entry: extract all images from 'files'
       if (Array.isArray(multiFiles) && multiFiles.length > 0) {
         multiFiles.forEach((fileItem: any, idx: number) => {
           const fileAttrs = fileItem.attributes || fileItem;
           const url = getStrapiMediaUrl(fileAttrs, '');
-          if (url) {
+          const mime = fileAttrs.mime || fileAttrs.mime_type;
+          if (url && isImageFile(url, mime)) {
             results.push({
               id: item.id * 1000 + idx,
               key: `${attrs.key}-${idx + 1}`,
