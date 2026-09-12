@@ -6,6 +6,20 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.15] - 2026-09-12
+
+### 🎨 Tampilan & UI (Split Layout Frame Dokumentasi Program Kerja)
+- **Segregasi Orientasi Media Dokumentasi (`src/components/program-kerja/ProgramKerjaDetailPage.tsx`)**:
+  - Ekstraksi metadata dimensi (`width`, `height`) dari atribut Strapi v5 media guna mengklasifikasikan orientasi (`landscape`, `portrait`, `square`).
+  - Implementasi layout responsif dual-column pada Section 4 (Dokumentasi & Hasil): foto horizontal/landscape di kolom kiri (`lg:col-span-7`, rasio `aspect-[16/10]`) dan foto vertikal/portrait/poster di kolom kanan (`lg:col-span-5`, rasio `aspect-[3/4]`).
+  - Penanganan adaptif fallback: otomatis melebar full-width secara elegan apabila proker hanya memiliki dokumentasi satu orientasi (hanya landscape atau hanya portrait).
+  - Integrasi badge status orientasi dinamis ("Dokumentasi Landscape / Horizontal" dan "Dokumentasi Portrait / Vertikal & Poster") serta pemeliharaan modal lightbox interaktif.
+- **Pembaruan Skema & Basis Data Strapi CMS v5 (`strapi-cms`)**:
+  - Penambahan opsi enum `split_landscape_portrait` sebagai nilai default pada atribut `layout_grid_dokumentasi` di skema `program-kerja`.
+  - Migrasi data produksi MySQL (`strapi-osis-agoraacta`) menyelaraskan seluruh 96 data program kerja aktif ke layout `split_landscape_portrait`.
+
+---
+
 ## [2.1.14] - 2026-09-12
 
 ### 🎨 Tampilan & UI (Figma Design-to-Code Alignment)

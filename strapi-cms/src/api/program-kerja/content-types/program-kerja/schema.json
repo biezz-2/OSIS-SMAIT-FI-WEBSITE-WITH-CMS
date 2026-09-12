@@ -67,13 +67,14 @@
     "layout_grid_dokumentasi": {
       "type": "enumeration",
       "enum": [
+        "split_landscape_portrait",
         "grid_3_col",
         "grid_2_col",
         "grid_4_col",
         "grid_1_col",
         "masonry"
       ],
-      "default": "grid_3_col"
+      "default": "split_landscape_portrait"
     },
     "tanggal_mulai": {
       "type": "date"

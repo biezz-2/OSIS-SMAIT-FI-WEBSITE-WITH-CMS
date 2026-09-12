@@ -14,6 +14,16 @@ export interface ChairPerson {
   image: string;
 }
 
+export interface DocumentationMediaItem {
+  url: string;
+  isVideo: boolean;
+  caption?: string;
+  alt?: string;
+  width?: number;
+  height?: number;
+  orientation: 'landscape' | 'portrait' | 'square';
+}
+
 export interface ProgramDetailProps {
   title: string;
   category: 'Program Rutinan' | 'Program Insidental';
@@ -24,14 +34,14 @@ export interface ProgramDetailProps {
   evaluasiDesc: string;
   evaluasiUrl?: string;
   tampilkanEvaluasi?: boolean;
-  documentationImages: Array<{ url: string; isVideo: boolean; caption?: string; alt?: string }>;
+  documentationImages: DocumentationMediaItem[];
   bannerImage: string;
   enablePreviewDokumentasi?: boolean;
   modeUkuranFrame?: 'auto' | 'contain' | 'cover' | 'square';
-  layoutGridDokumentasi?: 'grid_3_col' | 'grid_2_col' | 'grid_4_col' | 'grid_1_col' | 'masonry';
+  layoutGridDokumentasi?: 'split_landscape_portrait' | 'grid_3_col' | 'grid_2_col' | 'grid_4_col' | 'grid_1_col' | 'masonry';
 }
 
-function extractMediaList(mediaData: any): Array<{ url: string; isVideo: boolean; caption?: string; alt?: string }> {
+function extractMediaList(mediaData: any): DocumentationMediaItem[] {
   if (!mediaData) return [];
 
   let rawList: any[] = [];
@@ -43,22 +53,45 @@ function extractMediaList(mediaData: any): Array<{ url: string; isVideo: boolean
     rawList = [mediaData];
   }
 
-  return rawList
-    .map((doc: any) => {
-      const url = getStrapiMediaUrl(doc, '');
-      if (!url || url.trim() === '') return null;
-      const attrs = doc?.attributes || doc;
-      const mime = attrs?.mime || doc?.mime || '';
-      const name = attrs?.name || doc?.name || doc?.url || url;
-      const caption = attrs?.caption || doc?.caption || '';
-      const alt = attrs?.alternativeText || doc?.alternativeText || attrs?.caption || doc?.caption || '';
-      const isVid =
-        (typeof mime === 'string' && mime.startsWith('video/')) ||
-        /\.(mp4|webm|ogg|mov|m4v|avi|mkv)$/i.test(name) ||
-        /\.(mp4|webm|ogg|mov|m4v|avi|mkv)$/i.test(url.split('?')[0]);
-      return { url, isVideo: isVid, caption, alt };
-    })
-    .filter((item): item is { url: string; isVideo: boolean; caption: any; alt: any } => item !== null);
+  const result: DocumentationMediaItem[] = [];
+  for (const doc of rawList) {
+    const url = getStrapiMediaUrl(doc, '');
+    if (!url || url.trim() === '') continue;
+    const attrs = doc?.attributes || doc;
+    const mime = attrs?.mime || doc?.mime || '';
+    const name = attrs?.name || doc?.name || doc?.url || url;
+    const caption = attrs?.caption || doc?.caption || '';
+    const alt = attrs?.alternativeText || doc?.alternativeText || attrs?.caption || doc?.caption || '';
+    const isVid =
+      (typeof mime === 'string' && mime.startsWith('video/')) ||
+      /\.(mp4|webm|ogg|mov|m4v|avi|mkv)$/i.test(name) ||
+      /\.(mp4|webm|ogg|mov|m4v|avi|mkv)$/i.test(url.split('?')[0]);
+
+    const w = typeof attrs?.width === 'number' ? attrs.width : (typeof doc?.width === 'number' ? doc.width : undefined);
+    const h = typeof attrs?.height === 'number' ? attrs.height : (typeof doc?.height === 'number' ? doc.height : undefined);
+
+    let orientation: 'landscape' | 'portrait' | 'square' = 'landscape';
+    if (w && h) {
+      if (w > h) {
+        orientation = 'landscape';
+      } else if (h > w) {
+        orientation = 'portrait';
+      } else {
+        orientation = 'square';
+      }
+    }
+
+    result.push({
+      url,
+      isVideo: isVid,
+      caption: caption || undefined,
+      alt: alt || undefined,
+      width: w,
+      height: h,
+      orientation
+    });
+  }
+  return result;
 }
 
 function getGridContainerClass(layout?: string): string {
@@ -72,8 +105,10 @@ function getGridContainerClass(layout?: string): string {
     case 'masonry':
       return 'columns-1 md:columns-2 lg:columns-3 gap-6 w-full block space-y-6';
     case 'grid_3_col':
-    default:
       return 'grid grid-cols-1 md:grid-cols-3 gap-6 w-full';
+    case 'split_landscape_portrait':
+    default:
+      return 'w-full';
   }
 }
 
@@ -185,7 +220,7 @@ export function formatProgramDetail(strapiData: any): ProgramDetailProps | null 
     documentationImages: docImages,
     enablePreviewDokumentasi: isPreviewEnabled,
     modeUkuranFrame: attrs.mode_ukuran_frame || 'auto',
-    layoutGridDokumentasi: attrs.layout_grid_dokumentasi || 'grid_3_col',
+    layoutGridDokumentasi: attrs.layout_grid_dokumentasi || 'split_landscape_portrait',
   };
 }
 
@@ -287,8 +322,58 @@ export default function ProgramKerjaDetailPage({ slug, initialData }: { slug: st
     );
   }
 
+  const isSplitLayout = detail.layoutGridDokumentasi === 'split_landscape_portrait';
   const isMasonry = detail.layoutGridDokumentasi === 'masonry';
   const gridContainerClass = getGridContainerClass(detail.layoutGridDokumentasi);
+
+  const landscapeDocs = detail.documentationImages.filter(item => item.orientation === 'landscape' || item.orientation === 'square');
+  const portraitDocs = detail.documentationImages.filter(item => item.orientation === 'portrait');
+
+  const renderMediaCard = (item: DocumentationMediaItem, index: number, customFrameClass?: string, customImgClass?: string) => {
+    const rawUrl = item.url;
+    const isVid = item.isVideo;
+    const isPreviewActive = detail.enablePreviewDokumentasi !== false;
+    const { frameClass, imgClass } = getFrameContainerClass(detail.modeUkuranFrame, isMasonry);
+    const optUrl = getOptimizedImageUrl(rawUrl);
+    const captionText = item.caption || item.alt;
+
+    const resolvedFrame = customFrameClass || frameClass;
+    const resolvedImg = customImgClass || imgClass;
+
+    return (
+      <div key={`${item.url}-${index}`} className="flex flex-col gap-3 group w-full">
+        <div
+          onClick={() => {
+            if (isPreviewActive) {
+              setSelectedMedia({ url: rawUrl, isVideo: isVid, caption: captionText });
+            }
+          }}
+          className={`${resolvedFrame} ${isPreviewActive ? 'cursor-pointer' : ''}`}
+        >
+          {isVid ? (
+            <video
+              src={rawUrl}
+              controls
+              className={resolvedImg}
+            />
+          ) : (
+            <img
+              src={optUrl}
+              alt={captionText || `Dokumentasi ${index + 1}`}
+              className={resolvedImg}
+            />
+          )}
+        </div>
+        {captionText && (
+          <div className="bg-white rounded-[20px] border border-slate-100 p-4 shadow-xs transition-all duration-200 group-hover:border-slate-200">
+            <p className="text-xs md:text-sm text-slate-700 font-medium leading-relaxed">
+              {captionText}
+            </p>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <main className="min-h-screen bg-white flex flex-col font-sans">
@@ -465,53 +550,109 @@ export default function ProgramKerjaDetailPage({ slug, initialData }: { slug: st
               </h3>
             </div>
 
-            <div className={gridContainerClass}>
-              {detail.documentationImages.map((item, index) => {
-                const rawUrl = typeof item === 'string' ? item : item.url;
-                const isVid = typeof item === 'string'
-                  ? /\.(mp4|webm|ogg|mov|m4v|avi|mkv)$/i.test(rawUrl.split('?')[0])
-                  : item.isVideo;
-                const isPreviewActive = detail.enablePreviewDokumentasi !== false;
-                const { frameClass, imgClass } = getFrameContainerClass(detail.modeUkuranFrame, isMasonry);
-                const optUrl = getOptimizedImageUrl(rawUrl);
+            {isSplitLayout ? (
+              <div className="w-full flex flex-col gap-10">
+                {landscapeDocs.length > 0 && portraitDocs.length > 0 ? (
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full items-start">
+                    {/* Sisi Kiri: Foto Landscape / Horizontal */}
+                    <div className="lg:col-span-7 flex flex-col gap-5 w-full">
+                      <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100">
+                        <span className="w-3 h-3 rounded-full bg-blue-500 shadow-xs" />
+                        <h4 className="text-sm font-bold uppercase tracking-wider text-slate-700">
+                          Foto Landscape / Horizontal
+                        </h4>
+                        <span className="ml-auto text-xs font-semibold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-100">
+                          {landscapeDocs.length} Media
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full">
+                        {landscapeDocs.map((item, index) =>
+                          renderMediaCard(
+                            item,
+                            index,
+                            'relative aspect-[16/10] rounded-[24px] overflow-hidden shadow-xs bg-slate-100 group border border-slate-200 transition-all duration-300 flex items-center justify-center',
+                            'w-full h-full object-cover transition-transform duration-300 group-hover:scale-105'
+                          )
+                        )}
+                      </div>
+                    </div>
 
-                const captionText = typeof item === 'object' ? (item.caption || item.alt) : undefined;
-
-                return (
-                  <div key={index} className="flex flex-col gap-3 group">
-                    <div
-                      onClick={() => {
-                        if (isPreviewActive) {
-                          setSelectedMedia({ url: rawUrl, isVideo: isVid, caption: captionText });
-                        }
-                      }}
-                      className={`${frameClass} ${isPreviewActive ? 'cursor-pointer' : ''}`}
-                    >
-                      {isVid ? (
-                        <video
-                          src={rawUrl}
-                          controls
-                          className={imgClass}
-                        />
-                      ) : (
-                        <img
-                          src={optUrl}
-                          alt={captionText || `Dokumentasi ${index + 1}`}
-                          className={imgClass}
-                        />
+                    {/* Sisi Kanan: Foto Portrait / Vertikal */}
+                    <div className="lg:col-span-5 flex flex-col gap-5 w-full">
+                      <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100">
+                        <span className="w-3 h-3 rounded-full bg-emerald-500 shadow-xs" />
+                        <h4 className="text-sm font-bold uppercase tracking-wider text-slate-700">
+                          Foto Portrait / Vertikal & Poster
+                        </h4>
+                        <span className="ml-auto text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100">
+                          {portraitDocs.length} Media
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4 w-full">
+                        {portraitDocs.map((item, index) =>
+                          renderMediaCard(
+                            item,
+                            index,
+                            'relative aspect-[3/4] rounded-[24px] overflow-hidden shadow-xs bg-slate-100 group border border-slate-200 transition-all duration-300 flex items-center justify-center',
+                            'w-full h-full object-cover transition-transform duration-300 group-hover:scale-105'
+                          )
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ) : landscapeDocs.length > 0 ? (
+                  /* Fallback: Hanya Foto Landscape */
+                  <div className="flex flex-col gap-5 w-full">
+                    <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100">
+                      <span className="w-3 h-3 rounded-full bg-blue-500 shadow-xs" />
+                      <h4 className="text-sm font-bold uppercase tracking-wider text-slate-700">
+                        Foto Landscape / Horizontal
+                      </h4>
+                      <span className="ml-auto text-xs font-semibold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-100">
+                        {landscapeDocs.length} Media
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full">
+                      {landscapeDocs.map((item, index) =>
+                        renderMediaCard(
+                          item,
+                          index,
+                          'relative aspect-[16/10] rounded-[24px] overflow-hidden shadow-xs bg-slate-100 group border border-slate-200 transition-all duration-300 flex items-center justify-center',
+                          'w-full h-full object-cover transition-transform duration-300 group-hover:scale-105'
+                        )
                       )}
                     </div>
-                    {captionText && (
-                      <div className="bg-white rounded-[20px] border border-slate-100 p-4 md:p-5 shadow-xs transition-all duration-200 group-hover:border-slate-200">
-                        <p className="text-xs md:text-sm text-slate-700 font-medium leading-relaxed">
-                          {captionText}
-                        </p>
-                      </div>
-                    )}
                   </div>
-                );
-              })}
-            </div>
+                ) : (
+                  /* Fallback: Hanya Foto Portrait */
+                  <div className="flex flex-col gap-5 w-full">
+                    <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100">
+                      <span className="w-3 h-3 rounded-full bg-emerald-500 shadow-xs" />
+                      <h4 className="text-sm font-bold uppercase tracking-wider text-slate-700">
+                        Foto Portrait / Vertikal & Poster
+                      </h4>
+                      <span className="ml-auto text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100">
+                        {portraitDocs.length} Media
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5 w-full">
+                      {portraitDocs.map((item, index) =>
+                        renderMediaCard(
+                          item,
+                          index,
+                          'relative aspect-[3/4] rounded-[24px] overflow-hidden shadow-xs bg-slate-100 group border border-slate-200 transition-all duration-300 flex items-center justify-center',
+                          'w-full h-full object-cover transition-transform duration-300 group-hover:scale-105'
+                        )
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className={gridContainerClass}>
+                {detail.documentationImages.map((item, index) => renderMediaCard(item, index))}
+              </div>
+            )}
           </div>
         </section>
       )}
