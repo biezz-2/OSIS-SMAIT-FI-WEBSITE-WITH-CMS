@@ -91,11 +91,6 @@ export default function SosmedHub({ initialData }: SosmedHubProps) {
   const youtubeCtaText = attrs?.cta_youtube || ctaTexts.youtube || socialAccounts.youtube?.cta_text || 'Kunjungi';
   const spotifyCtaText = attrs?.cta_spotify || ctaTexts.spotify || socialAccounts.spotify?.cta_text || 'Kunjungi';
 
-  // Stat card fields (from Strapi attributes with metadata_json and static fallback)
-  const statReachLabel = attrs?.stat_reach_label || metadata.stat_reach_label || 'ESTIMASI JANGKAUAN';
-  const statReachValue = attrs?.stat_reach_value || metadata.stat_reach_value || '2.5K+';
-  const statReachTrend = attrs?.stat_reach_trend || metadata.stat_reach_trend || '+12% Bulan ini';
-
   // RSS Spotify State
   const [rssEpisodes, setRssEpisodes] = useState<any[]>([]);
   const [rssLoading, setRssLoading] = useState(false);
@@ -124,7 +119,6 @@ export default function SosmedHub({ initialData }: SosmedHubProps) {
 
   const [activeTab, setActiveTab] = useState('all');
   const [animating, setAnimating] = useState(false);
-  const showProfileCards = true;
 
   const [bgBanner, setBgBanner] = useState(() => {
     if (attrs?.banner_image) {
@@ -308,185 +302,8 @@ export default function SosmedHub({ initialData }: SosmedHubProps) {
                 {displayDescription}
               </p>
             </div>
-
-            {/* Total Reach Dashboard */}
-            <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex items-center gap-4 min-w-[260px] self-stretch md:self-auto hover:shadow-md transition-shadow">
-              <div className="p-3 bg-[#7A9EAD]/10 rounded-xl text-[#7A9EAD] shrink-0">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.109A9.342 9.342 0 0 1 12.5 19.5a9.34 9.34 0 0 1-2.5-.373m0 0v-.003c0-1.113.285-2.16.786-3.07M10 19.128v.11c-.347.009-.693-.02-1.03-.09A9.308 9.308 0 0 1 4.5 18.046M10 19.128c-.753-.548-1.38-1.258-1.824-2.072M9.25 10.5c0 .414-.336.75-.75.75h-2.25a.75.75 0 0 1-.75-.75v-2.25c0-.414.336-.75.75-.75h2.25c.414 0 .75.336.75.75v2.25Z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
-                </svg>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-gray-400 text-[10px] font-bold tracking-wider uppercase font-inter">{statReachLabel}</span>
-                <span className="text-[#101828] text-2xl font-extrabold font-inter leading-none">{statReachValue}</span>
-                {statReachTrend && (
-                  <span className="text-[#00BC7D] text-xs font-semibold font-inter mt-1 flex items-center gap-1">
-                    <span>{statReachTrend}</span>
-                  </span>
-                )}
-              </div>
-            </div>
           </div>
         </div>
-
-        {showProfileCards && (<>
-          {/* SECTION 1: Profiles Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
-
-            {/* Card 1: Instagram */}
-            <div className="bg-gradient-to-br from-[#833AB4] via-[#FD1D1D] to-[#FCB045] rounded-3xl p-6 text-white flex flex-col justify-between h-[210px] shadow-sm hover:shadow-xl hover:scale-[1.02] transition-all duration-300 group">
-              <div className="flex justify-between items-start">
-                <div className="p-2.5 bg-white/20 rounded-xl backdrop-blur-sm">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                  </svg>
-                </div>
-                <span className="text-[10px] font-bold tracking-widest uppercase bg-white/25 px-2 py-0.5 rounded-md backdrop-blur-sm">INSTAGRAM</span>
-              </div>
-
-              <div>
-                <span className="text-[11px] font-medium opacity-80 block font-inter">
-                  {attrs?.ig_handle || socialAccounts.instagram?.handle || '@osissmaitfi'}
-                </span>
-                <h3 className="text-xl font-bold font-inter mt-0.5">
-                  {attrs?.ig_name || socialAccounts.instagram?.name || 'Osis SMAIT FI'}
-                </h3>
-                <div className="flex justify-between items-end mt-4">
-                  <div className="flex flex-col">
-                    <span className="text-2xl font-black font-inter leading-none">
-                      {attrs?.ig_followers || socialAccounts.instagram?.followers || '1,203'}
-                    </span>
-                    <span className="text-[9px] font-bold opacity-75 tracking-wider uppercase mt-1">FOLLOWER</span>
-                  </div>
-                  <a
-                    href={instagramLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-3.5 py-1.5 bg-white text-[#FD1D1D] rounded-full text-xs font-bold font-inter hover:bg-white/90 transition-colors shadow-sm"
-                  >
-                    {instagramCtaText}
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            {/* Card 2: TikTok */}
-            <div className="bg-[#09090B] border border-gray-800 rounded-3xl p-6 text-white flex flex-col justify-between h-[210px] shadow-sm hover:shadow-xl hover:scale-[1.02] transition-all duration-300 group">
-              <div className="flex justify-between items-start">
-                <div className="p-2.5 bg-white/10 rounded-xl backdrop-blur-sm">
-                  <svg className="w-5 h-5 fill-current text-white" viewBox="0 0 24 24">
-                    <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.01 1.62 4.14.99 1.13 2.37 1.83 3.86 2.02v3.86c-1.08-.02-2.13-.24-3.13-.67-.85-.36-1.63-.9-2.28-1.57v7.54c.03 2.16-.72 4.26-2.12 5.88-1.39 1.62-3.37 2.62-5.51 2.78-2.58.19-5.16-.78-6.91-2.65C.2 17.06-.52 14.18-.32 11.58c.2-2.58 1.68-4.94 3.96-6.19 1.48-.81 3.16-1.18 4.84-1.07V8.2c-1.13-.08-2.26.23-3.17.92-.91.69-1.5 1.76-1.63 2.91-.25 2.19 1.29 4.19 3.47 4.5 1.58.23 3.2-.42 4.04-1.78.36-.59.54-1.28.53-1.97V.02z" />
-                  </svg>
-                </div>
-                <span className="text-[10px] font-bold tracking-widest uppercase bg-white/10 px-2 py-0.5 rounded-md">TIKTOK</span>
-              </div>
-
-              <div>
-                <span className="text-[11px] font-medium opacity-80 block font-inter">
-                  {attrs?.tiktok_handle || socialAccounts.tiktok?.handle || '@osissmaitfi'}
-                </span>
-                <h3 className="text-xl font-bold font-inter mt-0.5">
-                  {attrs?.tiktok_name || socialAccounts.tiktok?.name || 'Osis SMAIT FI'}
-                </h3>
-                <div className="flex justify-between items-end mt-4">
-                  <div className="flex flex-col">
-                    <span className="text-2xl font-black font-inter leading-none">
-                      {attrs?.tiktok_followers || socialAccounts.tiktok?.followers || '144'}
-                    </span>
-                    <span className="text-[9px] font-bold opacity-75 tracking-wider uppercase mt-1">FOLLOWER</span>
-                  </div>
-                  <a
-                    href={tiktokLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-3.5 py-1.5 bg-white text-black rounded-full text-xs font-bold font-inter hover:bg-white/90 transition-colors shadow-sm"
-                  >
-                    {tiktokCtaText}
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            {/* Card 3: YouTube */}
-            <div className="bg-[#FF0000] rounded-3xl p-6 text-white flex flex-col justify-between h-[210px] shadow-sm hover:shadow-xl hover:scale-[1.02] transition-all duration-300 group">
-              <div className="flex justify-between items-start">
-                <div className="p-2.5 bg-white/20 rounded-xl backdrop-blur-sm">
-                  <svg className="w-5 h-5 fill-current text-white" viewBox="0 0 24 24">
-                    <path d="M23.498 6.163a3.003 3.003 0 00-2.11-2.11C19.518 3.545 12 3.545 12 3.545s-7.518 0-9.388.508a3.003 3.003 0 00-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 002.11 2.11c1.87.508 9.388.508 9.388.508s7.518 0 9.388-.508a3.002 3.002 0 002.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-                  </svg>
-                </div>
-                <span className="text-[10px] font-bold tracking-widest uppercase bg-white/20 px-2 py-0.5 rounded-md">YOUTUBE</span>
-              </div>
-
-              <div>
-                <span className="text-[11px] font-medium opacity-80 block font-inter">
-                  {attrs?.youtube_handle || socialAccounts.youtube?.handle || '@osissmaitfithrahinsani9481'}
-                </span>
-                <h3 className="text-xl font-bold font-inter mt-0.5">
-                  {attrs?.youtube_name || socialAccounts.youtube?.name || 'SMAIT Fithrah Insani'}
-                </h3>
-                <div className="flex justify-between items-end mt-4">
-                  <div className="flex flex-col">
-                    <span className="text-2xl font-black font-inter leading-none">
-                      {attrs?.youtube_subscribers || socialAccounts.youtube?.followers || '267'}
-                    </span>
-                    <span className="text-[9px] font-bold opacity-75 tracking-wider uppercase mt-1">SUBSCRIBER</span>
-                  </div>
-                  <a
-                    href={youtubeLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-3.5 py-1.5 bg-white text-[#FF0000] rounded-full text-xs font-bold font-inter hover:bg-white/90 transition-colors shadow-sm"
-                  >
-                    {youtubeCtaText}
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            {/* Card 4: Spotify */}
-            <div className="bg-[#1DB954] rounded-3xl p-6 text-white flex flex-col justify-between h-[210px] shadow-sm hover:shadow-xl hover:scale-[1.02] transition-all duration-300 group">
-              <div className="flex justify-between items-start">
-                <div className="p-2.5 bg-white/20 rounded-xl backdrop-blur-sm">
-                  <svg className="w-5 h-5 fill-current text-white" viewBox="0 0 24 24">
-                    <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.563.387-.857.207-2.377-1.454-5.37-1.783-8.893-.982-.336.075-.668-.135-.744-.47-.077-.337.136-.669.471-.745 3.854-.88 7.15-.502 9.81 1.13.295.178.387.562.207.857zm1.226-2.724c-.226.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.08-1.182-.413.125-.847-.107-.972-.52-.125-.413.107-.847.52-.972 3.667-1.11 8.23-.57 11.345 1.343.367.227.487.708.26 1.075zm.106-2.836C14.393 8.74 8.56 8.547 5.17 9.575c-.528.16-1.08-.14-1.24-.668-.16-.528.14-1.08.668-1.24C8.5 6.45 14.935 6.67 19.043 9.11c.475.282.63.897.347 1.37-.282.474-.897.63-1.37.347z" />
-                  </svg>
-                </div>
-                <span className="text-[10px] font-bold tracking-widest uppercase bg-white/20 px-2 py-0.5 rounded-md">SPOTIFY</span>
-              </div>
-
-              <div>
-                <span className="text-[11px] font-medium opacity-80 block font-inter">
-                  {attrs?.spotify_handle || socialAccounts.spotify?.handle || 'OSIS Podcast'}
-                </span>
-                <h3 className="text-xl font-bold font-inter mt-0.5">
-                  {attrs?.spotify_name || socialAccounts.spotify?.name || 'Agora Talk'}
-                </h3>
-                <div className="flex justify-between items-end mt-4">
-                  <div className="flex flex-col">
-                    <span className="text-2xl font-black font-inter leading-none">
-                      {attrs?.spotify_listeners || socialAccounts.spotify?.followers || '436'}
-                    </span>
-                    <span className="text-[9px] font-bold opacity-75 tracking-wider uppercase mt-1">PENDENGAR</span>
-                  </div>
-                  <a
-                    href={spotifyLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-3.5 py-1.5 bg-white text-[#1DB954] rounded-full text-xs font-bold font-inter hover:bg-white/90 transition-colors shadow-sm"
-                  >
-                    {spotifyCtaText}
-                  </a>
-                </div>
-            </div>
-
-          </div>
-
-        </div>
-        </>)}
 
         {/* SECTION 2: Split Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start w-full">

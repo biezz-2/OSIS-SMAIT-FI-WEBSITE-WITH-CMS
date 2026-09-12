@@ -6,6 +6,17 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.22] - 2026-09-13
+
+### 💄 Desain & UI/UX (Pembersihan Header & Grid Badge Media Sosial)
+- **Komponen Media Sosial (`osis-smait-fi/src/components/sosmed/SosmedHub.tsx`)**:
+  - Menghapus kartu widget statistik `Total Reach Dashboard` ("ESTIMASI JANGKAUAN") dari header halaman `/media-sosial`.
+  - Menghapus grid profil banner kartu/badge media sosial (Instagram, TikTok, YouTube, Spotify) di atas area embed feed.
+  - Merampingkan layout header menjadi satu baris judul dan deskripsi yang bersih, langsung mengalir ke navigasi filter dan embed media sosial.
+  - Membersihkan variabel state dan props fallback yang tidak lagi terpakai (`statReachLabel`, `statReachValue`, `statReachTrend`, `showProfileCards`).
+
+---
+
 ## [2.1.21] - 2026-09-12
 
 ### 🐛 Perbaikan Bug & Routing (Standardisasi URL Event & Sinkronisasi CTA Strapi)
