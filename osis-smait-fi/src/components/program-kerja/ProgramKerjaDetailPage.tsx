@@ -80,7 +80,7 @@ function getGridContainerClass(layout?: string): string {
 function getFrameContainerClass(mode?: string, isMasonry?: boolean): { frameClass: string; imgClass: string } {
   if (isMasonry) {
     return {
-      frameClass: 'relative w-full rounded-2xl overflow-hidden shadow-sm bg-slate-100 group border border-slate-200 transition-all duration-300 break-inside-avoid mb-6',
+      frameClass: 'relative w-full rounded-[24px] overflow-hidden shadow-sm bg-slate-100 group border border-slate-200 transition-all duration-300 break-inside-avoid mb-6',
       imgClass: 'w-full h-auto object-contain block'
     };
   }
@@ -88,24 +88,24 @@ function getFrameContainerClass(mode?: string, isMasonry?: boolean): { frameClas
   switch (mode) {
     case 'contain':
       return {
-        frameClass: 'relative h-72 md:h-80 rounded-2xl overflow-hidden shadow-sm bg-slate-900 group border border-slate-800 transition-all duration-300 flex items-center justify-center p-2',
+        frameClass: 'relative h-72 md:h-80 rounded-[24px] overflow-hidden shadow-sm bg-slate-900 group border border-slate-800 transition-all duration-300 flex items-center justify-center p-2',
         imgClass: 'w-full h-full object-contain'
       };
     case 'cover':
       return {
-        frameClass: 'relative h-64 md:h-72 rounded-2xl overflow-hidden shadow-sm bg-slate-100 group border border-slate-200 transition-all duration-300',
+        frameClass: 'relative h-64 md:h-72 rounded-[24px] overflow-hidden shadow-sm bg-slate-100 group border border-slate-200 transition-all duration-300',
         imgClass: 'w-full h-full object-cover'
       };
     case 'square':
       return {
-        frameClass: 'relative aspect-square rounded-2xl overflow-hidden shadow-sm bg-slate-100 group border border-slate-200 transition-all duration-300',
+        frameClass: 'relative aspect-square rounded-[24px] overflow-hidden shadow-sm bg-slate-100 group border border-slate-200 transition-all duration-300',
         imgClass: 'w-full h-full object-cover'
       };
     case 'auto':
     default:
       return {
-        frameClass: 'relative h-auto max-h-[550px] rounded-2xl overflow-hidden shadow-sm bg-slate-900/5 group border border-slate-200 transition-all duration-300 flex items-center justify-center p-2',
-        imgClass: 'w-full h-auto max-h-[520px] object-contain rounded-xl'
+        frameClass: 'relative h-auto max-h-[550px] rounded-[24px] overflow-hidden shadow-sm bg-slate-900/5 group border border-slate-200 transition-all duration-300 flex items-center justify-center p-2',
+        imgClass: 'w-full h-auto max-h-[520px] object-contain rounded-[20px]'
       };
   }
 }
@@ -340,12 +340,12 @@ export default function ProgramKerjaDetailPage({ slug, initialData }: { slug: st
                 >
                   {/* Slight rotation offset per card for visual interest */}
                   <div
-                    className="absolute inset-0 bg-[#FACC15] rounded-2xl shadow-md"
-                    style={{ transform: idx % 2 === 0 ? 'rotate(-2deg)' : 'rotate(2deg)' }}
+                    className="absolute inset-0 bg-[#FACC15] rounded-[24px] shadow-md"
+                    style={{ transform: idx % 2 === 0 ? 'rotate(-2.8deg)' : 'rotate(2.8deg)' }}
                   />
                   <div
-                    className="relative w-full h-full rounded-2xl overflow-hidden shadow-xl bg-slate-900 border border-white/20 flex flex-col justify-end"
-                    style={{ transform: idx % 2 === 0 ? 'rotate(1.5deg)' : 'rotate(-1.5deg)' }}
+                    className="relative w-full h-full rounded-[24px] overflow-hidden shadow-xl bg-slate-900 border border-white/20 flex flex-col justify-end"
+                    style={{ transform: idx % 2 === 0 ? 'rotate(1.8deg)' : 'rotate(-1.8deg)' }}
                   >
                     {chair.image ? (
                       <img
@@ -387,14 +387,16 @@ export default function ProgramKerjaDetailPage({ slug, initialData }: { slug: st
                 {detail.goals.map((goal, idx) => (
                   <div
                     key={idx}
-                    className="w-full p-5 rounded-2xl bg-white border border-slate-100 shadow-[0_4px_20px_rgba(145,145,145,0.12)] flex items-start gap-4"
+                    className="w-full p-6 rounded-[24px] bg-white border border-slate-100 shadow-[0_4px_20px_rgba(145,145,145,0.12)] flex items-start gap-4 transition-all duration-200 hover:shadow-md"
                   >
-                    <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 mt-0.5 text-blue-600 font-bold">
-                      ✓
+                    <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0 mt-0.5 text-blue-600 font-bold">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                      </svg>
                     </div>
-                    <div className="flex flex-col gap-0.5">
-                      <h4 className="text-[#111827] font-bold text-base">{goal.title}</h4>
-                      <p className="text-[#64748B] text-sm leading-relaxed">{goal.desc}</p>
+                    <div className="flex flex-col gap-1">
+                      <h4 className="text-[#111827] font-bold text-base md:text-lg">{goal.title}</h4>
+                      <p className="text-[#64748B] text-sm md:text-base leading-relaxed">{goal.desc}</p>
                     </div>
                   </div>
                 ))}
@@ -408,7 +410,7 @@ export default function ProgramKerjaDetailPage({ slug, initialData }: { slug: st
       {detail.teknisDesc && (
         <section className="w-full bg-white pb-16 px-4">
           <div className="max-w-6xl mx-auto">
-            <div className="w-full bg-white rounded-3xl p-8 md:p-12 border border-gray-100 shadow-[0_10px_30px_-5px_rgba(0,0,0,0.08)] flex flex-col md:flex-row items-start gap-8">
+            <div className="w-full bg-white rounded-[24px] p-8 md:p-12 border border-slate-100 shadow-[0_10px_30px_-5px_rgba(0,0,0,0.08)] flex flex-col md:flex-row items-start gap-8">
               <div className="w-16 h-16 rounded-2xl bg-[#DCFCE7] flex items-center justify-center shrink-0">
                 <svg className="w-8 h-8 text-[#16A34A]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                   <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
@@ -476,7 +478,7 @@ export default function ProgramKerjaDetailPage({ slug, initialData }: { slug: st
                 const captionText = typeof item === 'object' ? (item.caption || item.alt) : undefined;
 
                 return (
-                  <div key={index} className="flex flex-col gap-2">
+                  <div key={index} className="flex flex-col gap-3 group">
                     <div
                       onClick={() => {
                         if (isPreviewActive) {
@@ -500,9 +502,11 @@ export default function ProgramKerjaDetailPage({ slug, initialData }: { slug: st
                       )}
                     </div>
                     {captionText && (
-                      <p className="text-xs md:text-sm text-slate-600 dark:text-slate-400 font-medium px-1 leading-snug line-clamp-2 mt-1">
-                        {captionText}
-                      </p>
+                      <div className="bg-white rounded-[20px] border border-slate-100 p-4 md:p-5 shadow-xs transition-all duration-200 group-hover:border-slate-200">
+                        <p className="text-xs md:text-sm text-slate-700 font-medium leading-relaxed">
+                          {captionText}
+                        </p>
+                      </div>
                     )}
                   </div>
                 );

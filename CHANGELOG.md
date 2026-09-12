@@ -6,6 +6,18 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.14] - 2026-09-12
+
+### 🎨 Tampilan & UI (Figma Design-to-Code Alignment)
+- **Refactoring Layout Detail Program Kerja (`src/components/program-kerja/ProgramKerjaDetailPage.tsx`)**:
+  - Penyesuaian corner radii seragam ke 24px (`rounded-[24px]`) untuk konsistensi geometry desain sesuai Figma node `1282:2356` (Agora-Acta-Website - rutinan).
+  - Penyesuaian rotasi kartu penanggung jawab (*Chair Cards*): yellow backplate berotasi `-2.8deg` / `+2.8deg` dan photo frame card berotasi `+1.8deg` / `-1.8deg` dengan bayangan `shadow-xl`.
+  - Pembaruan kartu list *Tujuan Program*: radius `rounded-[24px]`, padding `p-6`, shadow `shadow-[0_4px_20px_rgba(145,145,145,0.12)]`, dan check badge box `w-12 h-12 rounded-2xl bg-blue-50 text-blue-600`.
+  - Pembaruan kartu *Teknis Pelaksanaan*: radius `rounded-[24px]`, padding `p-8 md:p-12`, border `border-slate-100`, dan shadow `shadow-[0_10px_30px_-5px_rgba(0,0,0,0.08)]`.
+  - Restrukturisasi kartu *Dokumentasi & Hasil*: container gambar beradius `rounded-[24px]` dan penambahan kartu caption putih terstruktur (`rounded-[20px] bg-white border border-slate-100 p-4 md:p-5 shadow-xs`) di bawah masing-masing media.
+
+---
+
 ## [2.1.13] - 2026-09-10
 
 ### 🚨 Darurat & Stabilitas Sistem
