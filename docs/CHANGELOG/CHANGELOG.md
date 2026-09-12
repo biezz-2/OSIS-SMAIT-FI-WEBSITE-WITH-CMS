@@ -6,6 +6,17 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.19] - 2026-09-12
+
+### 🚀 Fitur & Peningkatan CMS (Multi-Image Ticker Edufest-Infinity)
+- **Strapi CMS Media Asset (strapi-cms/src/api/media-asset)**:
+  - Menambahkan field media `files` dengan opsi `multiple: true` sehingga pengelola dapat memilih puluhan foto galeri ticker sekaligus dalam 1 entri.
+- **Frontend Fetcher & Gallery (osis-smait-fi/src/lib/strapi.ts & TickerGallery.tsx)**:
+  - Memperbarui `fetchMediaAssetsByCategory('ticker')` untuk mengekstrak seluruh koleksi foto dari field multi-image `files` dengan backward-compatibility entri single-image `file`.
+  - Menyempurnakan loop marquee `TickerGallery` agar track scrolling berjalan mulus (seamless vertical marquee) berapapun jumlah gambar yang dimasukkan.
+
+---
+
 ## [2.1.18] - 2026-09-12
 
 ### ⚡ Performa & Optimasi Media (High-Fidelity Lossless-Retina Image Optimization)

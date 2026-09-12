@@ -173,20 +173,49 @@ export async function fetchMediaAssetByKey(
 export async function fetchMediaAssetsByCategory(
   category: string
 ): Promise<Array<{ id: number; key: string; src: string; title: string; tipeMedia: string }>> {
-  const json: any = await fetchStrapiAPI(`/api/media-assets?filters[kategori][$eq]=${category}&sort=urutan:asc&fields[0]=key&fields[1]=judul&fields[2]=tipe_media&populate[file][fields][0]=url`);
+  const json: any = await fetchStrapiAPI(
+    `/api/media-assets?filters[kategori][\$eq]=${category}&sort=urutan:asc&fields[0]=key&fields[1]=judul&fields[2]=tipe_media&populate[file][fields][0]=url&populate[files][fields][0]=url`
+  );
   const items = json?.data || [];
 
   if (items.length > 0) {
-    return items.map((item: any) => {
+    const results: Array<{ id: number; key: string; src: string; title: string; tipeMedia: string }> = [];
+
+    for (const item of items) {
       const attrs = item.attributes || item;
-      return {
-        id: item.id,
-        key: attrs.key,
-        src: getStrapiMediaUrl(attrs, ''),
-        title: attrs.judul || attrs.key,
-        tipeMedia: attrs.tipe_media || 'foto',
-      };
-    });
+      const multiFiles = attrs.files?.data || attrs.files;
+
+      // 1. Handle multi-image entry: extract all images from 'files'
+      if (Array.isArray(multiFiles) && multiFiles.length > 0) {
+        multiFiles.forEach((fileItem: any, idx: number) => {
+          const fileAttrs = fileItem.attributes || fileItem;
+          const url = getStrapiMediaUrl(fileAttrs, '');
+          if (url) {
+            results.push({
+              id: item.id * 1000 + idx,
+              key: `${attrs.key}-${idx + 1}`,
+              src: url,
+              title: attrs.judul ? `${attrs.judul} (${idx + 1})` : attrs.key,
+              tipeMedia: attrs.tipe_media || 'foto',
+            });
+          }
+        });
+      }
+
+      // 2. Handle single-image entry: fallback or standalone 'file'
+      const singleSrc = getStrapiMediaUrl(attrs, '');
+      if (singleSrc && (!Array.isArray(multiFiles) || multiFiles.length === 0)) {
+        results.push({
+          id: item.id,
+          key: attrs.key,
+          src: singleSrc,
+          title: attrs.judul || attrs.key,
+          tipeMedia: attrs.tipe_media || 'foto',
+        });
+      }
+    }
+
+    return results;
   }
 
   return [];

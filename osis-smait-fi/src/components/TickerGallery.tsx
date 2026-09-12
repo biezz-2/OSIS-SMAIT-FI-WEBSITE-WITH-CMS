@@ -81,7 +81,14 @@ export default function TickerGallery() {
                 {tickers.map((group, i) => (
                     <div key={i} className={styles.ticker}>
                         <ul className={i === 1 ? styles.tickerTrackReverse : styles.tickerTrack}>
-                            {[...group, ...group].map((item, j) => (
+                            {(() => {
+                                // Pastikan track cukup panjang untuk animasi loop tak terbatas yang mulus
+                                let loopItems = [...group];
+                                while (loopItems.length < 4 && loopItems.length > 0) {
+                                    loopItems = [...loopItems, ...group];
+                                }
+                                return [...loopItems, ...loopItems];
+                            })().map((item, j) => (
                                 <li key={`${i}-${j}`} className={styles.tickerItem}>
                                     <div className={styles.item}>
                                         <Image
