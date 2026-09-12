@@ -6,6 +6,19 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.20] - 2026-09-12
+
+### 🛡️ Keamanan, Integritas Data & CMS Hardening (Pencegahan Data Loss Konfigurasi Strapi)
+- **Strapi CMS Bootstrap Seeder (`strapi-cms/src/index.ts`)**:
+  - Menghapus pemanggilan mutasi destruktif `.update()` pada dokumen `media-sosial` yang sebelumnya otomatis menimpa URL YouTube pengguna menjadi URL placeholder saat restart.
+  - Menambahkan guard proteksi variabel lingkungan `ENABLE_DB_SEED=false` untuk mencegah auto-seeding dan auto-publishing draft secara tidak sengaja di server produksi maupun saat AI agent melakukan perbaikan.
+  - Memastikan seluruh konfigurasi halaman (`halamans`) seperti link YouTube, embed video, dan metadata kustom tetap utuh dan persisten di database MySQL.
+- **Rencana & Dokumentasi Arsitektur**:
+  - Menambahkan panduan mitigasi dan aksi komprehensif di `plans/plan_pencegahan_data_loss_strapi.md`.
+  - Merekam arsitektur proteksi konfigurasi ke dalam memori jangka panjang LangGraph MCP.
+
+---
+
 ## [2.1.19] - 2026-09-12
 
 ### 🚀 Fitur & Peningkatan CMS (Multi-Image Ticker Edufest-Infinity)

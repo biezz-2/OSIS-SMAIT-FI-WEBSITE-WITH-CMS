@@ -94,17 +94,16 @@ export default {
     // 2. Setup Public Read-Only Access
     await setupPublicPermissions(strapi);
 
-    // 3. Seed Initial Data from Hardcoded Frontend (if empty)
-    await seedInitialData(strapi);
-
-    // 3b. Ensure default Media Assets exist
-    await ensureDefaultMediaAssets(strapi);
-
-    // 4. Ensure all seeded documents are published for REST API
-    await publishExistingDrafts(strapi);
-
-    // 4b. Seed Partner entries if empty
-    await seedPartnerData(strapi);
+    // 3. Seed Initial Data (Only if explicitly enabled or on initial setup)
+    const isSeedExplicitlyDisabled = process.env.ENABLE_DB_SEED === 'false';
+    if (!isSeedExplicitlyDisabled) {
+      await seedInitialData(strapi);
+      await ensureDefaultMediaAssets(strapi);
+      await publishExistingDrafts(strapi);
+      await seedPartnerData(strapi);
+    } else {
+      strapi.log.info('ℹ️ ENABLE_DB_SEED=false: Auto-seeding and draft auto-publishing skipped to prevent data override.');
+    }
 
     // 5. Schedule database sync if running on MySQL (main)
     const dbClient = strapi.config.get('database.connection.client');
@@ -660,23 +659,8 @@ async function seedHalamanUtama(strapi: Core.Strapi) {
     };
 
     if (existingMediaSosial && existingMediaSosial.length > 0) {
-      const target = existingMediaSosial[0];
-      if (!target.metadata_json) {
-        await (strapi.documents as any)('api::halaman.halaman').update({
-          documentId: target.documentId,
-          data: {
-            metadata_json: defaultMetadata,
-            embed_youtube: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-            embed_spotify: 'https://open.spotify.com/episode/3Zg0z8C6f1z',
-            link_instagram: 'https://www.instagram.com/osissmaitfi',
-            link_tiktok: 'https://www.tiktok.com/@osissmaitfi',
-            link_youtube: 'https://www.youtube.com/@osissmaitfithrahinsani9481',
-            link_spotify: 'https://spotify.com',
-          }
-        });
-        await (strapi.documents as any)('api::halaman.halaman').publish({ documentId: target.documentId });
-        strapi.log.info('  ✅ Restored metadata_json and social links for Halaman Media Sosial');
-      }
+      // PREVENT DATA LOSS: Never overwrite existing configuration or YouTube links
+      strapi.log.info('ℹ️ Halaman Media Sosial already exists in database. Preserving user configuration.');
     }
   } catch (err: any) {
     strapi.log.warn('⚠️ Error updating Media Sosial entry: ' + err.message);
