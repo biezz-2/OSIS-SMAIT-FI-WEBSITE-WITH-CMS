@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { fetchHalamanFromStrapi, fetchMediaAssetByKey, getStrapiMediaUrl } from '@/lib/strapi';
 import { useImageQuality } from '@/context/ImageQualityContext';
 
@@ -88,23 +89,27 @@ const AboutUs: React.FC<AboutUsProps> = ({ title = "Agora Acta", initialData }) 
         <div className="flex-1 w-full flex justify-center lg:justify-end items-center gap-6 md:gap-8 py-4">
           {collabImg && (
             <div className="w-1/2 max-w-[280px] sm:max-w-[334px] aspect-[334/689] overflow-hidden rounded-[30px] shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 group relative bg-[#185FA5]">
-              <img 
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
-                src={getOptimizedImageUrl(collabImg, quality, compress)} 
-                alt="Kolaborasi OSIS Agora Acta" 
+              <Image
+                fill
+                sizes="(max-width: 640px) 140px, (max-width: 1024px) 280px, 334px"
+                className="object-cover group-hover:scale-105 transition-transform duration-700"
+                src={getOptimizedImageUrl(collabImg, quality, compress)}
+                alt="Kolaborasi OSIS Agora Acta"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
             </div>
           )}
 
           {leadershipImg && (
             <div className="w-1/2 max-w-[280px] sm:max-w-[334px] aspect-[334/689] overflow-hidden rounded-[30px] shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 mt-12 lg:mt-16 group relative bg-[#185FA5]">
-              <img 
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
-                src={getOptimizedImageUrl(leadershipImg, quality, compress)} 
-                alt="Kepemimpinan OSIS Agora Acta" 
+              <Image
+                fill
+                sizes="(max-width: 640px) 140px, (max-width: 1024px) 280px, 334px"
+                className="object-cover group-hover:scale-105 transition-transform duration-700"
+                src={getOptimizedImageUrl(leadershipImg, quality, compress)}
+                alt="Kepemimpinan OSIS Agora Acta"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
             </div>
           )}
         </div>

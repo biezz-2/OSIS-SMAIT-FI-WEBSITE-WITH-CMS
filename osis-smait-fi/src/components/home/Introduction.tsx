@@ -10,13 +10,13 @@ interface ImageItem {
 }
 
 const defaultFallbackImages = [
-  '/media/about/osis_about_collaboration.jpg',
-  '/images/hover-1.JPG',
-  '/media/about/osis_about_leadership.jpg',
-  '/images/hover-2.JPG',
-  '/media/about/osis_about_collaboration.jpg',
-  '/images/hover-1.JPG',
-  '/media/about/osis_about_leadership.jpg',
+  '/media/about/osis_about_collaboration.webp',
+  '/images/hover-1.webp',
+  '/media/about/osis_about_leadership.webp',
+  '/images/hover-2.webp',
+  '/media/about/osis_about_collaboration.webp',
+  '/images/hover-1.webp',
+  '/media/about/osis_about_leadership.webp',
 ];
 
 const Introduction = ({ initialData }: { initialData?: any }) => {

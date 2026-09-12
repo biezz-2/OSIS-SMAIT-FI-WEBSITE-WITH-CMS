@@ -19,7 +19,7 @@ export default function EventHeroSection({
   tagline,
   categoryBanner = "LOMBA & FESTIVAL / PANGGUNG SENI / ALL DAY",
   dateStr = "18.08.26 7:00 PM",
-  bannerUrl = "/images/hero-photo.png",
+  bannerUrl = "/images/hero-photo.webp",
   ctaUrl,
 }: EventHeroProps) {
   const { theme } = useEventTheme();
@@ -39,11 +39,12 @@ export default function EventHeroSection({
     >
       <div className="absolute top-0 left-0 w-full h-[60%] md:h-[65%] lg:h-[70%] z-0">
         <Image
-          src={bannerUrl || "/images/hero-photo.png"}
+          src={bannerUrl || "/images/hero-photo.webp"}
           alt={title || "Event Hero Visual"}
           fill
           className="object-cover object-center"
           priority
+          sizes="100vw"
         />
       </div>
 

@@ -6,6 +6,28 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.18] - 2026-09-12
+
+### ⚡ Performa & Optimasi Media (High-Fidelity Lossless-Retina Image Optimization)
+- **Kompresi Aset Presisi Tinggi (`osis-smait-fi/public`)**:
+  - Mengonversi aset raster raksasa ke WebP dengan mempertahankan **100% resolusi dimensi asli (1:1 tanpa downscale)**:
+    - `hero-photo.webp` (2400x1202, 460 KB vs 4.63 MB PNG asli - hemat 90%).
+    - `dome-photo.webp` (1568x800, 333 KB vs 2.35 MB PNG asli - hemat 85%).
+    - `hover-1.webp` & `hover-2.webp` (5184x3456, 1.6 MB vs ~11.7 MB JPG asli - hemat 72%).
+    - `azzam.webp` Photo-Profile & Card (4098x4098 & 1653x2598, hemat 88%).
+    - `event-*.webp` & `osis_about_*.webp` (kualitas Q92 dengan subsampling 4:4:4).
+- **Konfigurasi Engine Next.js 16 (`next.config.ts`)**:
+  - Menambahkan device sizes layar resolusi tinggi dan Retina (`deviceSizes: [..., 2400, 3840]`).
+  - Menambahkan `localPatterns` untuk rute internal proxy gambar `/api/compress-image`.
+  - Mengaktifkan `minimumCacheTTL` 30 hari untuk cache browser & CDN yang lebih stabil.
+- **Implementasi Komponen & Placeholder**:
+  - `Hero.tsx`: Menambahkan `placeholder="blur"` dengan inline WebP Base64 LQIP blurDataURL untuk menghilangkan blank state dan CLS.
+  - `AboutUs.tsx`: Memigrasikan elemen raw `<img>` ke `next/image` dengan `fill` dan prop `sizes` responsif.
+  - `edufest-infinity/panitia/page.tsx`: Memigrasikan avatar panitia ke `next/image` dengan `sizes="64px"` dan rounded layout.
+  - Pembaruan referensi berkas di `committee.ts`, `event-hero-section.tsx`, `event-dome-section.tsx`, dan `Introduction.tsx`.
+
+---
+
 ## [2.1.17] - 2026-09-12
 
 ### 🐛 Perbaikan Bug & Optimasi UI (Pemulihan Logo Navbar OSIS)

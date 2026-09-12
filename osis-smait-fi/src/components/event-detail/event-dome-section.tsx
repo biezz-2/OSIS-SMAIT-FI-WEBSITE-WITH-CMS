@@ -20,19 +20,19 @@ export interface EventDomeProps {
 
 const defaultDomeImages: DomeImageItem[] = [
   {
-    src: "/images/dome-photo.png",
+    src: "/images/dome-photo.webp",
     alt: "Dome vortex projection",
   },
   {
-    src: "/images/event-distance.png",
+    src: "/images/event-distance.webp",
     alt: "Edufest Infinity visual",
   },
   {
-    src: "/images/event-orion.png",
+    src: "/images/event-orion.webp",
     alt: "MPLS Sancaya Wiyata visual",
   },
   {
-    src: "/images/event-newton.png",
+    src: "/images/event-newton.webp",
     alt: "Univ Day visual",
   },
 ];

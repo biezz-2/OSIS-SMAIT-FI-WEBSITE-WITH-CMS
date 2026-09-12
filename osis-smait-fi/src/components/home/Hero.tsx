@@ -45,6 +45,8 @@ const Hero = ({ initialData }: { initialData?: any }) => {
           fill
           priority
           sizes="100vw"
+          placeholder="blur"
+          blurDataURL="data:image/webp;base64,UklGRkQAAABXRUJQVlA4IDgAAADwAQCdASoQAAgABUB8JQBOgB4jvyx7SgAA/TyAmPDiYXfjBJe/+SeXGd6p5mIezpD5pMuSDvAAAA=="
           className="absolute inset-0 object-cover"
         />
       )}

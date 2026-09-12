@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useCallback } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { committeeData as fallbackCommitteeData, findDivisionByMember, getMainPhoto, type Member, type Division } from "@/data/committee";
@@ -357,11 +358,13 @@ function MemberCard({ member, index, isCore = false, onClick }: MemberCardProps)
       <div className="relative flex flex-col items-center text-center">
         {/* Photo circle dengan subtle ring - Main photo */}
         <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gray-200 dark:from-white/10 to-transparent p-[1px] mb-3">
-          <div className="w-full h-full rounded-full bg-gray-100 dark:bg-white/5 flex items-center justify-center overflow-hidden">
+          <div className="relative w-full h-full rounded-full bg-gray-100 dark:bg-white/5 flex items-center justify-center overflow-hidden">
             {mainPhoto ? (
-              <img
+              <Image
                 src={mainPhoto}
                 alt={name}
+                fill
+                sizes="64px"
                 className="w-full h-full rounded-full object-cover"
               />
             ) : (

@@ -63,7 +63,7 @@ export default async function EventDetailPage({ params }: PageProps) {
   // Judul & Banner fallback ke desain prototipe jika event belum ada di Strapi atau dibuka langsung
   const title = attrs?.nama || attrs?.tema || slug.replace(/-/g, " ").toUpperCase();
   const bannerMedia = attrs?.banner || attrs?.gambar;
-  const bannerUrl = getStrapiMediaUrl(bannerMedia, "/images/hero-photo.png");
+  const bannerUrl = getStrapiMediaUrl(bannerMedia, "/images/hero-photo.webp");
   const tagline = attrs?.tagline || attrs?.ringkasan || "Agenda Resmi OSIS SMAIT Fithrah Insani";
   const rawKategori = attrs?.kategori;
   const categoryBanner =
@@ -93,7 +93,7 @@ export default async function EventDetailPage({ params }: PageProps) {
     attrs?.galeri;
   if (Array.isArray(mediaList) && mediaList.length > 0) {
     domeImages = mediaList.map((m: any, idx: number) => ({
-      src: getStrapiMediaUrl(m, "/images/dome-photo.png"),
+      src: getStrapiMediaUrl(m, "/images/dome-photo.webp"),
       alt: `${title} Galeri ${idx + 1}`,
     }));
   }
