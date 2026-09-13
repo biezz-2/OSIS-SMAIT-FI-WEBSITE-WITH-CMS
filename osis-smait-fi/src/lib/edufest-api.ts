@@ -170,9 +170,9 @@ export async function getEdufestCommittee(): Promise<Division[]> {
         const rawMembers = attrs.members?.data || attrs.members || [];
         const members: Member[] = rawMembers.map((m: any) => {
           const mAttrs = m.attributes || m;
-          const photoUrl = getStrapiMediaUrl(mAttrs.photo, undefined, 'medium');
-          const cardUrl = getStrapiMediaUrl(mAttrs.card_photo, undefined, 'medium');
-          const extraPhotos: string[] = (mAttrs.photos?.data || mAttrs.photos || []).map((p: any) => getStrapiMediaUrl(p, '', 'medium')).filter(Boolean);
+          const photoUrl = getStrapiMediaUrl(mAttrs.photo, undefined, 'large');
+          const cardUrl = getStrapiMediaUrl(mAttrs.card_photo, undefined, 'large');
+          const extraPhotos: string[] = (mAttrs.photos?.data || mAttrs.photos || []).map((p: any) => getStrapiMediaUrl(p, '', 'large')).filter(Boolean);
 
           let photosArr: string[] | undefined = undefined;
           if (extraPhotos.length > 0) {

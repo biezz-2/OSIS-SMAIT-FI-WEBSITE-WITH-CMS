@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import styles from '../styles/TickerGallery.module.css';
 import { fetchMediaAssetsByCategory, fetchStrapiAPI, getStrapiMediaUrl } from '@/lib/strapi';
-import { useImageQuality } from '@/context/ImageQualityContext';
 
 type TickerItem = {
     src: string;
@@ -14,7 +13,6 @@ type TickerItem = {
 export default function TickerGallery() {
     const [tickers, setTickers] = useState<TickerItem[][]>([]);
     const [loading, setLoading] = useState(true);
-    const { getOptimizedImageUrl } = useImageQuality();
 
     useEffect(() => {
         async function loadTickers() {
@@ -34,7 +32,7 @@ export default function TickerGallery() {
                     const items = json?.data || [];
                     formatted = items.map((item: any) => {
                         const attrs = item.attributes || item;
-                        const src = getStrapiMediaUrl(attrs.foto || attrs.gambar, '', 'medium');
+                        const src = getStrapiMediaUrl(attrs.foto || attrs.gambar, '', 'large');
                         return {
                             src,
                             alt: attrs.judul || attrs.title || 'Galeri Foto',
@@ -92,7 +90,7 @@ export default function TickerGallery() {
                                 <li key={`${i}-${j}`} className={styles.tickerItem}>
                                     <div className={styles.item}>
                                         <Image
-                                            src={getOptimizedImageUrl(item.src)}
+                                            src={item.src}
                                             alt={item.alt}
                                             fill
                                             draggable={false}

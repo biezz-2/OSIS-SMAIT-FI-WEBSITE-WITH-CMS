@@ -19,7 +19,7 @@ const STORAGE_KEY = 'osis_image_compression_quality';
 import { STRAPI_URL } from '@/lib/strapi';
 
 export function ImageQualityProvider({ children }: { children: React.ReactNode }) {
-  const [quality, setQualityState] = useState<number>(75);
+  const [quality, setQualityState] = useState<number>(85);
   const [compress, setCompressState] = useState<boolean>(true);
 
   useEffect(() => {
@@ -61,7 +61,7 @@ export function ImageQualityProvider({ children }: { children: React.ReactNode }
     const activeCompress = overrideCompress !== false && compress !== false;
     if (!activeCompress) return originalUrl;
 
-    const activeQuality = overrideQuality || quality || 75;
+    const activeQuality = overrideQuality || quality || 85;
 
     // Check if it's an image URL
     const isImage = /\.(jpg|jpeg|png|webp|avif|gif)(\?.*)?$/i.test(originalUrl.split('?')[0]);

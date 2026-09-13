@@ -52,7 +52,7 @@ export function getStrapiMediaUrl(
   } else if (preferredFormat === 'medium') {
     rawUrl = formats?.medium?.url || formats?.large?.url || originalUrl;
   } else if (preferredFormat === 'large') {
-    rawUrl = formats?.large?.url || originalUrl;
+    rawUrl = formats?.large?.url || originalUrl || formats?.medium?.url;
   } else {
     // 'original' — default. Ambil file asli HD untuk hero/banner/galeri.
     // Next.js <Image /> dan /api/compress-image menangani kompresi on-the-fly.
@@ -418,7 +418,7 @@ export function formatBPHMembers(strapiMembers: any[]): TeamMember[] {
   if (!strapiMembers || !Array.isArray(strapiMembers)) return [];
   return strapiMembers.map((item: any) => {
     const attrs = item.attributes || item;
-    const imgUrl = getStrapiMediaUrl(attrs.foto, '', 'medium');
+    const imgUrl = getStrapiMediaUrl(attrs.foto, '', 'large');
     return {
       role: attrs.jabatan || 'PENGURUS OSIS',
       name: attrs.nama_lengkap || '',
@@ -513,7 +513,7 @@ export async function fetchPartnersFromStrapi(): Promise<PartnerData[]> {
     return items.map((item: any) => {
       const attrs = item.attributes || item;
       const avatarMedia = attrs.avatar;
-      const resolvedAvatar = getStrapiMediaUrl(avatarMedia, attrs.avatar_url || `https://github.com/${attrs.nama}.png`, 'medium');
+      const resolvedAvatar = getStrapiMediaUrl(avatarMedia, attrs.avatar_url || `https://github.com/${attrs.nama}.png`, 'large');
 
       return {
         id: item.id,

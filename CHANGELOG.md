@@ -6,6 +6,22 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.25] - 2026-09-13
+
+### ⚡ Optimasi Kualitas Gambar & Resolusi Retina (Media Pipeline & High-DPI Display)
+- **Fallback Resolusi Media Cerdas (`osis-smait-fi/src/lib/strapi.ts`)**:
+  - Mengubah fungsi `getStrapiMediaUrl` agar mengutamakan resolusi `'large'` sebelum fallback ke `originalUrl` atau `'medium'`.
+  - Memperbaiki `formatBPHMembers` dan `fetchPartnersFromStrapi` dari pemaksaan format `'medium'` (~750px) ke `'large'`/original untuk mencegah degradasi gambar pada layar Retina.
+- **Peningkatan Resolusi Komponen Profil & Showcase**:
+  - `osis-smait-fi/src/components/about/MeetTeam.tsx`: Memperbarui resolusi foto pengurus dari `'medium'` ke `'large'`.
+  - `osis-smait-fi/src/components/anggota/AnggotaList.tsx`: Memperbarui resolusi foto pengurus inti dan sekbid dari `'medium'` ke `'large'`.
+  - `osis-smait-fi/src/lib/edufest-api.ts`: Mengubah resolusi foto panitia Edufest (`photoUrl`, `cardUrl`, `extraPhotos`) ke format `'large'`.
+- **Eliminasi Double-Lossy Compression**:
+  - `osis-smait-fi/src/components/TickerGallery.tsx`: Menghapus pembungkusan `getOptimizedImageUrl` di dalam komponen `<Image />` Next.js guna mencegah kompresi WebP berulang yang mengikis ketajaman gambar.
+  - `osis-smait-fi/src/context/ImageQualityContext.tsx`: Menaikkan baseline kualitas kompresi default dari 75 menjadi 85.
+
+---
+
 ## [2.1.24] - 2026-09-13
 
 ### 🐛 Perbaikan Bug & Theme Engine (Sinkronisasi Dark/Light Mode di /events/[slug])
