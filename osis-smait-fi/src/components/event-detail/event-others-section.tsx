@@ -84,6 +84,7 @@ export default function EventOthersSection({
                   src={event.image || "/images/event-distance.png"}
                   alt={event.title}
                   fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 360px"
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />
               </div>

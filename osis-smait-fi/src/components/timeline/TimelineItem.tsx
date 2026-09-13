@@ -83,6 +83,7 @@ export default function TimelineItem({ year, date, theme, participants, guests, 
                                                     src={guest.imageSrc}
                                                     alt={guest.name}
                                                     fill
+                                                    sizes="(max-width: 768px) 100vw, 420px"
                                                     className="object-cover"
                                                     style={{ objectPosition: guest.objectPosition || "center" }}
                                                 />

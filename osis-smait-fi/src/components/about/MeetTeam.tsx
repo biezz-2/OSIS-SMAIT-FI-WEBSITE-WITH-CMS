@@ -150,10 +150,13 @@ const MeetTeam: React.FC<MeetTeamProps> = ({
                     {/* Image Container */}
                     <div className="relative w-full aspect-[4/5] bg-[#F3F4F6] rounded-[24px] overflow-hidden">
                       {teamList[0].image && (
-                         <img 
-                            src={getOptimizedImageUrl(teamList[0].image, quality, compress)} 
+                         <Image 
+                            src={teamList[0].image} 
                             alt={teamList[0].imageAlt || teamList[0].name}
-                            className="w-full h-full object-cover"
+                            fill
+                            sizes="(max-width: 640px) 100vw, 384px"
+                            className="object-cover"
+                            priority
                          />
                       )}
                     </div>
@@ -197,11 +200,15 @@ const MeetTeam: React.FC<MeetTeamProps> = ({
                       {/* Top Half - Image */}
                       <div className="w-full h-[192px] bg-[#F3F4F6] relative">
                         {member.image && (
-                          <img 
-                            src={getOptimizedImageUrl(member.image, quality, compress)} 
-                            alt={member.imageAlt || member.name}
-                            className="w-full h-full object-cover object-top"
-                          />
+                          <div className="absolute inset-0 overflow-hidden">
+                            <Image 
+                              src={member.image} 
+                              alt={member.imageAlt || member.name}
+                              fill
+                              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 240px"
+                              className="object-cover object-top"
+                            />
+                          </div>
                         )}
                         {/* Icon Badge Overlay */}
                         <div

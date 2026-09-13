@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { fetchStrapiAPI, fetchAllSekbidsFromStrapi, getStrapiMediaUrl } from '@/lib/strapi';
 import { useImageQuality } from '@/context/ImageQualityContext';
 import Link from 'next/link';
+import Image from 'next/image';
 import { AnimatedTooltip } from '@/components/ui/animated-tooltip';
 
 interface Member {
@@ -328,11 +329,14 @@ const AnggotaList: React.FC<AnggotaListProps> = ({
                       className="w-full overflow-hidden relative aspect-[4/5] bg-[#F3F4F6] dark:bg-slate-800 rounded-[24px] max-h-[437.5px]"
                     >
                       {ketuaMember.image ? (
-                        <img
-                          src={getOptimizedImageUrl(ketuaMember.image)}
+                        <Image
+                          src={ketuaMember.image}
                           alt={ketuaMember.name}
-                          className="w-full h-full object-cover"
+                          fill
+                          sizes="(max-width: 640px) 100vw, 384px"
+                          className="object-cover"
                           style={{ filter: 'saturate(1)' }}
+                          priority
                         />
                       ) : (
                         <div className="w-full h-full bg-[#F3F4F6]" />
@@ -383,13 +387,15 @@ const AnggotaList: React.FC<AnggotaListProps> = ({
                     >
                       {/* Photo */}
                       <div
-                        className="w-full relative h-[192px] bg-[#F3F4F6] dark:bg-slate-800"
+                        className="w-full relative h-[192px] bg-[#F3F4F6] dark:bg-slate-800 overflow-hidden"
                       >
                         {member.image && (
-                          <img
-                            src={getOptimizedImageUrl(member.image)}
+                          <Image
+                            src={member.image}
                             alt={member.name}
-                            className="w-full h-full object-cover object-top"
+                            fill
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 240px"
+                            className="object-cover object-top"
                           />
                         )}
                       </div>
@@ -454,10 +460,12 @@ const AnggotaList: React.FC<AnggotaListProps> = ({
                     {(() => {
                       const sekbidImg = sekbidImages[section.id] || sekbidImages[sekbidNum];
                       return sekbidImg ? (
-                        <img
-                          src={getOptimizedImageUrl(sekbidImg)}
+                        <Image
+                          src={sekbidImg}
                           alt={sekbidTitle}
-                          className="w-full h-full object-cover"
+                          fill
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 380px"
+                          className="object-cover"
                         />
                       ) : (
                         <div className="w-full h-full bg-[#F3F4F6]" />

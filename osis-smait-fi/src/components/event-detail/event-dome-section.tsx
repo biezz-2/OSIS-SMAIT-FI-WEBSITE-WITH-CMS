@@ -125,6 +125,7 @@ export default function EventDomeSection({
               src={image.src}
               alt={image.alt}
               fill
+              sizes="(max-width: 768px) 120px, 180px"
               className="object-cover transition-opacity duration-500"
               style={{ opacity: index === currentIndex ? 1 : 0 }}
             />

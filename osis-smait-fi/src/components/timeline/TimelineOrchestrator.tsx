@@ -131,6 +131,7 @@ export default function TimelineOrchestrator() {
                                             src={guest.src}
                                             alt={guest.name}
                                             fill
+                                            sizes="128px"
                                             className="object-cover"
                                             style={{ objectPosition: guest.objectPosition || "center" }}
                                         />

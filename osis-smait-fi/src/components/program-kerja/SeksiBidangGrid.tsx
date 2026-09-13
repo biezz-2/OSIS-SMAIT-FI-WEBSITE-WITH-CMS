@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { fetchStrapiAPI, formatSekbidList, SeksiBidang } from '@/lib/strapi';
 import { useImageQuality } from '@/context/ImageQualityContext';
 
@@ -63,10 +64,12 @@ const SeksiBidangGrid = ({ initialSekbids, quality, compress }: { initialSekbids
               {/* Cover Image Header Section - Single Clean Frame */}
               <div className="relative aspect-[16/9] w-full overflow-hidden bg-slate-900">
                 {sekbid.image ? (
-                  <img
-                    src={getOptimizedImageUrl(sekbid.image, quality, compress)}
+                  <Image
+                    src={sekbid.image}
                     alt={sekbid.number}
-                    className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+                    className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                   />
                 ) : (
                   <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#38BDF8_1px,transparent_1px)] [background-size:16px_16px]" />

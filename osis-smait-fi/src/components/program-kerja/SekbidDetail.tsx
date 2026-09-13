@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { fetchSekbidFromStrapi, getStrapiMediaUrl } from '@/lib/strapi';
@@ -183,10 +184,13 @@ export default function SekbidDetail({ number, initialData }: { number: number |
         {/* Right Hero Image Section - Single Clean Frame */}
         <div className="w-full md:w-1/2 bg-[#1E293B] relative min-h-[350px] md:min-h-full flex items-center justify-center overflow-hidden">
           {data.bannerImg ? (
-            <img
-              src={getOptimizedImageUrl(data.bannerImg, quality, compress)}
+            <Image
+              src={data.bannerImg}
               alt={`Banner Sekbid ${numKey}`}
-              className="w-full h-full object-cover"
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-cover"
+              priority
             />
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-[#1E293B] via-[#334155] to-[#0F172A] flex items-center justify-center">

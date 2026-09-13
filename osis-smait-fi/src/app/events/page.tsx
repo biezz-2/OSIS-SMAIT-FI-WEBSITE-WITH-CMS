@@ -91,6 +91,7 @@ export default async function EventsPage() {
                         src={heroBgUrl}
                         alt={heroTitle}
                         fill
+                        sizes="100vw"
                         className="object-cover"
                         priority
                     />

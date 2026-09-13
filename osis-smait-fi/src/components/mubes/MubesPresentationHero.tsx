@@ -31,6 +31,7 @@ export default function MubesPresentationHero({ initialData }: MubesPresentation
           src={bgImg}
           alt="Mubes Background"
           fill
+          sizes="100vw"
           priority
           className="object-cover object-center brightness-50 contrast-110"
         />

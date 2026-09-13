@@ -276,7 +276,7 @@ const Introduction = ({ initialData }: { initialData?: any }) => {
                 src={getSlotImage(0)}
                 alt={getSlotAlt(0)}
                 fill
-                sizes="360px"
+                sizes="(max-width: 640px) 260px, (max-width: 768px) 320px, 360px"
                 draggable={false}
                 className="object-cover group-hover:scale-105 transition-transform duration-700 pointer-events-none"
               />
@@ -290,7 +290,7 @@ const Introduction = ({ initialData }: { initialData?: any }) => {
                   src={getSlotImage(1)}
                   alt={getSlotAlt(1)}
                   fill
-                  sizes="340px"
+                  sizes="(max-width: 640px) 240px, (max-width: 768px) 300px, 340px"
                   draggable={false}
                   className="object-cover group-hover:scale-105 transition-transform duration-700 pointer-events-none"
                 />
@@ -301,7 +301,7 @@ const Introduction = ({ initialData }: { initialData?: any }) => {
                   src={getSlotImage(2)}
                   alt={getSlotAlt(2)}
                   fill
-                  sizes="340px"
+                  sizes="(max-width: 640px) 240px, (max-width: 768px) 300px, 340px"
                   draggable={false}
                   className="object-cover group-hover:scale-105 transition-transform duration-700 pointer-events-none"
                 />
@@ -314,7 +314,7 @@ const Introduction = ({ initialData }: { initialData?: any }) => {
                 src={overlayImg || getSlotImage(3)}
                 alt={getSlotAlt(3)}
                 fill
-                sizes="420px"
+                sizes="(max-width: 640px) 280px, (max-width: 768px) 360px, 420px"
                 draggable={false}
                 className="object-cover group-hover:scale-105 transition-transform duration-700 pointer-events-none"
               />
@@ -339,7 +339,7 @@ const Introduction = ({ initialData }: { initialData?: any }) => {
                   src={getSlotImage(4)}
                   alt={getSlotAlt(4)}
                   fill
-                  sizes="340px"
+                  sizes="(max-width: 640px) 240px, (max-width: 768px) 300px, 340px"
                   draggable={false}
                   className="object-cover group-hover:scale-105 transition-transform duration-700 pointer-events-none"
                 />
@@ -350,7 +350,7 @@ const Introduction = ({ initialData }: { initialData?: any }) => {
                   src={getSlotImage(5)}
                   alt={getSlotAlt(5)}
                   fill
-                  sizes="340px"
+                  sizes="(max-width: 640px) 240px, (max-width: 768px) 300px, 340px"
                   draggable={false}
                   className="object-cover group-hover:scale-105 transition-transform duration-700 pointer-events-none"
                 />
@@ -363,7 +363,7 @@ const Introduction = ({ initialData }: { initialData?: any }) => {
                 src={getSlotImage(6)}
                 alt={getSlotAlt(6)}
                 fill
-                sizes="360px"
+                sizes="(max-width: 640px) 260px, (max-width: 768px) 320px, 360px"
                 draggable={false}
                 className="object-cover group-hover:scale-105 transition-transform duration-700 pointer-events-none"
               />

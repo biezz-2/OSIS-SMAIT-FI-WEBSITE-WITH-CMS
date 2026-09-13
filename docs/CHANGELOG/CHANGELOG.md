@@ -6,6 +6,23 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.26] - 2026-09-13
+
+### ⚡ Optimasi Global: Resolusi Retina Tajam & Hemat Bandwidth (Next/Image AVIF/WebP)
+- **Konfigurasi Mesin Optimizer Next.js (`osis-smait-fi/next.config.ts`)**:
+  - Mendaftarkan `qualities: [75, 85, 90]` untuk mengaktifkan generasi varian srcset berkualitas tinggi pada Next.js 16.
+  - Menambahkan breakpoint `2048` pada `deviceSizes` untuk dukungan optimal layar QHD/2K/Retina.
+- **Migrasi Raw `<img>` ke `<Image fill>` Responsive**:
+  - `osis-smait-fi/src/components/program-kerja/ProgramKerja.tsx`: Banner hero proker beralih ke `<Image fill sizes="(max-width: 1024px) 100vw, 50vw" />`.
+  - `osis-smait-fi/src/components/program-kerja/SeksiBidangGrid.tsx`: Banner kartu grid sekbid beralih ke `<Image fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px" />`.
+  - `osis-smait-fi/src/components/program-kerja/SekbidDetail.tsx`: Hero banner detail sekbid beralih ke `<Image fill sizes="(max-width: 768px) 100vw, 50vw" />`.
+  - `osis-smait-fi/src/components/about/MeetTeam.tsx` & `AnggotaList.tsx`: Seluruh foto Ketua OSIS, Pengurus Inti, dan kartu Sekbid dimigrasikan ke `<Image fill>` dengan ukuran container presisi, otomatis menyajikan format AVIF/WebP tajam sesuai DPR layar.
+- **Presisi Atribut `sizes` Seluruh Halaman (Hemat Bandwidth)**:
+  - Mencegah browser mengunduh aset `100vw` berlebih pada kartu kecil di `events/page.tsx`, `event-dome-section.tsx`, `event-others-section.tsx`, `EventCard.tsx`, `MubesPresentationHero.tsx`, `MubesPresentationViewer.tsx`, dan `timeline`.
+  - Menyesuaikan prop `sizes` di `Introduction.tsx` agar adaptif mengikuti lebar kolom dan DPR layar mobile/desktop.
+
+---
+
 ## [2.1.25] - 2026-09-13
 
 ### ⚡ Optimasi Kualitas Gambar & Resolusi Retina (Media Pipeline & High-DPI Display)

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { fetchHalamanFromStrapi, getStrapiMediaUrl } from '@/lib/strapi';
 import { useImageQuality } from '@/context/ImageQualityContext';
 
@@ -81,10 +82,13 @@ const ProgramKerja = ({ initialData }: { initialData?: any }) => {
         {/* Right Image Side - Single Clean Frame */}
         <div className="w-full lg:w-[50%] min-h-[350px] lg:h-full relative overflow-hidden bg-slate-950 flex items-center justify-center">
           {bannerUrl ? (
-            <img
-              className="w-full h-full object-cover"
-              src={getOptimizedImageUrl(bannerUrl, quality, compress)}
+            <Image
+              src={bannerUrl}
               alt="Program Kerja Banner"
+              fill
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="object-cover"
+              priority
             />
           ) : (
             <div className="text-slate-500 text-sm font-sans">Tidak ada banner</div>
