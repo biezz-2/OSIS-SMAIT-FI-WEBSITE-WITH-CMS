@@ -6,6 +6,19 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.24] - 2026-09-13
+
+### 🐛 Perbaikan Bug & Theme Engine (Sinkronisasi Dark/Light Mode di /events/[slug])
+- **Sinkronisasi Reaktif Event Theme Provider (`osis-smait-fi/src/components/event-detail/theme-provider.tsx`)**:
+  - Mengatasi masalah tombol dark/light toggle di Navbar yang tidak merespons pada halaman detail event (`/events/[slug]`).
+  - Menghubungkan `EventThemeProvider` secara langsung ke class `.dark` pada `document.documentElement` menggunakan `MutationObserver` dan key storage global `theme`.
+  - Ketika `AnimatedThemeToggler` di `Navbar` mengubah class `.dark` pada root `<html>`, state `theme` di `EventThemeContext` seketika tersinkronisasi sehingga seluruh token inline style (`eventDetailThemeTokens`) di `EventDetailClient`, `EventHeroSection`, `EventIntroSection`, `EventDomeSection`, dan `EventOthersSection` langsung berganti mode.
+  - Memastikan handler `toggleTheme` memanipulasi class `.dark` pada `<html>` secara konsisten dua arah.
+- **Pembersihan File Redundan**:
+  - Menghapus komponen mati `src/components/event-detail/event-navbar.tsx` yang sebelumnya menjadi sumber tombol toggle terisolasi.
+
+---
+
 ## [2.1.23] - 2026-09-13
 
 ### 🚀 Fitur & CMS (Multi-Image Ticker Gallery Terpusat & Sanitasi Media)

@@ -16,10 +16,15 @@ type EventThemeContextValue = {
 
 const EventThemeContext = createContext<EventThemeContextValue | null>(null);
 
-const STORAGE_KEY = "agoraacta-event-theme";
+const STORAGE_KEY = "theme";
 
 function applyTheme(theme: Theme) {
   document.documentElement.dataset.eventTheme = theme;
+  if (theme === "dark") {
+    document.documentElement.classList.add("dark");
+  } else {
+    document.documentElement.classList.remove("dark");
+  }
   try {
     localStorage.setItem(STORAGE_KEY, theme);
   } catch (_) {}
@@ -29,13 +34,49 @@ export function EventThemeProvider({ children }: { children: React.ReactNode }) 
   const [theme, setTheme] = useState<Theme>("dark");
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      const initial: Theme =
-        stored === "light" || stored === "dark" ? stored : "dark";
-      setTheme(initial);
-      applyTheme(initial);
-    } catch (_) {}
+    // 1. Initial sync from html.dark class or localStorage
+    const readCurrentTheme = (): Theme => {
+      if (typeof document !== "undefined") {
+        if (document.documentElement.classList.contains("dark")) {
+          return "dark";
+        }
+      }
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored === "light" || stored === "dark") return stored;
+      } catch (_) {}
+      return "dark";
+    };
+
+    const current = readCurrentTheme();
+    setTheme(current);
+    document.documentElement.dataset.eventTheme = current;
+
+    // 2. React to class="dark" mutation from Navbar's AnimatedThemeToggler
+    const syncWithGlobalClass = () => {
+      const isDark = document.documentElement.classList.contains("dark");
+      const nextTheme: Theme = isDark ? "dark" : "light";
+      setTheme(nextTheme);
+      document.documentElement.dataset.eventTheme = nextTheme;
+    };
+
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (
+          mutation.type === "attributes" &&
+          mutation.attributeName === "class"
+        ) {
+          syncWithGlobalClass();
+        }
+      }
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
   }, []);
 
   const toggleTheme = useCallback(() => {
