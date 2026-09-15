@@ -12,6 +12,7 @@ interface Member {
   role: string;
   description: string;
   image: string;
+  avatarThumb: string;
 }
 
 interface CategorySection {
@@ -83,12 +84,14 @@ const AnggotaList: React.FC<AnggotaListProps> = ({
           const attrs = item.attributes || item;
           const divKey = attrs.divisi || 'BPH';
           const imgUrl = getStrapiMediaUrl(attrs.foto, '', 'large');
+          const thumbUrl = getStrapiMediaUrl(attrs.foto, '', 'thumbnail') || getStrapiMediaUrl(attrs.foto, '', 'small') || imgUrl;
 
           const member: Member = {
             name: attrs.nama_lengkap || '',
             role: attrs.jabatan || 'Pengurus OSIS',
             description: attrs.deskripsi || `${attrs.jabatan} OSIS SMAIT Fithrah Insani.`,
             image: imgUrl,
+            avatarThumb: thumbUrl,
           };
 
           if (!categoryMap[divKey]) {
@@ -505,7 +508,7 @@ const AnggotaList: React.FC<AnggotaListProps> = ({
                             id: i,
                             name: m.name,
                             designation: m.role,
-                            image: m.image ? getOptimizedImageUrl(m.image) : null,
+                            image: m.avatarThumb || m.image || null,
                           }))}
                         />
                       </div>

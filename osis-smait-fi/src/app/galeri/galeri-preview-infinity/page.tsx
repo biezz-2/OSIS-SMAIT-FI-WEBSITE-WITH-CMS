@@ -25,13 +25,13 @@ const BASE_PHOTOS: GalleryPhoto[] = [
   { id: 6, src: "https://placehold.co/600x750/0f172a/334155?text=Galeri+OSIS+6", title: "Pentas Seni & Bakat", description: "Unjuk bakat dan ekspresi seni siswa.", width: 600, height: 750, kategori: "kegiatan" },
 ];
 
-const COLUMN_WIDTH = 340;
-const GAP = 0;
-const NUM_COLUMNS = 8;
+const COLUMN_WIDTH = 320;
+const GAP = 12;
+const NUM_COLUMNS = 4;
 const TOTAL_WIDTH = NUM_COLUMNS * (COLUMN_WIDTH + GAP);
 
-const GX_RANGE = [-1, 0, 1, 2];
-const CI_RANGE = [-2, -1, 0, 1, 2];
+const GX_RANGE = [0, 1];
+const CI_RANGE = [-1, 0, 1];
 
 const KATEGORI_LABELS: Record<string, string> = {
   all: "Semua",
@@ -52,6 +52,7 @@ export default function GaleriPreviewInfinityPage() {
   const [allPhotos, setAllPhotos] = useState<GalleryPhoto[]>(BASE_PHOTOS);
   const [loading, setLoading] = useState(true);
   const [activeKategori, setActiveKategori] = useState("all");
+  const [viewMode, setViewMode] = useState<"canvas" | "grid">("canvas");
   const [selectedPhoto, setSelectedPhoto] = useState<GalleryPhoto | null>(null);
   const [selectedIdx, setSelectedIdx] = useState<number>(-1);
   const [showHint, setShowHint] = useState(true);
@@ -366,6 +367,30 @@ export default function GaleriPreviewInfinityPage() {
                 </p>
               </div>
               <div className="flex items-center gap-1.5 flex-wrap">
+                {/* View Mode Toggle */}
+                <div className="flex items-center bg-white/5 border border-white/10 rounded-full p-0.5 mr-2">
+                  <button
+                    onClick={() => setViewMode("canvas")}
+                    className={`px-3 py-1 rounded-full text-[11px] font-bold transition-all ${
+                      viewMode === "canvas"
+                        ? "bg-blue-600 text-white shadow"
+                        : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    Canvas Interaktif
+                  </button>
+                  <button
+                    onClick={() => setViewMode("grid")}
+                    className={`px-3 py-1 rounded-full text-[11px] font-bold transition-all ${
+                      viewMode === "grid"
+                        ? "bg-blue-600 text-white shadow"
+                        : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    Grid Standar (Ringan)
+                  </button>
+                </div>
+
                 {kategoriList.map(k => (
                   <button
                     key={k}
@@ -439,56 +464,86 @@ export default function GaleriPreviewInfinityPage() {
           </div>
         )}
 
-        {/* Infinite Canvas */}
-        <div
-          ref={canvasRef}
-          className="absolute inset-0 origin-top-left pointer-events-auto"
-          style={{
-            transform: "translate3d(-400px, 0px, 0) scale(0.85)",
-            willChange: "transform",
-          }}
-        >
-          {GX_RANGE.map((gx) => (
-            <div
-              key={`grid-${gx}`}
-              className="absolute top-0"
-              style={{ left: `${gx * TOTAL_WIDTH}px`, width: `${TOTAL_WIDTH}px` }}
-            >
-              {columnsData.map((col, c) => (
+        {/* Grid View Mode (Ringan, smooth scroll, zero lag) */}
+        {viewMode === "grid" ? (
+          <div className="flex-1 w-full overflow-y-auto pt-24 px-4 sm:px-8 pb-16">
+            <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {photos.map((photo) => (
                 <div
-                  key={`col-${gx}-${c}`}
-                  ref={(el) => { if (columnsRefs.current) columnsRefs.current[`${gx}_${c}`] = el; }}
-                  className="absolute top-0 flex flex-col"
-                  style={{
-                    left: `${c * (COLUMN_WIDTH + GAP)}px`,
-                    width: `${COLUMN_WIDTH}px`,
-                    willChange: "transform",
-                  }}
+                  key={`grid-mode-${photo.id}`}
+                  onClick={() => openPhoto(photo)}
+                  className="group relative overflow-hidden rounded-xl bg-[#0a101d] border border-white/10 shadow-lg cursor-pointer transition-transform duration-300 hover:scale-[1.02] transform-gpu"
+                  style={{ aspectRatio: "4/3" }}
                 >
-                  {CI_RANGE.map((ci) => (
-                    <div
-                      key={ci}
-                      className="absolute top-0 left-0 w-full flex flex-col"
-                      style={{
-                        gap: `${GAP}px`,
-                        transform: `translate3d(0, ${ci * col.height}px, 0)`,
-                      }}
-                    >
-                      {col.photos.map((photo, pi) => (
-                        <PhotoCard
-                          key={`${gx}-${c}-${ci}-${pi}-${photo.id}`}
-                          photo={photo}
-                          onSelect={openPhoto}
-                          dragDistanceRef={dragDistanceRef}
-                        />
-                      ))}
-                    </div>
-                  ))}
+                  <img
+                    src={photo.src}
+                    alt={photo.title}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-4 flex flex-col justify-end">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-blue-400">
+                      {KATEGORI_LABELS[photo.kategori || ""] || photo.kategori}
+                    </span>
+                    <h4 className="text-white text-xs font-semibold mt-1">{photo.title}</h4>
+                  </div>
                 </div>
               ))}
             </div>
-          ))}
-        </div>
+          </div>
+        ) : (
+          /* Infinite Canvas */
+          <div
+            ref={canvasRef}
+            className="absolute inset-0 origin-top-left pointer-events-auto transform-gpu"
+            style={{
+              transform: "translate3d(-400px, 0px, 0) scale(0.85)",
+              willChange: "transform",
+            }}
+          >
+            {GX_RANGE.map((gx) => (
+              <div
+                key={`grid-${gx}`}
+                className="absolute top-0"
+                style={{ left: `${gx * TOTAL_WIDTH}px`, width: `${TOTAL_WIDTH}px` }}
+              >
+                {columnsData.map((col, c) => (
+                  <div
+                    key={`col-${gx}-${c}`}
+                    ref={(el) => { if (columnsRefs.current) columnsRefs.current[`${gx}_${c}`] = el; }}
+                    className="absolute top-0 flex flex-col transform-gpu"
+                    style={{
+                      left: `${c * (COLUMN_WIDTH + GAP)}px`,
+                      width: `${COLUMN_WIDTH}px`,
+                      willChange: "transform",
+                    }}
+                  >
+                    {CI_RANGE.map((ci) => (
+                      <div
+                        key={ci}
+                        className="absolute top-0 left-0 w-full flex flex-col"
+                        style={{
+                          gap: `${GAP}px`,
+                          transform: `translate3d(0, ${ci * col.height}px, 0)`,
+                        }}
+                      >
+                        {col.photos.map((photo, pi) => (
+                          <PhotoCard
+                            key={`${gx}-${c}-${ci}-${pi}-${photo.id}`}
+                            photo={photo}
+                            onSelect={openPhoto}
+                            dragDistanceRef={dragDistanceRef}
+                          />
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Lightbox Modal */}

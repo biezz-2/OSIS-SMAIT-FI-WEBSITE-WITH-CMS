@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import {
   fetchEventBySlug,
-  fetchAllEventsForPage,
+  fetchOtherEventsSummary,
   getStrapiMediaUrl,
 } from "@/lib/strapi";
 import EventDetailClient from "@/components/event-detail/event-detail-client";
@@ -49,9 +49,9 @@ export default async function EventDetailPage({ params }: PageProps) {
     // Bisa langsung redirect atau biarkan
   }
 
-  const [eventData, allEvents] = await Promise.all([
+  const [eventData, otherEventsRaw] = await Promise.all([
     fetchEventBySlug(slug),
-    fetchAllEventsForPage(),
+    fetchOtherEventsSummary(slug, 4),
   ]);
 
   if (!eventData) {
@@ -99,7 +99,7 @@ export default async function EventDetailPage({ params }: PageProps) {
   }
 
   // Other Events list (ambil dari events lain, kecualikan current slug)
-  const otherEvents = (allEvents || [])
+  const otherEvents = (otherEventsRaw || [])
     .filter((e: any) => {
       const eAttrs = e?.attributes || e;
       const eSlug = eAttrs?.slug || "";

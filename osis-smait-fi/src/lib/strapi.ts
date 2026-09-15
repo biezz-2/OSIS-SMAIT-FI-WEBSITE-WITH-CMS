@@ -321,6 +321,23 @@ export async function fetchEventsFromStrapi(limit: number = 5) {
 }
 
 /**
+ * Fetch minimal summary of other events for detail page
+ */
+export async function fetchOtherEventsSummary(excludeSlug: string, limit: number = 4) {
+  let json: any;
+  try {
+    json = await fetchStrapiAPI(
+      `/api/events?filters[slug][$ne]=${encodeURIComponent(excludeSlug)}&sort[0]=tanggal_mulai:desc&sort[1]=createdAt:desc&pagination[limit]=${limit}&fields[0]=nama&fields[1]=tema&fields[2]=slug&fields[3]=deskripsi&fields[4]=ringkasan&fields[5]=sub_judul&populate[banner][fields][0]=url&populate[gambar][fields][0]=url`
+    );
+  } catch {
+    json = await fetchStrapiAPI(
+      `/api/events?filters[slug][$ne]=${encodeURIComponent(excludeSlug)}&sort[0]=createdAt:desc&pagination[limit]=${limit}&fields[0]=nama&fields[1]=tema&fields[2]=slug&fields[3]=deskripsi&fields[4]=ringkasan&fields[5]=sub_judul&populate[banner][fields][0]=url&populate[gambar][fields][0]=url`
+    );
+  }
+  return json?.data || [];
+}
+
+/**
  * Fetch all Events for the /events page
  */
 export async function fetchAllEventsForPage() {

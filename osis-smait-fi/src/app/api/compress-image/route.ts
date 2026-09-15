@@ -5,11 +5,11 @@ import fs from 'fs/promises';
 import path from 'path';
 import crypto from 'crypto';
 
-sharp.concurrency(1);
-sharp.cache({ memory: 50, files: 0, items: 100 });
+sharp.concurrency(0);
+sharp.cache({ memory: 200, files: 50, items: 500 });
 
 const CACHE_DIR = path.join(process.cwd(), '.image-cache');
-const MAX_CACHE_FILES = 500;
+const MAX_CACHE_FILES = 2000;
 
 // Whitelist domain resmi yang diperbolehkan untuk image compression
 const ALLOWED_HOSTS = [
@@ -75,9 +75,8 @@ export async function GET(req: NextRequest) {
   try {
     let targetUrl = imageUrl;
     if (targetUrl.startsWith('/')) {
-      const host = req.headers.get('host') || 'localhost:3002';
-      const protocol = req.headers.get('x-forwarded-proto') || 'http';
-      targetUrl = `${protocol}://${host}${targetUrl}`;
+      const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://osissmaitfi.biezz.my.id').replace(/\/$/, '');
+      targetUrl = `${siteUrl}${targetUrl}`;
     }
 
     if (!/^https?:\/\//i.test(targetUrl)) {
