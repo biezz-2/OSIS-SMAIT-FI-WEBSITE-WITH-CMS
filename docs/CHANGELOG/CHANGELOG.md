@@ -6,6 +6,23 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.27] - 2026-09-15
+
+### ✨ Fitur Baru: Integrasi Desain MUBES Figma 1:1 & In-Place Proker Transformation
+- **Halaman Khusus Detail Proker Sidang MUBES (`/portal-mubes/proker/[slug]`)**:
+  - Mengimplementasikan layout presisi desain Figma (`node-id=1282-2356`) dengan keamanan SSR gatekeeper `getMubesAccess()`.
+  - Komponen `MubesProkerFigmaView`:
+    - **Hero Section**: Banner foto dengan directional gradient overlay navy gelap, breadcrumb navigasi, dan badge status terverifikasi MUBES.
+    - **Section Dokumen LPJ (`1290:5959`)**: Latar warm ivory (`#FDFDFB`), border halus (`#EAECEF`), kartu profil koordinator pelaksana beraksen gold Agora Acta (`#F2C21A`), rincian realisasi anggaran, dan catatan evaluasi internal kepanitiaan.
+    - **Section Dokumentasi Kegiatan (`1282:2390`)**: Grid 3 kartu dokumentasi foto beresolusi tinggi dengan soft drop shadow (radius 20px, offset-y 8px, alpha 5%).
+- **Transformasi In-Place Dinamis di Rute Publik (`/sekbid/[sekbidId]/[...slug]`)**:
+  - Halaman detail proker sekbid secara otomatis bertransformasi penuh ke tampilan Figma MUBES apabila dikunjungi oleh user terautentikasi dengan hak akses sidang MUBES sah (`status === 'approved'`).
+  - Pengunjung publik biasa tetap disajikan tampilan profil proker visitor standar tanpa kebocoran data sensitif anggaran/LPJ (Zero Data Leakage).
+- **Penambahan Tautan Navigasi Sidang (`MubesPresentationViewer.tsx`)**:
+  - Menambahkan tombol langsung *Buka Halaman Sidang MUBES (Full)* yang mengarahkan peserta ke rute `/portal-mubes/proker/[slug]`.
+
+---
+
 ## [2.1.26] - 2026-09-13
 
 ### ⚡ Optimasi Global: Resolusi Retina Tajam & Hemat Bandwidth (Next/Image AVIF/WebP)

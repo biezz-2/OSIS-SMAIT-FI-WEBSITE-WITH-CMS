@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { MubesSekbidGroup, MubesProgramKerja } from '@/lib/mubes-proker';
 import { getStrapiMediaUrl } from '@/lib/strapi';
 import {
@@ -17,7 +18,8 @@ import {
   Layers,
   Calendar,
   MapPin,
-  Users
+  Users,
+  ExternalLink
 } from 'lucide-react';
 
 interface MubesPresentationViewerProps {
@@ -193,17 +195,24 @@ export default function MubesPresentationViewer({ initialGroups }: MubesPresenta
                     </div>
                   </div>
 
-                  {/* Tombol Buka Mode Presentasi / PPT Sidang */}
-                  <div className="p-5 pt-0">
+                  {/* Tombol Aksi: Buka PPT Modal & Detail Sidang Figma */}
+                  <div className="p-5 pt-0 flex flex-col gap-2">
+                    <Link
+                      href={`/portal-mubes/proker/${encodeURIComponent(proker.slug)}`}
+                      className="w-full py-2.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-bold flex items-center justify-center gap-2 transition-colors shadow-sm"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      <span>Buka Halaman Sidang MUBES (Full)</span>
+                    </Link>
                     <button
                       onClick={() => {
                         setActiveModalProker(proker);
                         setActiveTab('overview');
                       }}
-                      className="w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-amber-600 dark:bg-slate-700 dark:hover:bg-amber-600 text-white text-xs font-semibold flex items-center justify-center gap-2 transition-colors shadow-sm"
+                      className="w-full py-2 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
                     >
                       <Maximize2 className="w-3.5 h-3.5" />
-                      <span>Buka Presentasi Sidang (PPT)</span>
+                      <span>Lihat Slide Cepat (Modal)</span>
                     </button>
                   </div>
                 </div>
