@@ -6,6 +6,19 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.28] - 2026-09-17
+
+### 🐛 Perbaikan: Error "The page couldn't load" & Next.js Runtime Stability
+- **Pembersihan Konflik Multi-Instance Next.js**:
+  - Menghentikan proses liar `next start` di port `3000` (PID 4017702) yang memicu benturan port dan request mismatch dengan instance PM2 resmi di port `3002`.
+- **Rebuild Bersih Build Cache Turbopack (`.next`)**:
+  - Menghapus artifact cache build lama dan mengompilasi ulang 84 rute secara bersih untuk menuntaskan galat `ChunkLoadError` pada rute utama dan dinamis.
+- **Pembaruan Service Worker PWA (`public/sw.js`)**:
+  - Menaikkan versi cache worker ke `osis-v4` untuk memaksa browser klien membuang cache chunk usang.
+  - Memperbaiki fallback handler statis dari `new Response('', { status: 404 })` menjadi fallback fetch network langsung agar browser tidak macet di layar blank.
+
+---
+
 ## [2.1.27] - 2026-09-15
 
 ### ✨ Fitur Baru: Integrasi Desain MUBES Figma 1:1 & In-Place Proker Transformation

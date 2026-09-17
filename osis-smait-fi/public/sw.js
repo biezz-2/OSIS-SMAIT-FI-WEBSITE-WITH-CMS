@@ -1,4 +1,4 @@
-const CACHE_NAME = 'osis-v3';
+const CACHE_NAME = 'osis-v4';
 const ASSETS_TO_CACHE = [
   '/',
   '/favicon.ico',
@@ -44,7 +44,7 @@ self.addEventListener('fetch', (event) => {
             caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
           }
           return networkResponse;
-        }).catch(() => new Response('', { status: 404, statusText: 'Not Found' }));
+        }).catch(() => fetch(event.request));
       })
     );
     return;
