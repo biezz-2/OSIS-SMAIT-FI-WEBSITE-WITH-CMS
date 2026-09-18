@@ -6,6 +6,33 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.33] - 2026-09-18
+
+### 🐛 Perbaikan & Keamanan: Isolasi COOP Google OAuth, Safe Error Boundary & UI Status Verifikasi Akun MUBES
+- **Kebijakan COOP untuk Google OAuth & Popups**:
+  - Mengubah header `Cross-Origin-Opener-Policy` dari `same-origin` menjadi `same-origin-allow-popups` di `next.config.ts`.
+  - Menambahkan whitelist `accounts.google.com` dan `*.clerk.com` pada direktif CSP `script-src`, `connect-src`, `frame-src`, dan `style-src` untuk mencegah crash komunikasi window saat login Google.
+- **Root Layout Protection & Safe Client Boundary**:
+  - Membuat komponen `SafeClientBoundary.tsx` dan mengisolasi komponen dinamis root (`MubesSessionBanner`, `TelemetryTracker`, `WebMcpProvider`) di `src/app/layout.tsx`.
+  - Membuat fallback `src/app/global-error.tsx` untuk mencegah crash tak tertangani pada level root layout Next.js.
+- **Komponen Status Verifikasi MUBES (`MubesApprovalStatusCard`)**:
+  - Menampilkan kartu status verifikasi presidium/BPH MUBES apabila pengguna telah terotentikasi namun statusnya belum disetujui (`pending` atau `ditolak`).
+  - Menyediakan tombol *Perbarui Status Akun*, *Hubungi BPH / Presidium*, *Kembali ke Beranda*, dan *Keluar Akun* yang bersih tanpa looping ke form login.
+  - Memperkuat ketahanan `getMubesAccess()` di SSR dengan safe fallback error handling.
+
+---
+
+## [2.1.32] - 2026-09-18
+
+### 🚀 Fitur Baru: A2A Agent Card Discovery Endpoint
+- **Spesifikasi A2A Protocol (`/.well-known/agent-card.json`)**:
+  - Menyediakan endpoint discovery agen AI mandiri di rute `/.well-known/agent-card.json` berbasis A2A Protocol v0.2.0.
+  - Mendaftarkan kemampuan agen (`capabilities: streaming, tool_use, context_awareness`) dan antarmuka transport JSON-RPC di `/api/a2a`.
+  - Mendefinisikan katalog keterampilan inti: `get_events`, `get_proker`, dan `submit_aspirasi`.
+  - Melampirkan ekstensi kepatuhan AP2 (`role: non-profit/community`, kategori `education/student-body`).
+
+---
+
 ## [2.1.31] - 2026-09-18
 
 ### 🐛 Perbaikan: Stabilitas Portal MUBES, Sinkronisasi Akses Pengguna & Resolusi Rute

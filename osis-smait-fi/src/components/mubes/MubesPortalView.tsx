@@ -8,18 +8,38 @@ import MubesHero from './MubesHero';
 import MubesLoginForm from './MubesLoginForm';
 import MubesSignUpForm from './MubesSignUpForm';
 import MubesBphHelpModal from './MubesBphHelpModal';
+import MubesApprovalStatusCard from './MubesApprovalStatusCard';
+import { useUser } from '@clerk/nextjs';
+import type { MubesAccessResult } from '@/lib/mubes-access';
 
 interface MubesPortalViewProps {
   initialMode?: 'login' | 'signup';
+  accessState?: MubesAccessResult;
 }
 
-export default function MubesPortalView({ initialMode = 'login' }: MubesPortalViewProps) {
+export default function MubesPortalView({
+  initialMode = 'login',
+  accessState,
+}: MubesPortalViewProps) {
   const [mode, setMode] = useState<'login' | 'signup'>(initialMode);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const { isSignedIn, isLoaded, user } = useUser();
 
   React.useEffect(() => {
     setMode(initialMode);
   }, [initialMode]);
+
+  // Evaluasi apakah user sudah login namun belum diapprove
+  const isUserAuthenticated = Boolean(accessState?.userId || (isLoaded && isSignedIn));
+  const isPendingOrDitolak =
+    isUserAuthenticated &&
+    !accessState?.allowed &&
+    (accessState?.status === 'pending' ||
+      accessState?.status === 'ditolak' ||
+      (user?.publicMetadata?.status as string) === 'pending' ||
+      (user?.publicMetadata?.status as string) === 'ditolak' ||
+      // Fallback default jika user login tapi status belum approved
+      (user?.publicMetadata?.status as string) !== 'approved');
 
   return (
     <div className="relative min-h-screen w-full bg-[#0d0a08] overflow-x-hidden flex flex-col justify-between selection:bg-[#e3bd7d]/30 selection:text-[#faf0db]">
@@ -38,7 +58,7 @@ export default function MubesPortalView({ initialMode = 'login' }: MubesPortalVi
         {/* Desktop Side Vignette Gradient */}
         <div className="hidden lg:block absolute inset-0 bg-gradient-to-r from-[#0d0a08]/90 via-[#0d0a08]/30 to-[#0d0a08]/75" />
 
-        {/* Subtle Ambient Radial Glow positioned behind the card */}
+        {/* Subtle Ambient Radial Glow */}
         <div className="absolute top-1/2 right-1/4 -translate-y-1/2 size-[650px] bg-[#d9b270]/15 rounded-full blur-[140px] pointer-events-none" />
       </div>
 
@@ -53,15 +73,32 @@ export default function MubesPortalView({ initialMode = 'login' }: MubesPortalVi
         </Link>
       </header>
 
-      {/* 3. Main Content Container (Figma: Left Hero Content at left-[140px] & Card at left-[1220px]) */}
+      {/* 3. Main Content Container */}
       <main className="relative z-10 flex-1 w-full max-w-[1720px] mx-auto px-6 sm:px-12 lg:px-[100px] xl:px-[140px] py-4 lg:py-8 flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-12 lg:gap-16">
         {/* Left / Top: Mubes Editorial Hero */}
         <MubesHero className="flex-1 max-w-[763px]" />
 
-        {/* Right / Bottom: Auth Card with Smooth Mode Transition */}
+        {/* Right / Bottom: Auth Card OR Pending Status Card */}
         <div className="w-full lg:w-auto flex justify-center items-center shrink-0">
           <AnimatePresence mode="wait">
-            {mode === 'login' ? (
+            {isPendingOrDitolak ? (
+              <motion.div
+                key="approval-card"
+                initial={{ opacity: 0, y: 15, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -15, scale: 0.98 }}
+                transition={{ duration: 0.25, ease: 'easeOut' }}
+                className="w-full max-w-[480px]"
+              >
+                <MubesApprovalStatusCard
+                  status={accessState?.status || (user?.publicMetadata?.status as string) || 'pending'}
+                  role={accessState?.role || (user?.publicMetadata?.role as string) || 'member'}
+                  email={accessState?.email || user?.primaryEmailAddress?.emailAddress}
+                  fullName={accessState?.fullName || user?.fullName}
+                  onOpenHelp={() => setIsHelpOpen(true)}
+                />
+              </motion.div>
+            ) : mode === 'login' ? (
               <motion.div
                 key="login-card"
                 initial={{ opacity: 0, y: 15, scale: 0.98 }}

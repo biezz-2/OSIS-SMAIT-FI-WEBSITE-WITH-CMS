@@ -126,6 +126,8 @@ import { ClerkProvider } from "@clerk/nextjs";
 import MubesSessionBanner from "@/components/mubes/MubesSessionBanner";
 import TelemetryTracker from "@/components/telemetry/TelemetryTracker";
 import JsonLd from "@/components/seo/JsonLd";
+import SafeClientBoundary from "@/components/common/SafeClientBoundary";
+import WebMcpProvider from "@/components/agent/WebMcpProvider";
 
 export default async function RootLayout({
   children,
@@ -162,8 +164,15 @@ export default async function RootLayout({
       </head>
       <body className="min-h-full flex flex-col">
         <ClerkProvider>
-          <MubesSessionBanner />
-          <TelemetryTracker />
+          <SafeClientBoundary name="MubesSessionBanner">
+            <MubesSessionBanner />
+          </SafeClientBoundary>
+          <SafeClientBoundary name="TelemetryTracker">
+            <TelemetryTracker />
+          </SafeClientBoundary>
+          <SafeClientBoundary name="WebMcpProvider">
+            <WebMcpProvider />
+          </SafeClientBoundary>
           <ImageQualityProvider>
             <LivePreviewListener />
             {bgTextureConfig && <GlobalBgTexture config={bgTextureConfig} />}
