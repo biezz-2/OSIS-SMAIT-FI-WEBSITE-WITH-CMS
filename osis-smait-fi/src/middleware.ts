@@ -4,6 +4,7 @@ import type { NextRequest } from 'next/server';
 
 export default clerkMiddleware(async (_auth, request: NextRequest) => {
   const { pathname } = request.nextUrl;
+  const userAgent = request.headers.get('user-agent') || '';
   const response = NextResponse.next();
 
   // Static assets - cache immutable 1 year
@@ -12,13 +13,55 @@ export default clerkMiddleware(async (_auth, request: NextRequest) => {
     return response;
   }
 
-  // API routes - no cache
-  if (pathname.startsWith('/api/')) {
-    response.headers.set('Cache-Control', 'no-store, max-age=0');
+  // Handle MUBES Proker rewrites:
+  // Browser requests literal bracket URL /program-kerja[mubes] or /program-kerja%5Bmubes%5D
+  // Rewrite internally to /program-kerja-mubes while preserving URL bar
+  let decodedPath = pathname;
+  try {
+    decodedPath = decodeURIComponent(pathname);
+  } catch {
+    decodedPath = pathname;
+  }
+  if (decodedPath === '/program-kerja[mubes]') {
+    const url = request.nextUrl.clone();
+    url.pathname = '/program-kerja-mubes';
+    const rewriteResponse = NextResponse.rewrite(url);
+    rewriteResponse.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet');
+    rewriteResponse.headers.set('Cache-Control', 'private, no-store, no-cache, must-revalidate, max-age=0');
+    return rewriteResponse;
+  }
+  if (decodedPath.startsWith('/program-kerja[mubes]/')) {
+    const subSlug = decodedPath.slice('/program-kerja[mubes]/'.length);
+    const url = request.nextUrl.clone();
+    url.pathname = `/program-kerja-mubes/${encodeURIComponent(subSlug)}`;
+    const rewriteResponse = NextResponse.rewrite(url);
+    rewriteResponse.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet');
+    rewriteResponse.headers.set('Cache-Control', 'private, no-store, no-cache, must-revalidate, max-age=0');
+    return rewriteResponse;
+  }
+
+  // AI & Crawler Shield untuk rute internal & MUBES:
+  // Cegah crawler search engine atau bot AI liar mengekspos sidang MUBES
+  const isInternalOrMubes =
+    pathname.startsWith('/portal-mubes') ||
+    pathname.startsWith('/program-kerja-mubes') ||
+    decodedPath.startsWith('/program-kerja[mubes]') ||
+    pathname.startsWith('/api/') ||
+    pathname.startsWith('/sso-callback');
+  if (isInternalOrMubes) {
+    response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet');
+    response.headers.set('Cache-Control', 'private, no-store, no-cache, must-revalidate, max-age=0');
+
+    // Jika bot AI mencoba langsung request ke endpoint internal MUBES, tolak
+    const isAiBot = /GPTBot|ClaudeBot|CCBot|PerplexityBot|Bytespider|Diffbot/i.test(userAgent);
+    if (isAiBot && pathname.startsWith('/portal-mubes')) {
+      return new NextResponse('Access Denied for automated scrapers on internal session.', { status: 403 });
+    }
+
     return response;
   }
 
-  // HTML Pages - short edge cache with stale-while-revalidate, force browser to always check edge server
+  // HTML Pages Publik - short edge cache with stale-while-revalidate
   response.headers.set('Cache-Control', 'public, max-age=0, s-maxage=10, stale-while-revalidate=60');
   response.headers.set('CDN-Cache-Control', 'public, s-maxage=10, stale-while-revalidate=60');
 

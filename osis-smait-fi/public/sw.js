@@ -1,8 +1,8 @@
-const CACHE_NAME = 'osis-v4';
+const CACHE_NAME = 'osis-v5';
 const ASSETS_TO_CACHE = [
-  '/',
   '/favicon.ico',
-  '/manifest.json'
+  '/manifest.json',
+  '/offline.html'
 ];
 
 self.addEventListener('install', (event) => {
@@ -33,6 +33,9 @@ self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
 
+  // Jangan cegat request internal RSC atau Next.js internal: biarkan network fail atau pass through
+  if (url.searchParams.has('_rsc')) return;
+
   // 1. Static Assets (_next/static): Cache-first with network fallback
   if (url.pathname.startsWith('/_next/static/')) {
     event.respondWith(
@@ -49,6 +52,8 @@ self.addEventListener('fetch', (event) => {
     );
     return;
   }
+
+  if (url.pathname.includes('/_next/')) return;
 
   // 2. API Data & Strapi CMS: Network-first with cache fallback
   if (url.pathname.startsWith('/api/') || url.hostname.includes('osisstrapi')) {
@@ -73,21 +78,12 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 3. HTML Pages: Network-first (selalu ambil terbaru, fallback cache jika offline)
-  if (url.origin === location.origin) {
+  // 3. HTML Pages: batasi mode === 'navigate'. Fallback ke cache /offline.html jika network gagal.
+  if (event.request.mode === 'navigate') {
     event.respondWith(
       fetch(event.request)
-        .then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200) {
-            const copy = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
-          }
-          return networkResponse;
-        })
         .catch(() => {
-          return caches.match(event.request).then((cachedResponse) => {
-            return cachedResponse || new Response('Offline', { status: 503, statusText: 'Service Unavailable' });
-          });
+          return caches.match('/offline.html');
         })
     );
   }

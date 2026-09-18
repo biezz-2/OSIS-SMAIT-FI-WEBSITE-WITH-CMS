@@ -6,6 +6,20 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.29] - 2026-09-18
+
+### 🐛 Perbaikan & Hardening: Root Error Boundary, Middleware & PWA Stability
+- **Fix Root Error Boundary (`src/app/global-error.tsx`)**:
+  - Pembuatan `src/app/global-error.tsx` dengan mekanisme auto-recovery cache clearing saat terjadi chunk mismatch untuk mengeliminasi layar bawaan Next.js *"This page couldn’t load"*.
+- **Fix Middleware URIError Crash (`src/middleware.ts`)**:
+  - Penambahan safe try-catch pada pemanggilan `decodeURIComponent(pathname)` untuk memitigasi HTTP 500 unhandled exception akibat URI malformed.
+- **PWA & Service Worker Hardening (`public/sw.js` & `public/offline.html`)**:
+  - Pembaruan versi cache ke `osis-v5`.
+  - Eliminasi caching stale root HTML guna mencegah inkonsistensi chunk aset client.
+  - Penyediaan halaman fallback offline mandiri di `public/offline.html`.
+
+---
+
 ## [2.1.28] - 2026-09-17
 
 ### 🐛 Perbaikan: Error "The page couldn't load" & Next.js Runtime Stability
