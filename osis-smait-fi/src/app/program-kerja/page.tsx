@@ -39,10 +39,10 @@ export const metadata: Metadata = {
 
 export default async function ProgramKerjaPage() {
   // Cek otentikasi & status persetujuan MUBES
-  // Jika user sudah login, signup, dan disetujui (approved), langsung redirect ke /program-kerja[mubes]
+  // Jika user sudah login, signup, dan disetujui (approved), langsung redirect ke /program-kerja-mubes
   const access = await getMubesAccess();
   if (access.allowed) {
-    redirect('/program-kerja[mubes]');
+    redirect('/program-kerja-mubes');
   }
 
   const programKerjaData = await fetchHalamanFromStrapi('program-kerja');

@@ -287,6 +287,8 @@ export function GooeyInput({
           >
             {!isExpanded ? <SearchIcon layoutId={iconLayoutId} /> : null}
             <motion.input
+              id={`search-input-${safeId}`}
+              name="search"
               layoutId={inputLayoutId}
               ref={inputRef}
               type="search"

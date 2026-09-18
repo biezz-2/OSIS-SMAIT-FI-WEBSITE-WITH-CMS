@@ -154,7 +154,7 @@ export default function MubesProkerFigmaView({
           {/* Breadcrumb & Sidang Badge */}
           <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm font-medium text-amber-300/90">
             <Link
-              href="/program-kerja[mubes]"
+              href="/program-kerja-mubes"
               className="hover:text-amber-200 transition-colors flex items-center gap-1.5"
             >
               <ArrowLeft className="w-4 h-4" />

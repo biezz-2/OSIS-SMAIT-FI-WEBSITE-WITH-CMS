@@ -42,10 +42,10 @@ export default async function ProgramDetailPage({
   const { slug } = await params;
 
   // Cek otentikasi & status persetujuan MUBES
-  // Jika user sudah login, signup, dan disetujui (approved), langsung redirect ke /program-kerja[mubes]/[slug]
+  // Jika user sudah login, signup, dan disetujui (approved), langsung redirect ke /program-kerja-mubes/[slug]
   const access = await getMubesAccess();
   if (access.allowed) {
-    redirect(`/program-kerja[mubes]/${slug}`);
+    redirect(`/program-kerja-mubes/${slug}`);
   }
 
   const initialData = await fetchProgramKerjaFromStrapi(slug);

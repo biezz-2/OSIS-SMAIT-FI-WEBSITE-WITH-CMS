@@ -132,6 +132,8 @@ async function setupRBAC(strapi: Core.Strapi) {
     'api::edufest-timeline.edufest-timeline',
     'api::edufest-config.edufest-config',
     'api::partner.partner',
+    'api::navbar-config.navbar-config',
+    'api::footer-config.footer-config',
   ];
 
   const contributorContentTypes = [
@@ -292,6 +294,8 @@ async function setupPublicPermissions(strapi: Core.Strapi) {
     'edufest-timeline',
     'edufest-config',
     'partner',
+    'navbar-config',
+    'footer-config',
   ];
   const permissions: any = {};
   for (const apiName of publicContentTypes) {

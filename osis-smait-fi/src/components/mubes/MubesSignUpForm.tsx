@@ -197,6 +197,8 @@ export default function MubesSignUpForm({ onSwitchToLogin, onOpenHelp }: MubesSi
         <form onSubmit={handleVerifyCode} className="relative z-10 self-stretch flex flex-col justify-start items-start gap-4">
           <div className="self-stretch h-12 px-4 bg-black/25 focus-within:bg-black/45 rounded-lg border border-[#D8B270]/25 focus-within:border-[#E0BA7A] focus-within:ring-1 focus-within:ring-[#E0BA7A]/40 shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)] transition-all duration-200 inline-flex justify-start items-center">
             <input
+              id="signup-otp-code"
+              name="otp_code"
               type="text"
               required
               value={code}
@@ -244,6 +246,8 @@ export default function MubesSignUpForm({ onSwitchToLogin, onOpenHelp }: MubesSi
           {/* Nama Lengkap */}
           <div className="self-stretch h-12 px-4 bg-black/25 hover:bg-black/35 focus-within:bg-black/45 rounded-lg border border-[#D8B270]/25 focus-within:border-[#E0BA7A] focus-within:ring-1 focus-within:ring-[#E0BA7A]/40 shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)] transition-all duration-200 inline-flex justify-start items-center overflow-hidden">
             <input
+              id="signup-full-name"
+              name="full_name"
               type="text"
               required
               value={fullName}
@@ -264,6 +268,8 @@ export default function MubesSignUpForm({ onSwitchToLogin, onOpenHelp }: MubesSi
               />
             </div>
             <input
+              id="signup-email"
+              name="email"
               type="email"
               required
               value={emailAddress}
@@ -285,6 +291,8 @@ export default function MubesSignUpForm({ onSwitchToLogin, onOpenHelp }: MubesSi
                 />
               </div>
               <input
+                id="signup-password"
+                name="password"
                 type={showPassword ? 'text' : 'password'}
                 required
                 value={password}
@@ -320,6 +328,8 @@ export default function MubesSignUpForm({ onSwitchToLogin, onOpenHelp }: MubesSi
                 />
               </div>
               <input
+                id="signup-confirm-password"
+                name="confirm_password"
                 type={showConfirmPassword ? 'text' : 'password'}
                 required
                 value={confirmPassword}
@@ -346,6 +356,8 @@ export default function MubesSignUpForm({ onSwitchToLogin, onOpenHelp }: MubesSi
           {/* Role Dropdown */}
           <div className="self-stretch h-12 px-4 bg-black/25 hover:bg-black/35 focus-within:bg-black/45 rounded-lg border border-[#D8B270]/25 focus-within:border-[#E0BA7A] focus-within:ring-1 focus-within:ring-[#E0BA7A]/40 shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)] transition-all duration-200 inline-flex justify-between items-center relative overflow-hidden">
             <select
+              id="signup-role"
+              name="role"
               value={role}
               onChange={(e) => setRole(e.target.value)}
               className="w-full bg-transparent text-[#F9EFDB] text-sm font-normal font-['Inter'] focus:outline-none appearance-none cursor-pointer pr-8 [&>option]:bg-[#282119] [&>option]:text-[#F9EFDB]"
@@ -367,8 +379,10 @@ export default function MubesSignUpForm({ onSwitchToLogin, onOpenHelp }: MubesSi
 
           {/* Remember Me & Help Row */}
           <div className="self-stretch inline-flex justify-between items-center overflow-hidden pt-1">
-            <label className="flex justify-start items-center gap-2 overflow-hidden cursor-pointer select-none group">
+            <label htmlFor="signup-remember-me" className="flex justify-start items-center gap-2 overflow-hidden cursor-pointer select-none group">
               <input
+                id="signup-remember-me"
+                name="remember_me"
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}

@@ -76,7 +76,7 @@ export default function MubesSessionBanner() {
 
           <div className="flex items-center justify-between gap-2 pt-1">
             <Link
-              href="/program-kerja[mubes]"
+              href="/program-kerja-mubes"
               className="text-[11px] text-[#E0BA7A] hover:text-[#F2D194] underline underline-offset-2 transition-colors"
             >
               LPJ Proker →

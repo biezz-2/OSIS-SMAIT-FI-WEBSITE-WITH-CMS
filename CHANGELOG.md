@@ -6,6 +6,20 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.31] - 2026-09-18
+
+### 🐛 Perbaikan: Stabilitas Portal MUBES, Sinkronisasi Akses Pengguna & Resolusi Rute
+- **Normalisasi Rute Program Kerja MUBES**:
+  - Memperbaiki tautan dan pengalihan rute dari pola bracket `/program-kerja[mubes]` ke path kanonikal `/program-kerja-mubes` pada `ProgramKerjaPage`, `ProgramDetailPage`, `MubesSessionBanner`, dan `MubesProkerFigmaView`.
+- **Aktivasi & Otorisasi Akun MUBES (`akses-users`)**:
+  - Menyetujui status pengguna pada koleksi `akses-users` di Strapi (`status: 'approved'`, `role: 'admin_pembina'`) dan menyinkronkan `publicMetadata` akun Clerk.
+- **Penyempurnaan Form Accessibility & CSP**:
+  - Menambahkan atribut `id` dan `name` lengkap pada seluruh elemen input login/signup MUBES dan pencarian `gooey-input`.
+  - Mengizinkan `clerk-telemetry.com` pada direktif `connect-src` di `next.config.ts`.
+  - Memberikan hak akses publik untuk endpoint `navbar-config` dan `footer-config` pada Strapi bootstrap.
+
+---
+
 ## [2.1.30] - 2026-09-18
 
 ### 🚀 Fitur Baru & Peningkatan SEO: 50 Fundamental SEO, JSON-LD Schema & Portal Satelit GitHub Pages
