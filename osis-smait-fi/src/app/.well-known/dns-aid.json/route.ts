@@ -1,0 +1,34 @@
+import { NextResponse } from 'next/server';
+
+export const dynamic = 'force-static';
+export const revalidate = 86400;
+
+export async function GET() {
+  const dnsAidGateway = {
+    version: '1.0.0',
+    protocol: 'dns-aid',
+    domain: 'osissmaitfi.biezz.my.id',
+    records: [
+      {
+        type: 'TXT',
+        name: '_agent.osissmaitfi.biezz.my.id',
+        value: 'v=AID1; t=web; proto=acp,ucp; url=https://osissmaitfi.biezz.my.id/.well-known/agents/index.json',
+      },
+    ],
+    agent_manifest: 'https://osissmaitfi.biezz.my.id/.well-known/agents/index.json',
+    gateway_endpoints: {
+      http: 'https://osissmaitfi.biezz.my.id/api',
+      acp: 'https://osissmaitfi.biezz.my.id/.well-known/acp.json',
+      ucp: 'https://osissmaitfi.biezz.my.id/.well-known/ucp',
+    },
+  };
+
+  return NextResponse.json(dnsAidGateway, {
+    status: 200,
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Cache-Control': 'public, max-age=86400, s-maxage=86400',
+    },
+  });
+}

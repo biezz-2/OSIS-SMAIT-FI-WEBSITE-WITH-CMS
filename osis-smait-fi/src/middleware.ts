@@ -13,6 +13,34 @@ export default clerkMiddleware(async (_auth, request: NextRequest) => {
     return response;
   }
 
+  // Handle /.well-known/ agent and protocol discovery requests
+  if (pathname.startsWith('/.well-known/')) {
+    response.headers.set('Access-Control-Allow-Origin', '*');
+    response.headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    response.headers.set('Cache-Control', 'public, max-age=86400, s-maxage=86400');
+    return response;
+  }
+
+  // Handle /api/premium/* routes (x402 Payment Required enforcement)
+  if (pathname.startsWith('/api/premium')) {
+    return NextResponse.json(
+      {
+        error: 'Payment Required',
+        message: 'This endpoint requires payment authorization under x402 specification.',
+        details: 'OSIS SMAIT FI portal does not host commercial premium endpoints. All features are free and non-profit.',
+        discovery_url: 'https://osissmaitfi.biezz.my.id/.well-known/x402.json',
+      },
+      {
+        status: 402,
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Payment-Required': 'true',
+          'X-Discovery-URL': 'https://osissmaitfi.biezz.my.id/.well-known/x402.json',
+        },
+      }
+    );
+  }
+
   // Handle MUBES Proker rewrites:
   // Browser requests literal bracket URL /program-kerja[mubes] or /program-kerja%5Bmubes%5D
   // Rewrite internally to /program-kerja-mubes while preserving URL bar
@@ -59,6 +87,35 @@ export default clerkMiddleware(async (_auth, request: NextRequest) => {
     }
 
     return response;
+  }
+
+  // Markdown Content Negotiation (Cloudflare Markdown for Agents & isitagentready standard):
+  // When an AI agent or client requests Accept: text/markdown on public routes,
+  // internally rewrite to /api/markdown?path=<path> to return clean markdown with x-markdown-tokens
+  const acceptHeader = request.headers.get('accept') || '';
+  const wantsMarkdown = acceptHeader.split(',').some((mime) => mime.trim().startsWith('text/markdown'));
+
+  if (wantsMarkdown && !pathname.startsWith('/api/') && !pathname.startsWith('/.well-known/') && pathname !== '/auth.md' && !isInternalOrMubes) {
+    const markdownUrl = request.nextUrl.clone();
+    markdownUrl.pathname = '/api/markdown';
+    markdownUrl.search = `?path=${encodeURIComponent(pathname)}`;
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set('x-markdown-path', pathname);
+    const rewriteResponse = NextResponse.rewrite(markdownUrl, {
+      request: {
+        headers: requestHeaders,
+      },
+    });
+    rewriteResponse.headers.set('x-markdown-route', pathname);
+    return rewriteResponse;
+  }
+
+  // Machine-readable discovery Link headers for root path (RFC 8288 & RFC 9727)
+  if (pathname === '/') {
+    response.headers.set(
+      'Link',
+      '</.well-known/api-catalog>; rel="api-catalog", </openapi.json>; rel="service-desc", </docs>; rel="service-doc", </.well-known/oauth-protected-resource>; rel="describedby", </.well-known/mcp/server-card.json>; rel="describedby"'
+    );
   }
 
   // HTML Pages Publik - short edge cache with stale-while-revalidate

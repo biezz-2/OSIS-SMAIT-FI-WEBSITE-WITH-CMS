@@ -40,6 +40,15 @@ const nextConfig: NextConfig = {
         ],
       },
       {
+        source: '/',
+        headers: [
+          {
+            key: 'Link',
+            value: '</.well-known/api-catalog>; rel="api-catalog", </openapi.json>; rel="service-desc", </docs>; rel="service-doc", </.well-known/oauth-protected-resource>; rel="describedby", </.well-known/mcp/server-card.json>; rel="describedby"',
+          },
+        ],
+      },
+      {
         source: '/:path*',
         headers: [
           {

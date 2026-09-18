@@ -1,0 +1,20 @@
+{
+  "protocol": {
+    "name": "acp",
+    "version": "1.0.0"
+  },
+  "api_base_url": "https://osissmaitfi.biezz.my.id/api",
+  "transports": ["http-json", "mcp"],
+  "capabilities": {
+    "services": ["catalog", "information"]
+  },
+  "organization": {
+    "name": "OSIS SMAIT Fithrah Insani",
+    "type": "non-profit-student-organization",
+    "website": "https://osissmaitfi.biezz.my.id"
+  },
+  "endpoints": {
+    "catalog": "https://osissmaitfi.biezz.my.id/api/events",
+    "info": "https://osissmaitfi.biezz.my.id/api/inbox"
+  }
+}

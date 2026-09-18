@@ -1,0 +1,502 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "OSIS SMAIT Fithrah Insani Public API (Agora Acta)",
+    "version": "1.0.0",
+    "description": "Official public API specification for OSIS SMAIT Fithrah Insani (Kabupaten Bandung Barat). Provides access to school public agendas, official work programs (Program Kerja), student aspiration channel, and system status.",
+    "contact": {
+      "name": "Tim IT & Pengembang OSIS SMAIT Fithrah Insani",
+      "url": "https://osissmaitfi.biezz.my.id",
+      "email": "osis@smaitfithrahinsani.sch.id"
+    },
+    "license": {
+      "name": "MIT License",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "x-service-info": {
+    "organization": "OSIS SMAIT Fithrah Insani",
+    "kabinet": "Agora Acta",
+    "school": "SMAIT Fithrah Insani",
+    "location": "Kabupaten Bandung Barat, Jawa Barat, Indonesia",
+    "category": "K-12 Student Council & Islamic Education Management",
+    "type": "Non-Profit Student Organization",
+    "portalUrl": "https://osissmaitfi.biezz.my.id",
+    "cmsProvider": "Strapi v5 Community Edition"
+  },
+  "x-payment-info": {
+    "model": "free",
+    "description": "Public community and non-profit educational service. No financial charges apply.",
+    "pricingPlan": "open-access",
+    "quota": {
+      "rateLimit": "60 requests per minute",
+      "freeTier": true,
+      "commercialUse": false
+    },
+    "checks": {
+      "commerce": {
+        "mpp": {
+          "valid": true,
+          "status": "exempt",
+          "type": "non-profit/educational-free-quota"
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://osissmaitfi.biezz.my.id",
+      "description": "Production Server"
+    }
+  ],
+  "paths": {
+    "/api/health": {
+      "get": {
+        "summary": "Health Check & System Status",
+        "description": "Returns the current operational and health status of the OSIS portal frontend and connected services.",
+        "operationId": "getHealthStatus",
+        "responses": {
+          "200": {
+            "description": "System is healthy and operational",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/events": {
+      "get": {
+        "summary": "List Public Events & Agenda",
+        "description": "Retrieve published student council events, workshops, school celebrations, and general agendas.",
+        "operationId": "listPublicEvents",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of event records to return (1-100)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Filter events by execution status",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "upcoming",
+                "ongoing",
+                "past",
+                "all"
+              ],
+              "default": "upcoming"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of events retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventsListResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error or CMS connection failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/program-kerja": {
+      "get": {
+        "summary": "List Official Work Programs (Proker)",
+        "description": "Retrieve official work programs from each Sekbid (Seksi Bidang) and BPH of OSIS SMAIT Fithrah Insani.",
+        "operationId": "listProgramKerja",
+        "parameters": [
+          {
+            "name": "division",
+            "in": "query",
+            "description": "Filter by Sekbid division name or number (e.g. BPH, Sekbid 1, Sekbid 2, etc.)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Filter by program execution status",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "planned",
+                "in_progress",
+                "completed",
+                "all"
+              ],
+              "default": "all"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of work programs retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgramKerjaListResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error or CMS failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/inbox": {
+      "post": {
+        "summary": "Submit Student Aspirations & Feedback",
+        "description": "Submit inquiries, suggestions, complaints, or constructive feedback to the OSIS student council inbox.",
+        "operationId": "submitAspirasi",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AspirasiSubmissionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Aspiration received and submitted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AspirasiSubmissionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input payload or missing required fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded (maximum 3 submissions per 10 minutes per client)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error processing the aspiration ticket",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HealthStatus": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "healthy"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-09-18T12:00:00.000Z"
+          },
+          "version": {
+            "type": "string",
+            "example": "1.0.0"
+          },
+          "uptime": {
+            "type": "number",
+            "description": "Process uptime in seconds",
+            "example": 86400
+          },
+          "services": {
+            "type": "object",
+            "properties": {
+              "strapiCms": {
+                "type": "string",
+                "example": "connected"
+              },
+              "telegramBot": {
+                "type": "string",
+                "example": "active"
+              }
+            }
+          }
+        },
+        "required": [
+          "status",
+          "timestamp"
+        ]
+      },
+      "EventsListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EventItem"
+            }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "total": {
+                "type": "integer",
+                "example": 12
+              }
+            }
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "EventItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "slug": {
+            "type": "string",
+            "example": "edufest-2026"
+          },
+          "title": {
+            "type": "string",
+            "example": "Edufest SMAIT Fithrah Insani 2026"
+          },
+          "description": {
+            "type": "string",
+            "example": "Festival edukasi dan ajang perlombaan akademik dan seni."
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-10-15T08:00:00.000Z"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-10-17T17:00:00.000Z"
+          },
+          "location": {
+            "type": "string",
+            "example": "Kampus SMAIT Fithrah Insani"
+          },
+          "bannerUrl": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://osisstrapi.biezz.my.id/uploads/edufest_banner.webp"
+          },
+          "ctaUrl": {
+            "type": "string",
+            "example": "/events/edufest-2026"
+          }
+        },
+        "required": [
+          "id",
+          "slug",
+          "title"
+        ]
+      },
+      "ProgramKerjaListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProgramKerjaItem"
+            }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "total": {
+                "type": "integer",
+                "example": 24
+              }
+            }
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "ProgramKerjaItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 5
+          },
+          "slug": {
+            "type": "string",
+            "example": "mubes-2026"
+          },
+          "title": {
+            "type": "string",
+            "example": "Musyawarah Besar (MUBES) OSIS"
+          },
+          "division": {
+            "type": "string",
+            "example": "BPH"
+          },
+          "description": {
+            "type": "string",
+            "example": "Laporan pertanggungjawaban dan pemilihan ketua OSIS periode berikutnya."
+          },
+          "targetExecution": {
+            "type": "string",
+            "example": "November 2026"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "planned",
+              "in_progress",
+              "completed"
+            ],
+            "example": "in_progress"
+          }
+        },
+        "required": [
+          "id",
+          "slug",
+          "title"
+        ]
+      },
+      "AspirasiSubmissionRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nama siswa atau pengirim (opsional jika anonim)",
+            "example": "Ahmad Siswa"
+          },
+          "kelas": {
+            "type": "string",
+            "description": "Kelas atau tingkatan",
+            "example": "XI MIPA 1"
+          },
+          "category": {
+            "type": "string",
+            "description": "Kategori aspirasi",
+            "enum": [
+              "fasilitas",
+              "kegiatan",
+              "akademik",
+              "keasramaan",
+              "umum",
+              "instagram"
+            ],
+            "example": "fasilitas"
+          },
+          "suggestion": {
+            "type": "string",
+            "description": "Isi pesan aspirasi atau saran/masukan",
+            "example": "Mohon penambahan buku referensi olimpiade sains di perpustakaan sekolah."
+          }
+        },
+        "required": [
+          "name",
+          "suggestion"
+        ]
+      },
+      "AspirasiSubmissionResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "Saran Anda berhasil dikirim ke pengurus OSIS."
+          }
+        },
+        "required": [
+          "success",
+          "message"
+        ]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Rate limit exceeded. Please try again later."
+          },
+          "code": {
+            "type": "string",
+            "example": "RATE_LIMITED"
+          },
+          "details": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "error"
+        ]
+      }
+    }
+  }
+}

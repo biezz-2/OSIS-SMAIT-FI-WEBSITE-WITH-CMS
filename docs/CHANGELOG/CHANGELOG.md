@@ -6,6 +6,34 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.34] - 2026-09-18
+
+### 🚀 Fitur Baru: Cloudflare AI Agent Readiness Level 5 (Agent-Native Full Suite)
+- **Content Signals & RFC 9309 Bots Policy (`robots.txt`)**:
+  - Menetapkan direktif IETF Content Signals (`Content-Signal: ai-train=no, search=yes, ai-input=no, use=reference`).
+  - Mengonfigurasi hak akses crawling selektif untuk bot AI (GPTBot, ClaudeBot, Claude-Web, OAI-SearchBot, PerplexityBot, Applebot-Extended, Google-Extended, Cohere-ai) dan memblokir bot agresif non-compliant (Bytespider, CCBot, Diffbot).
+  - Menyertakan direktif `Agentmap: https://osissmaitfi.biezz.my.id/.well-known/ai-catalog.json` untuk standar ARD (Agent Resource Discovery).
+- **HTTP Markdown Content Negotiation & In-Edge Rewriting (`middleware.ts`)**:
+  - Mengimplementasikan negosiasi konten RFC 7231 (`Accept: text/markdown`) yang secara transparan mengalihkan permintaan publik ke `/api/markdown`.
+  - Mengembalikan representasi Markdown semantik bebas elemen UI yang dilengkapi header `x-markdown-tokens` dan `x-markdown-route`.
+- **Standar Discovery Terintegrasi (RFC 9727, RFC 8288 & RFC 9728)**:
+  - Menerbitkan API Catalog kanonikal RFC 9727 pada `/.well-known/api-catalog` (`application/linkset+json`).
+  - Menyematkan header respon HTTP `Link` pada root domain (`rel="api-catalog"`, `rel="service-desc"`, `rel="service-doc"`, `rel="describedby"`).
+  - Mempublikasikan OAuth Protected Resource Metadata (PRM) RFC 9728 di `/.well-known/oauth-protected-resource` dan OAuth Authorization Server Metadata RFC 8414 di `/.well-known/oauth-authorization-server` lengkap dengan blok validasi `agent_auth`.
+  - Menerbitkan `auth.md` di `/auth.md` untuk panduan registrasi dan autentikasi agen AI mandiri.
+- **Agent Resource Discovery (ARD) Manifest (`/.well-known/ai-catalog.json`)**:
+  - Menyediakan manifest kapabilitas agen dengan envelope `specVersion: 1.0.0`, `hostIdentifier`, `hostDisplayName`, serta entri URN terstruktur (`urn:ard:osissmaitfi:*`).
+- **MCP Server Card (SEP-1649) & A2A Agent Card (v0.2.0)**:
+  - Menyediakan kartu server Model Context Protocol di `/.well-known/mcp/server-card.json` berbasis Streamable HTTP transport di `/api/mcp`.
+  - Menyediakan A2A Agent Card di `/.well-known/agent-card.json` dan indeks Agent Skills di `/.well-known/agent-skills/index.json`.
+- **Web Bot Auth (RFC 9421) & WebMCP Client Tools Provider**:
+  - Menyediakan direktori JWKS Web Bot Auth di `/.well-known/http-message-signatures-directory` untuk verifikasi HTTP Message Signatures.
+  - Mengintegrasikan W3C WebMCP in-browser tools API (`navigator.modelContext.registerTool`) via komponen `WebMcpProvider` untuk asisten AI browser.
+- **Protokol Ekstensi Komersial Non-Profit (ACP, AP2, x402, UCP, MPP)**:
+  - Menerbitkan manifes ACP di `/.well-known/acp.json` dan deklarasi status non-profit untuk x402, UCP, dan AP2.
+
+---
+
 ## [2.1.33] - 2026-09-18
 
 ### 🐛 Perbaikan & Keamanan: Isolasi COOP Google OAuth, Safe Error Boundary & UI Status Verifikasi Akun MUBES
