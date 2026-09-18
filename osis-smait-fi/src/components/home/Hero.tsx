@@ -41,7 +41,7 @@ const Hero = ({ initialData }: { initialData?: any }) => {
       {bannerUrl && (
         <Image
           src={bannerUrl}
-          alt="Hero Background"
+          alt="OSIS SMAIT Fithrah Insani (Agora Acta) Kab. Bandung Barat"
           fill
           priority
           sizes="100vw"

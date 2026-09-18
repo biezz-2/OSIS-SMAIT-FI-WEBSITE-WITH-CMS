@@ -117,11 +117,6 @@ function IdCardModal({ member, division, isOpen, onClose }: IdCardModalProps) {
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState<number>(0);
   const [isHovered, setIsHovered] = useState<boolean>(false);
 
-  // Reset slider when member changes
-  useEffect(() => {
-    setCurrentPhotoIndex(0);
-  }, [member]);
-
   // Handle ESC key
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
@@ -719,6 +714,7 @@ export default function PanitiaPage() {
 
       {/* ID Card Modal - Extra Large Version with Rectangular Photo */}
       <IdCardModal
+        key={typeof selectedMember === "string" ? selectedMember : (selectedMember?.id || "modal")}
         member={selectedMember || ""}
         division={selectedDivision || undefined}
         isOpen={selectedMember !== null}

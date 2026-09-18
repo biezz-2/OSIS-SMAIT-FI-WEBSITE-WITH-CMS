@@ -8,6 +8,8 @@ export const useSmoothScroll = () => {
     const [lenis, setLenis] = useState<Lenis | null>(null);
 
     useEffect(() => {
+        // ponytail: disable touch hijacking on mobile to prevent iOS WebKit scroll lock
+        const isTouch = typeof window !== "undefined" && ("ontouchstart" in window || navigator.maxTouchPoints > 0);
         const lenisInstance = new Lenis({
             duration: 1.2,
             easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // standard ease
@@ -15,7 +17,8 @@ export const useSmoothScroll = () => {
             gestureOrientation: "vertical",
             smoothWheel: true,
             wheelMultiplier: 1,
-            touchMultiplier: 2,
+            touchMultiplier: 1,
+            syncTouch: false,
             autoRaf: false,
         });
 

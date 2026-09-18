@@ -43,8 +43,8 @@ export function GlobeToMapTransform() {
   useEffect(() => {
     const loadWorldData = async () => {
       try {
-        // Using Natural Earth data from a CDN
-        const response = await fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json");
+        // Load from local public folder to prevent third-party runtime CDN supply chain risks
+        const response = await fetch("/countries-110m.json");
         const world: any = await response.json();
         const countries = (feature(world, world.objects.countries) as any).features;
         setWorldData(countries);

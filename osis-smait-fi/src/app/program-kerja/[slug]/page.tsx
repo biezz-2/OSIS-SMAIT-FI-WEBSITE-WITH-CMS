@@ -1,9 +1,11 @@
 import React from 'react';
 import { Metadata } from 'next';
+import { redirect } from 'next/navigation';
 import ProgramKerjaDetailPage from '@/components/program-kerja/ProgramKerjaDetailPage';
 import { fetchProgramKerjaFromStrapi } from '@/lib/strapi';
+import { getMubesAccess } from '@/lib/mubes-access';
 
-export const revalidate = 60;
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({
   params,
@@ -21,6 +23,9 @@ export async function generateMetadata({
   return {
     title: judul,
     description: deskripsi,
+    alternates: {
+      canonical: `/program-kerja/${slug}`,
+    },
     openGraph: {
       title: `${judul} | OSIS SMAIT Fithrah Insani`,
       description: deskripsi,
@@ -35,6 +40,14 @@ export default async function ProgramDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+
+  // Cek otentikasi & status persetujuan MUBES
+  // Jika user sudah login, signup, dan disetujui (approved), langsung redirect ke /program-kerja[mubes]/[slug]
+  const access = await getMubesAccess();
+  if (access.allowed) {
+    redirect(`/program-kerja[mubes]/${slug}`);
+  }
+
   const initialData = await fetchProgramKerjaFromStrapi(slug);
   return <ProgramKerjaDetailPage slug={slug} initialData={initialData} />;
 }

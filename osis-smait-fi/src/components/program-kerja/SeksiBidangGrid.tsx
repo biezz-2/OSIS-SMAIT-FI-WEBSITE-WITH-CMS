@@ -66,7 +66,7 @@ const SeksiBidangGrid = ({ initialSekbids, quality, compress }: { initialSekbids
                 {sekbid.image ? (
                   <Image
                     src={sekbid.image}
-                    alt={sekbid.number}
+                    alt={`Seksi Bidang ${sekbid.number} - ${sekbid.title || sekbid.name}`}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                     className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"

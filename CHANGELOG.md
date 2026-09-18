@@ -6,6 +6,24 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.30] - 2026-09-18
+
+### 🚀 Fitur Baru & Peningkatan SEO: 50 Fundamental SEO, JSON-LD Schema & Portal Satelit GitHub Pages
+- **Implementasi 50 Fundamental SEO (Google Search Central Guidelines)**:
+  - Audit dan optimalisasi struktur heading (`h1`, `h2`, `h3`) hierarkis semantik di seluruh rute publik.
+  - Perbaikan accessibility dan alt text deskriptif untuk retina visual assets.
+  - Hardening robots.txt dan sitemap.ts untuk crawling efisien Googlebot.
+- **Structured Data Schema.org (`EducationalOrganization`, `WebSite`, `Social sameAs`)**:
+  - Penambahan komponen `JsonLd` pada root layout dan rute penting.
+  - Metadata terstruktur untuk profil organisasi sekolah, entitas OSIS SMAIT Fithrah Insani, dan jejaring sosial resmi.
+- **Canonical & Full OpenGraph / Twitter Cards**:
+  - Canonical URL eksplisit di seluruh rute utama guna mencegah duplikasi konten.
+  - Konfigurasi komprehensif metadata OpenGraph dan Twitter Card dengan preview grafis tajam.
+- **Portal Satelit GitHub Pages untuk Otoritas & Backlink Organik**:
+  - Penguatan domain authority dan backlink profile melalui satelit dokumentasi resmi di GitHub Pages.
+
+---
+
 ## [2.1.29] - 2026-09-18
 
 ### 🐛 Perbaikan & Hardening: Root Error Boundary, Middleware & PWA Stability

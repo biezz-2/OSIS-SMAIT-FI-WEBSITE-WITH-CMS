@@ -3,47 +3,66 @@ import { fetchAllSekbidsFromStrapi, fetchAllProgramKerjaForSitemap, fetchAllEven
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://osissmaitfi.biezz.my.id';
+  const staticBuildDate = new Date('2026-09-01');
 
   const staticRoutes: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
-      lastModified: new Date(),
+      lastModified: staticBuildDate,
       changeFrequency: 'weekly',
       priority: 1.0,
     },
     {
       url: `${baseUrl}/about`,
-      lastModified: new Date(),
+      lastModified: staticBuildDate,
       changeFrequency: 'monthly',
       priority: 0.8,
     },
     {
       url: `${baseUrl}/events`,
-      lastModified: new Date(),
+      lastModified: staticBuildDate,
       changeFrequency: 'weekly',
       priority: 0.9,
     },
     {
       url: `${baseUrl}/program-kerja`,
-      lastModified: new Date(),
+      lastModified: staticBuildDate,
       changeFrequency: 'weekly',
       priority: 0.8,
     },
     {
       url: `${baseUrl}/anggota`,
-      lastModified: new Date(),
+      lastModified: staticBuildDate,
       changeFrequency: 'monthly',
       priority: 0.7,
     },
     {
+      url: `${baseUrl}/partners`,
+      lastModified: staticBuildDate,
+      changeFrequency: 'monthly',
+      priority: 0.6,
+    },
+    {
+      url: `${baseUrl}/privacy-policy`,
+      lastModified: staticBuildDate,
+      changeFrequency: 'yearly',
+      priority: 0.3,
+    },
+    {
+      url: `${baseUrl}/galeri/galeri-preview-infinity`,
+      lastModified: staticBuildDate,
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    },
+    {
       url: `${baseUrl}/media-sosial`,
-      lastModified: new Date(),
+      lastModified: staticBuildDate,
       changeFrequency: 'monthly',
       priority: 0.6,
     },
     {
       url: `${baseUrl}/edufest-infinity`,
-      lastModified: new Date(),
+      lastModified: staticBuildDate,
       changeFrequency: 'weekly',
       priority: 0.9,
     },
@@ -58,7 +77,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         const num = attrs.nomor || item.id;
         return {
           url: `${baseUrl}/sekbid/sekbid-${num}`,
-          lastModified: attrs.updatedAt ? new Date(attrs.updatedAt) : new Date(),
+          lastModified: attrs.updatedAt ? new Date(attrs.updatedAt) : staticBuildDate,
           changeFrequency: 'weekly',
           priority: 0.7,
         };
@@ -68,15 +87,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error('Failed to fetch sekbids for sitemap', e);
   }
 
+  const sanitizeSlug = (slug: string) => encodeURIComponent(slug.trim().replace(/^\/+|\/+$/g, ''));
+
   let prokerRoutes: MetadataRoute.Sitemap = [];
   try {
     const prokers = await fetchAllProgramKerjaForSitemap();
     if (prokers && Array.isArray(prokers)) {
       prokerRoutes = prokers
-        .filter((item) => item.slug)
+        .filter((item) => item.slug && typeof item.slug === 'string')
         .map((item) => ({
-          url: `${baseUrl}/program-kerja/${item.slug}`,
-          lastModified: new Date(item.updatedAt),
+          url: `${baseUrl}/program-kerja/${sanitizeSlug(item.slug)}`,
+          lastModified: item.updatedAt ? new Date(item.updatedAt) : staticBuildDate,
           changeFrequency: 'weekly',
           priority: 0.8,
         }));
@@ -91,10 +112,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     if (events && Array.isArray(events)) {
       eventRoutes = events
         .map((e: any) => e?.attributes || e)
-        .filter((item: any) => item.slug && item.slug !== 'edufest-infinity')
-        .map((item: any) => ({
-          url: `${baseUrl}/events/${item.slug}`,
-          lastModified: item.updatedAt ? new Date(item.updatedAt) : new Date(),
+        .filter((item: any) => item.slug && typeof item.slug === 'string' && item.slug.trim() !== 'edufest-infinity')
+        .map((item) => ({
+          url: `${baseUrl}/events/${sanitizeSlug(item.slug)}`,
+          lastModified: item.updatedAt ? new Date(item.updatedAt) : staticBuildDate,
           changeFrequency: 'weekly',
           priority: 0.8,
         }));

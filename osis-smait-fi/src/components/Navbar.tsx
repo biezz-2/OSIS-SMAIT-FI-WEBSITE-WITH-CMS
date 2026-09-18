@@ -27,7 +27,7 @@ import {
     ShoppingBag,
     Tv
 } from 'lucide-react';
-import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
+import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 
 // Nav items standar (di luar Mega Menu)
 const defaultNavItems = [
@@ -399,6 +399,20 @@ const Navbar = () => {
                         cards={galeriCards}
                     />
 
+                    {/* 9. PORTAL MUBES (Khusus User Terdaftar / SignedIn) */}
+                    <SignedIn>
+                        <Link href="/portal-mubes" className="no-underline">
+                            <div
+                                className="px-2.5 xl:px-3 py-1.5 rounded transition-all duration-200 flex items-center justify-center cursor-pointer hover:opacity-80 shrink-0"
+                                style={{ background: isActive('/portal-mubes') ? '#E8850A' : '#FA982E' }}
+                            >
+                                <span className="text-[#1A1A1A] text-xs font-bold font-[Inter,sans-serif] leading-4 whitespace-nowrap">
+                                    PORTAL MUBES
+                                </span>
+                            </div>
+                        </Link>
+                    </SignedIn>
+
                     <GooeyInput
                         placeholder="Cari..."
                         collapsedWidth={105}
@@ -407,25 +421,21 @@ const Navbar = () => {
                     />
                     <AnimatedThemeToggler variant="diamond" />
 
-                    {/* Clerk Auth Controls */}
+                    {/* Portal MUBES Auth Controls */}
                     <div className="flex items-center gap-2 pl-1">
                         <SignedOut>
-                            <SignInButton mode="modal">
-                                <button
-                                    type="button"
-                                    className="px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-white text-xs font-semibold font-[Inter,sans-serif] transition-colors cursor-pointer"
-                                >
-                                    Masuk
-                                </button>
-                            </SignInButton>
-                            <SignUpButton mode="modal">
-                                <button
-                                    type="button"
-                                    className="px-3 py-1.5 rounded-lg bg-[#2E90FA] hover:bg-[#1570EF] text-white text-xs font-semibold font-[Inter,sans-serif] transition-colors cursor-pointer"
-                                >
-                                    Daftar
-                                </button>
-                            </SignUpButton>
+                            <Link
+                                href="/portal-mubes"
+                                className="px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-white text-xs font-semibold font-[Inter,sans-serif] transition-colors cursor-pointer"
+                            >
+                                Masuk
+                            </Link>
+                            <Link
+                                href="/portal-mubes?mode=signup"
+                                className="px-3 py-1.5 rounded-lg bg-[#2E90FA] hover:bg-[#1570EF] text-white text-xs font-semibold font-[Inter,sans-serif] transition-colors cursor-pointer"
+                            >
+                                Daftar
+                            </Link>
                         </SignedOut>
                         <SignedIn>
                             <UserButton />
@@ -520,31 +530,35 @@ const Navbar = () => {
 
                 {/* Mobile Nav Links Sesuai Urutan Presisi */}
                 <div className="flex flex-col py-2">
-                    {/* Mobile Clerk Auth Controls */}
+                    {/* Mobile Portal MUBES Auth Controls */}
                     <div className="px-5 py-3 border-b border-gray-100 flex items-center justify-between">
                         <SignedOut>
                             <div className="flex items-center gap-2 w-full">
-                                <SignInButton mode="modal">
-                                    <button
-                                        type="button"
-                                        className="flex-1 py-2 text-center rounded-lg border border-gray-200 text-[#1A1A1A] text-xs font-semibold font-[Inter,sans-serif] hover:bg-gray-50 active:bg-gray-100 transition-colors"
-                                    >
-                                        Masuk
-                                    </button>
-                                </SignInButton>
-                                <SignUpButton mode="modal">
-                                    <button
-                                        type="button"
-                                        className="flex-1 py-2 text-center rounded-lg bg-[#2E90FA] text-white text-xs font-semibold font-[Inter,sans-serif] hover:bg-[#1570EF] active:bg-[#1849A9] transition-colors"
-                                    >
-                                        Daftar
-                                    </button>
-                                </SignUpButton>
+                                <Link
+                                    href="/portal-mubes"
+                                    onClick={() => setMobileOpen(false)}
+                                    className="flex-1 py-2 text-center rounded-lg border border-gray-200 text-[#1A1A1A] text-xs font-semibold font-[Inter,sans-serif] hover:bg-gray-50 active:bg-gray-100 transition-colors"
+                                >
+                                    Masuk
+                                </Link>
+                                <Link
+                                    href="/portal-mubes?mode=signup"
+                                    onClick={() => setMobileOpen(false)}
+                                    className="flex-1 py-2 text-center rounded-lg bg-[#2E90FA] text-white text-xs font-semibold font-[Inter,sans-serif] hover:bg-[#1570EF] active:bg-[#1849A9] transition-colors"
+                                >
+                                    Daftar
+                                </Link>
                             </div>
                         </SignedOut>
                         <SignedIn>
                             <div className="flex items-center justify-between w-full">
-                                <span className="text-xs font-semibold text-gray-700 font-[Inter,sans-serif]">Akun Pengguna</span>
+                                <Link
+                                    href="/portal-mubes"
+                                    onClick={() => setMobileOpen(false)}
+                                    className="px-3 py-1.5 rounded-lg bg-[#FA982E] hover:bg-[#E8850A] text-[#1A1A1A] text-xs font-bold font-[Inter,sans-serif] transition-colors"
+                                >
+                                    Portal MUBES →
+                                </Link>
                                 <UserButton />
                             </div>
                         </SignedIn>
@@ -703,6 +717,16 @@ const Navbar = () => {
                             </div>
                         </div>
                     </div>
+
+                    {/* 9. PORTAL MUBES (Khusus User Terdaftar / SignedIn) */}
+                    <SignedIn>
+                        <Link href="/portal-mubes" className="no-underline" onClick={() => setMobileOpen(false)}>
+                            <div className={`flex items-center gap-3 px-5 py-3.5 transition-colors duration-200 ${isActive('/portal-mubes') ? 'bg-[#FA982E]/20 text-[#E8850A]' : 'text-[#1A1A1A] hover:bg-gray-50 active:bg-gray-100'}`}>
+                                <span className="text-sm font-bold font-[Inter,sans-serif] text-[#E8850A]">PORTAL MUBES</span>
+                                {isActive('/portal-mubes') && <div className="w-1.5 h-1.5 rounded-full bg-[#E8850A]" />}
+                            </div>
+                        </Link>
+                    </SignedIn>
                 </div>
 
                 {/* Mobile Footer */}

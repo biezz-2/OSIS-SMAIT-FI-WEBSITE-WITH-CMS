@@ -8,12 +8,15 @@ export async function GET(request: NextRequest) {
   const url = searchParams.get('url');
   const status = searchParams.get('status');
 
-  const previewSecret = process.env.PREVIEW_SECRET || 'preview_secret_agoraacta_2026';
+  const previewSecret = process.env.PREVIEW_SECRET;
 
   // Check the secret token
-  if (secret !== previewSecret) {
+  if (!previewSecret || secret !== previewSecret) {
     return new Response('Invalid token', { status: 401 });
   }
+
+  // Prevent Open Redirect: only allow internal relative paths
+  const safeUrl = url && url.startsWith('/') && !url.startsWith('//') ? url : '/';
 
   // Enable or disable draft mode based on content status
   const draft = await draftMode();
@@ -24,5 +27,5 @@ export async function GET(request: NextRequest) {
   }
 
   // Redirect to the target URL path
-  redirect(url || '/');
+  redirect(safeUrl);
 }

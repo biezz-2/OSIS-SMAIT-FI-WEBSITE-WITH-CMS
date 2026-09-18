@@ -39,14 +39,17 @@ export default function AudioManager({ isLoading = false }: AudioManagerProps) {
         if (audioRef.current) {
             const audio = audioRef.current;
 
-            // If still loading, keep volume at 0 (silent)
-            if (isLoading) {
-                audio.volume = 0;
-            } else {
-                // Once loading is finished, attempt to play with sound
-                audio.volume = volume;
-                audio.muted = false;
+            // ponytail: wrap volume write in try-catch because iOS Safari marks volume as read-only
+            try {
+                if (isLoading) {
+                    audio.volume = 0;
+                } else {
+                    audio.volume = volume;
+                }
+            } catch (_) {}
 
+            if (!isLoading) {
+                audio.muted = false;
                 const playPromise = audio.play();
                 if (playPromise !== undefined) {
                     playPromise.catch(error => {
@@ -61,13 +64,14 @@ export default function AudioManager({ isLoading = false }: AudioManagerProps) {
         const handleInteraction = () => {
             if (hasInteracted) return;
 
-            // CRITICAL: We MUST call play() directly inside the event handler 
+            // CRITICAL: We MUST call play() directly inside the event handler
             // to "unlock" audio for mobile browsers.
             if (audioRef.current) {
                 const audio = audioRef.current;
                 audio.muted = false;
-                // If still loading, we play silently to unlock the context
-                audio.volume = isLoading ? 0 : volume;
+                try {
+                    audio.volume = isLoading ? 0 : volume;
+                } catch (_) {}
 
                 audio.play()
                     .then(() => {
@@ -92,7 +96,9 @@ export default function AudioManager({ isLoading = false }: AudioManagerProps) {
     const handleVolumeChange = (newVolume: number) => {
         setVolume(newVolume);
         if (audioRef.current) {
-            audioRef.current.volume = newVolume;
+            try {
+                audioRef.current.volume = newVolume;
+            } catch (_) {}
         }
     };
 

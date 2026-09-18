@@ -12,9 +12,26 @@ export async function generateMetadata(): Promise<Metadata> {
     const pageData = await fetchHalamanFromStrapi('events');
     const attrs = pageData?.attributes || pageData || {};
 
+    const title = attrs.seo_title || attrs.judul_hero || 'Events & Agenda Kegiatan | OSIS SMAIT Fithrah Insani';
+    const description = attrs.seo_description || attrs.sub_judul || 'Daftar acara, event, kompetisi, dan agenda kegiatan OSIS SMAIT Fithrah Insani (Agora Acta) Kab. Bandung Barat.';
+
     return {
-        title: attrs.seo_title || attrs.judul_hero || 'Events & Agenda Kegiatan',
-        description: attrs.seo_description || attrs.sub_judul || 'Daftar acara, event, dan agenda kegiatan OSIS SMAIT Fithrah Insani.',
+        title,
+        description,
+        alternates: {
+            canonical: '/events',
+        },
+        openGraph: {
+            title,
+            description,
+            url: '/events',
+            type: 'website',
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title,
+            description,
+        },
     };
 }
 

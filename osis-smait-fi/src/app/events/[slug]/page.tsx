@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import {
   fetchEventBySlug,
   fetchOtherEventsSummary,
@@ -38,15 +38,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: `${title} | OSIS SMAIT Fithrah Insani`,
     description: desc,
+    alternates: {
+      canonical: `/events/${slug}`,
+    },
   };
 }
 
 export default async function EventDetailPage({ params }: PageProps) {
   const { slug } = await params;
 
-  // Khusus edufest-infinity: tetap memiliki subsite khusus tersendiri
+  // Khusus edufest-infinity: alihkan langsung ke subsite resmi Edufest
   if (slug === "edufest-infinity") {
-    // Bisa langsung redirect atau biarkan
+    redirect("/edufest-infinity");
   }
 
   const [eventData, otherEventsRaw] = await Promise.all([

@@ -6,6 +6,11 @@ export async function GET(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   const { slug } = await params;
+
+  if (!slug || !/^[a-zA-Z0-9-_]+$/.test(slug)) {
+    return NextResponse.json({ error: 'Format slug tidak valid' }, { status: 400 });
+  }
+
   const access = await getMubesAccess();
 
   if (!access.allowed) {

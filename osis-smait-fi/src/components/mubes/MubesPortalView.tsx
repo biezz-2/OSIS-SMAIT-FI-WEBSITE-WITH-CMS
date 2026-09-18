@@ -17,6 +17,10 @@ export default function MubesPortalView({ initialMode = 'login' }: MubesPortalVi
   const [mode, setMode] = useState<'login' | 'signup'>(initialMode);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
 
+  React.useEffect(() => {
+    setMode(initialMode);
+  }, [initialMode]);
+
   return (
     <div className="relative min-h-screen w-full bg-[#0d0a08] overflow-x-hidden flex flex-col justify-between selection:bg-[#e3bd7d]/30 selection:text-[#faf0db]">
       {/* 1. Background Enchanted Castle/Hall Image */}

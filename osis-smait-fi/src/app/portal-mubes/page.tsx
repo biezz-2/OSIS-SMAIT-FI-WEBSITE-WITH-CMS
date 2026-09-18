@@ -6,7 +6,7 @@ import MubesPresentationHero from '@/components/mubes/MubesPresentationHero';
 import MubesPresentationViewer from '@/components/mubes/MubesPresentationViewer';
 import MubesPortalView from '@/components/mubes/MubesPortalView';
 import { fetchHalamanFromStrapi } from '@/lib/strapi';
-import { fetchMubesProkerData } from '@/lib/mubes-proker';
+import { fetchMubesProkerData, fetchMubesSidangData } from '@/lib/mubes-proker';
 import { getMubesAccess } from '@/lib/mubes-access';
 
 export const dynamic = 'force-dynamic';
@@ -21,6 +21,19 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title,
     description,
+    robots: {
+      index: false,
+      follow: false,
+      nocache: true,
+      googleBot: {
+        index: false,
+        follow: false,
+        noimageindex: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'none',
+        'max-snippet': -1,
+      },
+    },
     openGraph: {
       title,
       description,
@@ -29,18 +42,27 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function PortalMubesPage() {
-  const access = await getMubesAccess();
+interface PortalMubesPageProps {
+  searchParams: Promise<{ mode?: string }>;
+}
+
+export default async function PortalMubesPage({ searchParams }: PortalMubesPageProps) {
+  const [access, resolvedParams] = await Promise.all([
+    getMubesAccess(),
+    searchParams,
+  ]);
+  const initialMode = resolvedParams?.mode === 'signup' ? 'signup' : 'login';
 
   // Proteksi akses Sidang MUBES: Jika pengguna belum login atau belum disetujui,
   // tampilkan portal autentikasi (MubesPortalView) tanpa membocorkan data LPJ
   if (!access.allowed) {
-    return <MubesPortalView initialMode="login" />;
+    return <MubesPortalView initialMode={initialMode} />;
   }
 
-  const [mubesConfig, prokerGroups] = await Promise.all([
+  const [mubesConfig, prokerGroups, sidangData] = await Promise.all([
     fetchHalamanFromStrapi('portal-mubes'),
     fetchMubesProkerData(),
+    fetchMubesSidangData(),
   ]);
 
   return (
@@ -52,7 +74,7 @@ export default async function PortalMubesPage() {
       <MubesPresentationHero initialData={mubesConfig} />
 
       {/* 3. Area Presentasi Sidang & Ekstensi LPJ Per Program Kerja */}
-      <MubesPresentationViewer initialGroups={prokerGroups} />
+      <MubesPresentationViewer initialGroups={prokerGroups} sidangData={sidangData} />
 
       {/* 4. Global Footer OSIS */}
       <Footer />

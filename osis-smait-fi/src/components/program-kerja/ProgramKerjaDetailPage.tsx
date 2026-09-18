@@ -406,17 +406,17 @@ export default function ProgramKerjaDetailPage({ slug, initialData }: { slug: st
 
       {/* Section 2: Tujuan Program & Chair Cards */}
       <section className="w-full bg-white py-16 md:py-24 px-4 overflow-hidden">
-        <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-start justify-between gap-16">
+        <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-center lg:items-start justify-center gap-10 lg:gap-14">
 
           {/* Left: Chair Cards — support 1 atau lebih penanggung jawab */}
-          <div className="w-full lg:w-auto flex-shrink-0 flex flex-col gap-4">
+          <div className="w-full lg:w-auto flex-shrink-0 flex flex-col items-center lg:items-start gap-4">
             {/* Label */}
             <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">
               {detail.chairs.length > 1 ? 'Penanggung Jawab' : 'Penanggung Jawab'}
             </p>
 
             {/* Row kartu — side by side jika > 1 */}
-            <div className={`flex flex-row flex-wrap gap-5 ${detail.chairs.length === 1 ? 'justify-center' : 'justify-start'
+            <div className={`flex flex-row flex-wrap gap-5 ${detail.chairs.length === 1 ? 'justify-center' : 'justify-center lg:justify-start'
               }`}>
               {detail.chairs.map((chair, idx) => (
                 <div
@@ -458,7 +458,7 @@ export default function ProgramKerjaDetailPage({ slug, initialData }: { slug: st
             </div>
           </div>
 
-          <div className="w-full lg:w-1/2 flex flex-col items-center lg:items-start gap-8">
+          <div className="w-full lg:flex-1 max-w-2xl flex flex-col items-center lg:items-start gap-8">
             <h2 className="text-[#111827] text-3xl md:text-4xl font-bold font-sans text-center lg:text-left">
               Tujuan Program
             </h2>

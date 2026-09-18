@@ -61,14 +61,20 @@ export const AnimatedTooltip = ({
     springConfig,
   );
 
+  // ponytail: rect fallback supports touch and pointer without full PointerEvent migration
   const handleMouseMove = (event: any) => {
     if (animationFrameRef.current) {
       cancelAnimationFrame(animationFrameRef.current);
     }
 
     animationFrameRef.current = requestAnimationFrame(() => {
-      const halfWidth = event.target.offsetWidth / 2;
-      x.set(event.nativeEvent.offsetX - halfWidth);
+      const target = event.currentTarget || event.target;
+      const rect = target?.getBoundingClientRect?.();
+      if (!rect) return;
+
+      const clientX = event.touches?.[0]?.clientX ?? event.clientX ?? (rect.left + rect.width / 2);
+      const offsetX = clientX - rect.left;
+      x.set(offsetX - rect.width / 2);
     });
   };
 

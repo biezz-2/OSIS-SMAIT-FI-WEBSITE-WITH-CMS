@@ -143,7 +143,8 @@ export default function SosmedHub({ initialData }: SosmedHubProps) {
     category: 'instagram',
     suggestion: ''
   });
-  const [formStatus, setFormStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
+  const [formStatus, setFormStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const [formErrorMessage, setFormErrorMessage] = useState<string>('');
 
   // Filter animation state update
   useEffect(() => {
@@ -201,12 +202,20 @@ export default function SosmedHub({ initialData }: SosmedHubProps) {
           setFormStatus('idle');
         }, 4000);
       } else {
-        console.error('Failed to send suggestion to inbox API');
-        setFormStatus('idle');
+        const data = await res.json().catch(() => ({}));
+        setFormErrorMessage(data?.message || data?.error || 'Gagal mengirim saran. Silakan coba beberapa saat lagi.');
+        setFormStatus('error');
+        setTimeout(() => {
+          setFormStatus('idle');
+        }, 5000);
       }
     } catch (err) {
       console.error('Error submitting suggestion to inbox API:', err);
-      setFormStatus('idle');
+      setFormErrorMessage('Terjadi kendala jaringan. Pastikan koneksi internet stabil.');
+      setFormStatus('error');
+      setTimeout(() => {
+        setFormStatus('idle');
+      }, 5000);
     }
   };
 
@@ -417,6 +426,20 @@ export default function SosmedHub({ initialData }: SosmedHubProps) {
                   <h4 className="text-lg font-bold text-[#101828] font-inter">Terima Kasih!</h4>
                   <p className="text-xs text-[#6A7282] max-w-[220px] font-inter leading-relaxed">
                     Saran ide konten kamu berhasil terkirim. Tim kreatif OSIS akan segera mengulasnya!
+                  </p>
+                </div>
+              )}
+
+              {formStatus === 'error' && (
+                <div className="absolute inset-0 bg-white/95 backdrop-blur-md flex flex-col items-center justify-center text-center p-6 gap-3 z-20 rounded-3xl animate-fade-in">
+                  <div className="w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center text-red-600 shadow-inner">
+                    <svg className="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" strokeWidth="2.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 6.75h.008v.008H12v-.008z" />
+                    </svg>
+                  </div>
+                  <h4 className="text-base font-bold text-[#101828] font-inter">Gagal Mengirim</h4>
+                  <p className="text-xs text-red-600 max-w-[240px] font-inter leading-relaxed">
+                    {formErrorMessage}
                   </p>
                 </div>
               )}

@@ -50,28 +50,63 @@ const cormorantGaramond = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://osissmaitfithrahinsani.sch.id"), // sesuaikan domain utama jika ada
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://osissmaitfi.biezz.my.id"),
   title: {
-    default: "OSIS SMAIT Fithrah Insani | Agora Acta",
-    template: "%s | OSIS SMAIT Fithrah Insani",
+    default: "OSIS SMAIT FI (Agora Acta) | Portal Resmi OSIS SMA IT Fithrah Insani",
+    template: "%s | OSIS SMAIT FI",
   },
-  description: "Website Resmi OSIS SMAIT Fithrah Insani - Kab. Bandung Barat. Wadah aspirasi, informasi program kerja, berita acara, dan kegiatan siswa SMAIT Fithrah Insani.",
+  description: "Website Resmi OSIS SMA IT Fithrah Insani (OSIS SMAIT FI / Agora Acta) Kab. Bandung Barat. Wadah aspirasi, informasi program kerja, berita acara, dan kepemimpinan siswa.",
   keywords: [
+    "osis sma it fi",
+    "osis smait fi",
+    "OSIS SMA IT Fithrah Insani",
     "OSIS SMAIT Fithrah Insani",
     "osis smait fithrah insani",
+    "SMA IT FI",
+    "SMAIT FI",
+    "SMA IT Fithrah Insani",
     "SMAIT Fithrah Insani",
     "Agora Acta",
     "OSIS Fithrah Insani",
-    "Kegiatan Siswa SMAIT Fithrah Insani",
-    "Sekbid OSIS SMAIT Fithrah Insani"
+    "OSIS FI",
+    "Kegiatan Siswa SMA IT FI",
+    "Sekbid OSIS SMA IT Fithrah Insani",
+    "SMA IT Fithrah Insani Bandung Barat"
   ],
   authors: [{ name: "OSIS SMAIT Fithrah Insani" }],
+  creator: "OSIS SMAIT Fithrah Insani",
+  publisher: "SMAIT Fithrah Insani",
+  alternates: {
+    canonical: "/",
+  },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "google-site-verification-placeholder",
+    yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION || undefined,
+    other: {
+      "msvalidate.01": process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION || "bing-verification-placeholder",
+    },
+  },
   openGraph: {
-    title: "OSIS SMAIT Fithrah Insani | Agora Acta",
-    description: "Website Resmi OSIS SMAIT Fithrah Insani - Kab. Bandung Barat.",
-    siteName: "OSIS SMAIT Fithrah Insani",
+    title: "OSIS SMA IT FI | Portal Resmi OSIS SMAIT Fithrah Insani",
+    description: "Website Resmi OSIS SMA IT Fithrah Insani (OSIS SMAIT FI / Agora Acta) Kab. Bandung Barat.",
+    siteName: "OSIS SMAIT FI",
     locale: "id_ID",
     type: "website",
+    url: process.env.NEXT_PUBLIC_SITE_URL || "https://osissmaitfi.biezz.my.id",
+    images: [
+      {
+        url: "/images/logo-osis.jpg",
+        width: 800,
+        height: 800,
+        alt: "Logo OSIS SMAIT Fithrah Insani (Agora Acta)",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "OSIS SMA IT FI | Portal Resmi OSIS SMAIT Fithrah Insani",
+    description: "Website Resmi OSIS SMA IT Fithrah Insani (OSIS SMAIT FI / Agora Acta) Kab. Bandung Barat.",
+    images: ["/images/logo-osis.jpg"],
   },
   manifest: "/manifest.json",
   appleWebApp: {
@@ -90,6 +125,7 @@ import GlobalBgTexture from "@/components/ui/GlobalBgTexture";
 import { ClerkProvider } from "@clerk/nextjs";
 import MubesSessionBanner from "@/components/mubes/MubesSessionBanner";
 import TelemetryTracker from "@/components/telemetry/TelemetryTracker";
+import JsonLd from "@/components/seo/JsonLd";
 
 export default async function RootLayout({
   children,
@@ -105,6 +141,7 @@ export default async function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${greatVibes.variable} ${inter.variable} ${cinzel.variable} ${cormorantGaramond.variable} h-full antialiased`}
     >
       <head>
+        <JsonLd />
         <script
           dangerouslySetInnerHTML={{
             __html: `

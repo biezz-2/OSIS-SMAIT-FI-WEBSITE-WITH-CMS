@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { MubesSekbidGroup, MubesProgramKerja } from '@/lib/mubes-proker';
+import { MubesSekbidGroup, MubesProgramKerja, MubesSidangData } from '@/lib/mubes-proker';
 import { getStrapiMediaUrl } from '@/lib/strapi';
 import {
   FileText,
@@ -19,17 +19,22 @@ import {
   Calendar,
   MapPin,
   Users,
-  ExternalLink
+  ExternalLink,
+  BookOpen,
+  Gavel,
+  ShieldCheck
 } from 'lucide-react';
 
 interface MubesPresentationViewerProps {
   initialGroups: MubesSekbidGroup[];
+  sidangData?: MubesSidangData | null;
 }
 
-export default function MubesPresentationViewer({ initialGroups }: MubesPresentationViewerProps) {
+export default function MubesPresentationViewer({ initialGroups, sidangData }: MubesPresentationViewerProps) {
   const [selectedSekbid, setSelectedSekbid] = useState<number>(1);
   const [activeModalProker, setActiveModalProker] = useState<MubesProgramKerja | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'teknis' | 'lpj' | 'evaluasi'>('overview');
+  const [activeViewerSection, setActiveViewerSection] = useState<'proker' | 'sidang'>('proker');
 
   const currentGroup = initialGroups.find((g) => g.nomor === selectedSekbid) || initialGroups[0];
   const prokers = currentGroup?.prokerList || [];
@@ -37,187 +42,338 @@ export default function MubesPresentationViewer({ initialGroups }: MubesPresenta
   return (
     <section className="w-full bg-slate-50 dark:bg-slate-900/50 py-12 px-6 sm:px-8 lg:px-12 transition-colors">
       <div className="max-w-7xl mx-auto flex flex-col gap-10">
-        {/* Navigasi Filter Sekbid 1 - 8 */}
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200 dark:border-slate-800">
-            <div>
-              <h2 className="text-2xl sm:text-3xl font-bold font-serif text-slate-900 dark:text-slate-100 flex items-center gap-3">
-                <Layers className="w-7 h-7 text-amber-600 dark:text-amber-400" />
-                <span>Pilih Seksi Bidang (Sekbid 1 - 8)</span>
-              </h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                Pilih seksi bidang untuk menampilkan presentasi program kerja dan dokumen LPJ terkait.
-              </p>
-            </div>
-            <div className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700/50 self-start sm:self-auto">
-              Mode Sidang Aktif
-            </div>
+        {/* Navigasi Utama: Sekbid Proker vs Ketetapan & Dokumen Sidang */}
+        <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
+          <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-slate-200/70 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700">
+            <button
+              onClick={() => setActiveViewerSection('proker')}
+              className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all ${
+                activeViewerSection === 'proker'
+                  ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+              }`}
+            >
+              <Layers className="w-4 h-4" />
+              <span>Program Kerja & LPJ (Sekbid 1 - 8)</span>
+            </button>
+            <button
+              onClick={() => setActiveViewerSection('sidang')}
+              className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all ${
+                activeViewerSection === 'sidang'
+                  ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+              }`}
+            >
+              <Gavel className="w-4 h-4" />
+              <span>Ketetapan & Dokumen Sidang</span>
+              {sidangData && (
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              )}
+            </button>
           </div>
 
-          {/* Tab Button Carousel / Grid */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin">
-            {initialGroups.map((group) => {
-              const isSelected = group.nomor === selectedSekbid;
-              return (
-                <button
-                  key={group.nomor}
-                  onClick={() => setSelectedSekbid(group.nomor)}
-                  className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all flex items-center gap-2 border ${
-                    isSelected
-                      ? 'bg-amber-600 text-white border-amber-600 shadow-md shadow-amber-600/20'
-                      : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700'
-                  }`}
-                >
-                  <span className="w-5 h-5 rounded-full bg-black/10 dark:bg-white/10 flex items-center justify-center text-[11px]">
-                    {group.nomor}
-                  </span>
-                  <span>{group.judul}</span>
-                  <span className="text-[11px] opacity-75">({group.prokerList.length})</span>
-                </button>
-              );
-            })}
+          <div className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700/50">
+            {activeViewerSection === 'proker' ? 'Mode Evaluasi Proker' : 'Mode Pleno Ketetapan'}
           </div>
         </div>
 
-        {/* Sekbid Active Info Box */}
-        <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="text-xs uppercase font-bold tracking-wider text-amber-600 dark:text-amber-400">
-              Seksi Bidang {currentGroup.nomor}
+        {/* ================= SECTION 1: PROKER & LPJ SEKBID ================= */}
+        {activeViewerSection === 'proker' && (
+          <>
+            {/* Navigasi Filter Sekbid 1 - 8 */}
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200 dark:border-slate-800">
+                <div>
+                  <h2 className="text-2xl sm:text-3xl font-bold font-serif text-slate-900 dark:text-slate-100 flex items-center gap-3">
+                    <Layers className="w-7 h-7 text-amber-600 dark:text-amber-400" />
+                    <span>Pilih Seksi Bidang (Sekbid 1 - 8)</span>
+                  </h2>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                    Pilih seksi bidang untuk menampilkan presentasi program kerja dan dokumen LPJ terkait.
+                  </p>
+                </div>
+              </div>
+
+              {/* Tab Button Carousel / Grid */}
+              <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin">
+                {initialGroups.map((group) => {
+                  const isSelected = group.nomor === selectedSekbid;
+                  return (
+                    <button
+                      key={group.nomor}
+                      onClick={() => setSelectedSekbid(group.nomor)}
+                      className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all flex items-center gap-2 border ${
+                        isSelected
+                          ? 'bg-amber-600 text-white border-amber-600 shadow-md shadow-amber-600/20'
+                          : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700'
+                      }`}
+                    >
+                      <span className="w-5 h-5 rounded-full bg-black/10 dark:bg-white/10 flex items-center justify-center text-[11px]">
+                        {group.nomor}
+                      </span>
+                      <span>{group.judul}</span>
+                      <span className="text-[11px] opacity-75">({group.prokerList.length})</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-            <h3 className="text-2xl font-bold font-serif text-slate-900 dark:text-slate-100 mt-1">
-              {currentGroup.judul}
-            </h3>
-            <p className="text-sm text-slate-600 dark:text-slate-300 mt-1 max-w-2xl">
-              {currentGroup.deskripsi}
-            </p>
-          </div>
-          <div className="text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700/50 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700">
-            Total {prokers.length} program kerja terlapor untuk sidang.
-          </div>
-        </div>
 
-        {/* Grid Program Kerja (Tampilan Visitor dengan Ekstensi MUBES) */}
-        {prokers.length === 0 ? (
-          <div className="bg-white dark:bg-slate-800 rounded-2xl p-12 text-center border border-dashed border-slate-300 dark:border-slate-700">
-            <AlertCircle className="w-12 h-12 text-slate-400 mx-auto mb-3" />
-            <h4 className="text-base font-semibold text-slate-700 dark:text-slate-300">
-              Belum ada program kerja untuk Sekbid {currentGroup.nomor}
-            </h4>
-            <p className="text-xs text-slate-500 mt-1">
-              Data dapat dilengkapi melalui panel Strapi CMS bagian 🌐 [VISITOR] Program Kerja.
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {prokers.map((proker) => {
-              const bannerMedia = proker.banner_image || (proker.dokumentasi && proker.dokumentasi[0]);
-              const bannerUrl = getStrapiMediaUrl(bannerMedia, '/images/mubes/bg-medieval.png');
-              const hasLpj = Boolean(proker.lpj);
+            {/* Sekbid Active Info Box */}
+            <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <div className="text-xs uppercase font-bold tracking-wider text-amber-600 dark:text-amber-400">
+                  Seksi Bidang {currentGroup.nomor}
+                </div>
+                <h3 className="text-2xl font-bold font-serif text-slate-900 dark:text-slate-100 mt-1">
+                  {currentGroup.judul}
+                </h3>
+                <p className="text-sm text-slate-600 dark:text-slate-300 mt-1 max-w-2xl">
+                  {currentGroup.deskripsi}
+                </p>
+              </div>
+              <div className="text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700/50 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700">
+                Total {prokers.length} program kerja terlapor untuk sidang.
+              </div>
+            </div>
 
-              return (
-                <div
-                  key={proker.id}
-                  className="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700/80 shadow-sm hover:shadow-md transition-all flex flex-col justify-between group"
-                >
+            {/* Grid Program Kerja (Tampilan Visitor dengan Ekstensi MUBES) */}
+            {prokers.length === 0 ? (
+              <div className="bg-white dark:bg-slate-800 rounded-2xl p-12 text-center border border-dashed border-slate-300 dark:border-slate-700">
+                <AlertCircle className="w-12 h-12 text-slate-400 mx-auto mb-3" />
+                <h4 className="text-base font-semibold text-slate-700 dark:text-slate-300">
+                  Belum ada program kerja untuk Sekbid {currentGroup.nomor}
+                </h4>
+                <p className="text-xs text-slate-500 mt-1">
+                  Data dapat dilengkapi melalui panel Strapi CMS bagian 🌐 [VISITOR] Program Kerja.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {prokers.map((proker) => {
+                  const bannerMedia = proker.banner_image || (proker.dokumentasi && proker.dokumentasi[0]);
+                  const bannerUrl = getStrapiMediaUrl(bannerMedia, '/images/mubes/bg-medieval.png');
+                  const hasLpj = Boolean(proker.lpj);
+
+                  return (
+                    <div
+                      key={proker.id}
+                      className="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700/80 shadow-sm hover:shadow-md transition-all flex flex-col justify-between group"
+                    >
+                      <div>
+                        {/* Header Image */}
+                        <div className="relative aspect-[16/9] w-full bg-slate-900 overflow-hidden">
+                          <Image
+                            src={bannerUrl}
+                            alt={proker.judul}
+                            fill
+                            sizes="(max-width: 1024px) 100vw, 60vw"
+                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+
+                          {/* Badge Kategori & Status LPJ */}
+                          <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
+                            <span className="text-[11px] font-semibold uppercase px-2.5 py-1 rounded-md bg-white/90 dark:bg-slate-900/90 text-slate-900 dark:text-white backdrop-blur-sm">
+                              {proker.kategori}
+                            </span>
+                            {hasLpj ? (
+                              <span className="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-emerald-500/90 text-white flex items-center gap-1 shadow">
+                                <CheckCircle2 className="w-3 h-3" />
+                                LPJ Tersedia
+                              </span>
+                            ) : (
+                              <span className="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-amber-500/90 text-white shadow">
+                                LPJ Pending
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Title Overlay on Image Bottom */}
+                          <div className="absolute bottom-3 left-3 right-3">
+                            <h4 className="text-white font-serif font-bold text-lg leading-tight line-clamp-2 drop-shadow-sm">
+                              {proker.judul}
+                            </h4>
+                          </div>
+                        </div>
+
+                        {/* Proker Meta Body */}
+                        <div className="p-5 flex flex-col gap-3">
+                          {proker.tujuan && (
+                            <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed">
+                              {proker.tujuan}
+                            </p>
+                          )}
+
+                          {/* Penanggung Jawab */}
+                          {proker.penanggung_jawab && proker.penanggung_jawab.length > 0 && (
+                            <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                              <Users className="w-3.5 h-3.5 text-amber-500" />
+                              <span className="truncate">
+                                PJ: {proker.penanggung_jawab.map(p => p.nama_lengkap).join(', ')}
+                              </span>
+                            </div>
+                          )}
+
+                          {/* Rangkuman Data Mubes (Tambahan Sidang) */}
+                          <div className="mt-2 pt-3 border-t border-slate-100 dark:border-slate-700/60 grid grid-cols-2 gap-2 text-xs">
+                            <div className="bg-slate-50 dark:bg-slate-900/50 p-2.5 rounded-xl">
+                              <span className="text-[10px] text-slate-400 uppercase font-semibold block">Anggaran</span>
+                              <span className="font-bold text-slate-800 dark:text-slate-200">
+                                {proker.lpj?.realisasi_anggaran
+                                  ? `Rp ${Number(proker.lpj.realisasi_anggaran).toLocaleString('id-ID')}`
+                                  : 'Tercatat di LPJ'}
+                              </span>
+                            </div>
+                            <div className="bg-slate-50 dark:bg-slate-900/50 p-2.5 rounded-xl">
+                              <span className="text-[10px] text-slate-400 uppercase font-semibold block">Pengesahan</span>
+                              <span className="font-bold capitalize text-amber-600 dark:text-amber-400">
+                                {proker.lpj?.status_pengesahan || 'Siap Diuji'}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Tombol Aksi: Buka PPT Modal & Detail Sidang Figma */}
+                      <div className="p-5 pt-0 flex flex-col gap-2">
+                        <Link
+                          href={`/portal-mubes/proker/${encodeURIComponent(proker.slug)}`}
+                          className="w-full py-2.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-bold flex items-center justify-center gap-2 transition-colors shadow-sm"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                          <span>Buka Halaman Sidang MUBES (Full)</span>
+                        </Link>
+                        <button
+                          onClick={() => {
+                            setActiveModalProker(proker);
+                            setActiveTab('overview');
+                          }}
+                          className="w-full py-2 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
+                        >
+                          <Maximize2 className="w-3.5 h-3.5" />
+                          <span>Lihat Slide Cepat (Modal)</span>
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </>
+        )}
+
+        {/* ================= SECTION 2: KETETAPAN & DOKUMEN SIDANG ================= */}
+        {activeViewerSection === 'sidang' && (
+          <div className="flex flex-col gap-8">
+            <div className="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div>
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-xs font-bold uppercase tracking-wider mb-2">
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  <span>Periode Sidang {sidangData?.tahun_periode || '2025-2026'}</span>
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-bold font-serif text-slate-900 dark:text-slate-100">
+                  Ketetapan & Dokumen Sidang Pleno MUBES
+                </h3>
+                <p className="text-sm text-slate-600 dark:text-slate-300 mt-2 max-w-2xl leading-relaxed">
+                  Seluruh konsideran, tata tertib persidangan, dan komisi kerja dikelola langsung melalui Strapi CMS (api::mubes-sidang) untuk transparansi organisasi.
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-center gap-3">
+                <span className="text-xs font-semibold px-4 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 capitalize">
+                  Status: {sidangData?.status_sidang || 'Berlangsung'}
+                </span>
+              </div>
+            </div>
+
+            {/* Grid Tata Tertib & Konsideran */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Tata Tertib */}
+              <div className="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-700 flex flex-col gap-4 shadow-sm">
+                <div className="flex items-center gap-3 pb-3 border-b border-slate-100 dark:border-slate-700/60">
+                  <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                    <BookOpen className="w-5 h-5" />
+                  </div>
                   <div>
-                    {/* Header Image */}
-                    <div className="relative aspect-[16/9] w-full bg-slate-900 overflow-hidden">
-                      <Image
-                        src={bannerUrl}
-                        alt={proker.judul}
-                        fill
-                        sizes="(max-width: 1024px) 100vw, 60vw"
-                        className="object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                    <h4 className="text-lg font-bold font-serif text-slate-900 dark:text-slate-100">
+                      Tata Tertib Persidangan
+                    </h4>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Aturan pelaksanaan sidang pleno & komisi</p>
+                  </div>
+                </div>
 
-                      {/* Badge Kategori & Status LPJ */}
-                      <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
-                        <span className="text-[11px] font-semibold uppercase px-2.5 py-1 rounded-md bg-white/90 dark:bg-slate-900/90 text-slate-900 dark:text-white backdrop-blur-sm">
-                          {proker.kategori}
+                <div className="prose dark:prose-invert max-w-none text-sm text-slate-700 dark:text-slate-300 whitespace-pre-line leading-relaxed bg-slate-50 dark:bg-slate-900/40 p-5 rounded-2xl border border-slate-200 dark:border-slate-700">
+                  {sidangData?.tata_tertib || 'Tata tertib sidang mengacu pada peraturan persidangan resmi OSIS SMAIT Fithrah Insani.'}
+                </div>
+              </div>
+
+              {/* Draft Konsideran */}
+              <div className="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-700 flex flex-col gap-4 shadow-sm">
+                <div className="flex items-center gap-3 pb-3 border-b border-slate-100 dark:border-slate-700/60">
+                  <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                    <Gavel className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-bold font-serif text-slate-900 dark:text-slate-100">
+                      Draft Konsideran Ketetapan
+                    </h4>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Rancangan naskah pengesahan hasil sidang</p>
+                  </div>
+                </div>
+
+                <div className="prose dark:prose-invert max-w-none text-sm text-slate-700 dark:text-slate-300 whitespace-pre-line leading-relaxed bg-slate-50 dark:bg-slate-900/40 p-5 rounded-2xl border border-slate-200 dark:border-slate-700">
+                  {sidangData?.draft_konsideran || 'Draft konsideran pengesahan laporan pertanggungjawaban kepengurusan OSIS masa bakti.'}
+                </div>
+              </div>
+            </div>
+
+            {/* Daftar Komisi Sidang */}
+            {sidangData?.daftar_komisi && Array.isArray(sidangData.daftar_komisi) && sidangData.daftar_komisi.length > 0 && (
+              <div className="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col gap-6">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700/60">
+                  <div>
+                    <h4 className="text-lg font-bold font-serif text-slate-900 dark:text-slate-100">
+                      Daftar Komisi Musyawarah Besar
+                    </h4>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Pembagian komisi kerja untuk pembahasan materi MUBES</p>
+                  </div>
+                  <span className="text-xs font-bold text-amber-600 dark:text-amber-400">
+                    {sidangData.daftar_komisi.length} Komisi Terdaftar
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {sidangData.daftar_komisi.map((komisi: any, kIdx: number) => (
+                    <div
+                      key={kIdx}
+                      className="bg-slate-50 dark:bg-slate-900/50 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 flex flex-col justify-between gap-3"
+                    >
+                      <div>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 block">
+                          Komisi {kIdx + 1}
                         </span>
-                        {hasLpj ? (
-                          <span className="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-emerald-500/90 text-white flex items-center gap-1 shadow">
-                            <CheckCircle2 className="w-3 h-3" />
-                            LPJ Tersedia
-                          </span>
-                        ) : (
-                          <span className="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-amber-500/90 text-white shadow">
-                            LPJ Pending
-                          </span>
+                        <h5 className="text-base font-bold text-slate-900 dark:text-slate-100 mt-0.5">
+                          {komisi.nama_komisi || `Komisi ${kIdx + 1}`}
+                        </h5>
+                        {komisi.tugas && (
+                          <p className="text-xs text-slate-600 dark:text-slate-300 mt-2 leading-relaxed">
+                            {komisi.tugas}
+                          </p>
                         )}
                       </div>
 
-                      {/* Title Overlay on Image Bottom */}
-                      <div className="absolute bottom-3 left-3 right-3">
-                        <h4 className="text-white font-serif font-bold text-lg leading-tight line-clamp-2 drop-shadow-sm">
-                          {proker.judul}
-                        </h4>
-                      </div>
-                    </div>
-
-                    {/* Proker Meta Body */}
-                    <div className="p-5 flex flex-col gap-3">
-                      {proker.tujuan && (
-                        <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed">
-                          {proker.tujuan}
-                        </p>
-                      )}
-
-                      {/* Penanggung Jawab */}
-                      {proker.penanggung_jawab && proker.penanggung_jawab.length > 0 && (
-                        <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                      {komisi.koordinator && (
+                        <div className="pt-3 border-t border-slate-200 dark:border-slate-700/60 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
                           <Users className="w-3.5 h-3.5 text-amber-500" />
-                          <span className="truncate">
-                            PJ: {proker.penanggung_jawab.map(p => p.nama_lengkap).join(', ')}
-                          </span>
+                          <span>Koordinator: <strong>{komisi.koordinator}</strong></span>
                         </div>
                       )}
-
-                      {/* Rangkuman Data Mubes (Tambahan Sidang) */}
-                      <div className="mt-2 pt-3 border-t border-slate-100 dark:border-slate-700/60 grid grid-cols-2 gap-2 text-xs">
-                        <div className="bg-slate-50 dark:bg-slate-900/50 p-2.5 rounded-xl">
-                          <span className="text-[10px] text-slate-400 uppercase font-semibold block">Anggaran</span>
-                          <span className="font-bold text-slate-800 dark:text-slate-200">
-                            {proker.lpj?.realisasi_anggaran
-                              ? `Rp ${Number(proker.lpj.realisasi_anggaran).toLocaleString('id-ID')}`
-                              : 'Tercatat di LPJ'}
-                          </span>
-                        </div>
-                        <div className="bg-slate-50 dark:bg-slate-900/50 p-2.5 rounded-xl">
-                          <span className="text-[10px] text-slate-400 uppercase font-semibold block">Pengesahan</span>
-                          <span className="font-bold capitalize text-amber-600 dark:text-amber-400">
-                            {proker.lpj?.status_pengesahan || 'Siap Diuji'}
-                          </span>
-                        </div>
-                      </div>
                     </div>
-                  </div>
-
-                  {/* Tombol Aksi: Buka PPT Modal & Detail Sidang Figma */}
-                  <div className="p-5 pt-0 flex flex-col gap-2">
-                    <Link
-                      href={`/portal-mubes/proker/${encodeURIComponent(proker.slug)}`}
-                      className="w-full py-2.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-bold flex items-center justify-center gap-2 transition-colors shadow-sm"
-                    >
-                      <ExternalLink className="w-3.5 h-3.5" />
-                      <span>Buka Halaman Sidang MUBES (Full)</span>
-                    </Link>
-                    <button
-                      onClick={() => {
-                        setActiveModalProker(proker);
-                        setActiveTab('overview');
-                      }}
-                      className="w-full py-2 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
-                    >
-                      <Maximize2 className="w-3.5 h-3.5" />
-                      <span>Lihat Slide Cepat (Modal)</span>
-                    </button>
-                  </div>
+                  ))}
                 </div>
-              );
-            })}
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -302,7 +458,7 @@ export default function MubesPresentationViewer({ initialGroups }: MubesPresenta
               {/* Tab 1: Overview & Dokumentasi */}
               {activeTab === 'overview' && (
                 <div className="flex flex-col gap-6">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
                       <span className="text-xs text-slate-400 font-semibold block uppercase">Kategori Program</span>
                       <span className="text-base font-bold capitalize mt-1 block">{activeModalProker.kategori}</span>
@@ -311,13 +467,58 @@ export default function MubesPresentationViewer({ initialGroups }: MubesPresenta
                       <span className="text-xs text-slate-400 font-semibold block uppercase">Lokasi Pelaksanaan</span>
                       <span className="text-base font-bold mt-1 block">{activeModalProker.lokasi || 'SMAIT FI'}</span>
                     </div>
-                    <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
-                      <span className="text-xs text-slate-400 font-semibold block uppercase">Penanggung Jawab</span>
-                      <span className="text-base font-bold mt-1 block truncate">
-                        {activeModalProker.penanggung_jawab?.map(p => p.nama_lengkap).join(', ') || 'Pengurus Sekbid'}
-                      </span>
-                    </div>
                   </div>
+
+                  {/* Penanggung Jawab dengan Rotated Double-Card Frame (Identik Website Utama) */}
+                  {activeModalProker.penanggung_jawab && activeModalProker.penanggung_jawab.length > 0 && (
+                    <div className="flex flex-col gap-3">
+                      <h4 className="text-sm font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+                        Penanggung Jawab Program Kerja ({activeModalProker.penanggung_jawab.length} Orang)
+                      </h4>
+                      <div className="flex flex-row flex-wrap gap-5">
+                        {activeModalProker.penanggung_jawab.map((pj, pIdx) => (
+                          <div
+                            key={pIdx}
+                            className="relative flex-shrink-0 w-[170px] sm:w-[190px] h-[240px] sm:h-[260px]"
+                          >
+                            {/* Outer Card Background Kuning (#FACC15) */}
+                            <div
+                              className="absolute inset-0 bg-[#FACC15] rounded-[20px] shadow-sm transition-transform duration-300"
+                              style={{ transform: pIdx % 2 === 0 ? 'rotate(-2.5deg)' : 'rotate(2.5deg)' }}
+                            />
+                            {/* Inner Card Konten Foto */}
+                            <div
+                              className="relative w-full h-full rounded-[20px] overflow-hidden shadow-md bg-slate-900 border border-white/20 flex flex-col justify-end transition-transform duration-300"
+                              style={{ transform: pIdx % 2 === 0 ? 'rotate(1.5deg)' : 'rotate(-1.5deg)' }}
+                            >
+                              {pj.foto ? (
+                                <img
+                                  src={pj.foto}
+                                  alt={pj.nama_lengkap || 'Penanggung Jawab'}
+                                  className="w-full h-full object-cover object-top absolute inset-0"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-800 to-slate-950 p-4 text-center">
+                                  <div className="w-12 h-12 rounded-full bg-slate-700/60 border border-slate-600 flex items-center justify-center text-yellow-400 mb-1">
+                                    <Users className="w-6 h-6" />
+                                  </div>
+                                </div>
+                              )}
+                              {/* Overlay Nama & Jabatan */}
+                              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent p-3.5 z-10">
+                                <h5 className="text-white text-xs sm:text-sm font-bold leading-tight drop-shadow-sm line-clamp-1">
+                                  {pj.nama_lengkap}
+                                </h5>
+                                <p className="text-amber-300 text-[11px] font-medium mt-0.5 truncate">
+                                  {pj.jabatan || 'Koordinator Pelaksana'}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   <div>
                     <h4 className="text-sm font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-2">
@@ -338,8 +539,8 @@ export default function MubesPresentationViewer({ initialGroups }: MubesPresenta
                         {activeModalProker.dokumentasi.map((doc: any, i: number) => {
                           const docUrl = getStrapiMediaUrl(doc, '');
                           return (
-                            <div key={i} className="relative aspect-video rounded-xl overflow-hidden bg-slate-900 border border-slate-200 dark:border-slate-700">
-                              <Image src={docUrl} alt={`Dokumentasi ${i + 1}`} fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover" />
+                            <div key={i} className="relative aspect-video rounded-xl overflow-hidden bg-slate-900 border border-slate-200 dark:border-slate-700 group/doc">
+                              <Image src={docUrl} alt={`Dokumentasi ${i + 1}`} fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover group-hover/doc:scale-105 transition-transform" />
                             </div>
                           );
                         })}

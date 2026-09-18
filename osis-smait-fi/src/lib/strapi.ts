@@ -451,6 +451,7 @@ export interface SeksiBidang {
   id: number;
   number: string;
   name: string;
+  title?: string;
   description: string;
   image: string;
   highlightType: string;
@@ -477,10 +478,13 @@ export function formatSekbidList(items: any[]): SeksiBidang[] {
       label = num === 1 || num === 8 ? 'TERPOPULER' : 'SHOWCASE';
     }
 
+    const titleText = attrs.judul || attrs.nama || `Sekbid ${num}`;
+
     return {
       id: item.id,
       number: `Seksi Bidang ${num}`,
-      name: attrs.judul || attrs.nama || `Sekbid ${num}`,
+      name: titleText,
+      title: titleText,
       description: attrs.deskripsi || attrs.visi || '',
       image: bannerUrl,
       highlightType: label,

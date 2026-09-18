@@ -28,7 +28,30 @@ export default function MubesSignUpForm({ onSwitchToLogin, onOpenHelp }: MubesSi
   const [code, setCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isResending, setIsResending] = useState(false);
+  const [resendSuccess, setResendSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const handleResendCode = async () => {
+    if (!isLoaded || isResending) return;
+    setIsResending(true);
+    setErrorMessage(null);
+    setResendSuccess(false);
+
+    try {
+      await signUp.prepareEmailAddressVerification({ strategy: 'email_code' });
+      setResendSuccess(true);
+      setTimeout(() => setResendSuccess(false), 5000);
+    } catch (err: any) {
+      const msg =
+        err?.errors?.[0]?.longMessage ||
+        err?.errors?.[0]?.message ||
+        'Gagal mengirim ulang kode. Silakan coba lagi.';
+      setErrorMessage(msg);
+    } finally {
+      setIsResending(false);
+    }
+  };
 
   const handleGoogleSignUp = async () => {
     if (!isLoaded) return;
@@ -111,6 +134,13 @@ export default function MubesSignUpForm({ onSwitchToLogin, onOpenHelp }: MubesSi
 
       if (completeSignUp.status === 'complete') {
         await setActive({ session: completeSignUp.createdSessionId });
+        fetch('/api/auth/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            roleHint: role,
+          }),
+        }).catch(() => {});
         router.push('/portal-mubes');
       } else {
         setErrorMessage('Verifikasi belum selesai. Silakan periksa kembali kode Anda.');
@@ -155,6 +185,13 @@ export default function MubesSignUpForm({ onSwitchToLogin, onOpenHelp }: MubesSi
         </div>
       )}
 
+      {/* Success Feedback */}
+      {resendSuccess && (
+        <div className="relative z-10 self-stretch p-3 rounded-lg bg-emerald-950/70 backdrop-blur-md border border-emerald-800/60 text-emerald-200 text-xs text-center font-['Inter'] shadow-[0_4px_12px_rgba(0,0,0,0.3)]">
+          Kode verifikasi baru telah dikirimkan ke email Anda!
+        </div>
+      )}
+
       {pendingVerification ? (
         /* Verification Form */
         <form onSubmit={handleVerifyCode} className="relative z-10 self-stretch flex flex-col justify-start items-start gap-4">
@@ -183,13 +220,23 @@ export default function MubesSignUpForm({ onSwitchToLogin, onOpenHelp }: MubesSi
             )}
           </button>
 
-          <button
-            type="button"
-            onClick={() => setPendingVerification(false)}
-            className="w-full text-center text-[#A59989] hover:text-[#F9EFDB] text-xs font-normal font-['Inter'] transition-colors cursor-pointer mt-1"
-          >
-            ← Ubah email atau data pendaftaran
-          </button>
+          <div className="w-full flex items-center justify-between pt-1">
+            <button
+              type="button"
+              disabled={isResending}
+              onClick={handleResendCode}
+              className="text-[#E0BA7A] hover:text-[#F2D193] disabled:opacity-50 text-xs font-normal font-['Inter'] transition-colors cursor-pointer"
+            >
+              {isResending ? 'Mengirim...' : 'Kirim ulang kode?'}
+            </button>
+            <button
+              type="button"
+              onClick={() => setPendingVerification(false)}
+              className="text-[#A59989] hover:text-[#F9EFDB] text-xs font-normal font-['Inter'] transition-colors cursor-pointer"
+            >
+              ← Ubah data
+            </button>
+          </div>
         </form>
       ) : (
         /* Signup Input Fields */

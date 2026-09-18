@@ -12,17 +12,13 @@ const CACHE_DIR = path.join(process.cwd(), '.image-cache');
 const MAX_CACHE_FILES = 2000;
 
 // Whitelist domain resmi yang diperbolehkan untuk image compression
-const ALLOWED_HOSTS = [
+const ALLOWED_HOSTS = new Set([
   'osisstrapi.biezz.my.id',
   'osissmaitfi.biezz.my.id',
-  'localhost',
-  '127.0.0.1',
-  '100.100.68.83',
-];
+]);
 
 function isHostAllowed(hostname: string): boolean {
-  const host = hostname.toLowerCase();
-  return ALLOWED_HOSTS.some((allowed) => host === allowed || host.endsWith('.' + allowed));
+  return ALLOWED_HOSTS.has(hostname.toLowerCase());
 }
 
 // 1x1 transparent PNG fallback buffer

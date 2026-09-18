@@ -14,6 +14,22 @@ export interface MubesLpjData {
 export interface MubesPenanggungJawab {
   nama_lengkap?: string;
   jabatan?: string;
+  foto?: string;
+}
+
+export interface MubesSidangData {
+  id?: number | string;
+  documentId?: string;
+  tahun_periode?: string;
+  status_sidang?: 'pra_mubes' | 'berlangsung' | 'selesai';
+  tata_tertib?: string;
+  draft_konsideran?: string;
+  daftar_komisi?: Array<{
+    nama_komisi?: string;
+    tugas?: string;
+    koordinator?: string;
+    anggota?: string[];
+  }> | any;
 }
 
 export interface MubesProgramKerja {
@@ -661,12 +677,20 @@ function normalizeProgramKerja(item: any, lpjByProker: Map<string, MubesLpjData>
   // Extract Penanggung Jawab
   const pjList: MubesPenanggungJawab[] = [];
   const rawPj = attrs.penanggung_jawab?.data || attrs.penanggung_jawab;
+  const rawKetuaFoto = attrs.ketua_foto;
+  const ketuaFotoArr = Array.isArray(rawKetuaFoto)
+    ? rawKetuaFoto
+    : (rawKetuaFoto?.data ? rawKetuaFoto.data : (rawKetuaFoto ? [rawKetuaFoto] : []));
+
   if (Array.isArray(rawPj)) {
-    rawPj.forEach((p: any) => {
+    rawPj.forEach((p: any, idx: number) => {
       const pAttr = p.attributes || p;
+      const fotoRel = pAttr.foto?.data || pAttr.foto;
+      const fotoUrl = getStrapiMediaUrl(fotoRel, '') || getStrapiMediaUrl(ketuaFotoArr[idx], '') || undefined;
       pjList.push({
         nama_lengkap: pAttr.nama_lengkap || pAttr.nama,
         jabatan: pAttr.jabatan,
+        foto: fotoUrl,
       });
     });
   }
@@ -742,7 +766,7 @@ export async function fetchMubesProkerList(): Promise<MubesSekbidGroup[]> {
 
   try {
     const [prokerRes, lpjRes, sekbidRes]: [any, any, any] = await Promise.all([
-      fetchStrapiAPI('/api/program-kerjas?populate=*&pagination[limit]=100', {
+      fetchStrapiAPI('/api/program-kerjas?populate[penanggung_jawab][populate][foto]=true&populate[ketua_foto]=true&populate[sekbid]=true&populate[dokumentasi]=true&populate[banner_image]=true&populate[tujuan_detail]=true&pagination[limit]=100', {
         headers: authHeaders,
       }).catch(() => null),
       fetchStrapiAPI('/api/mubes-lpjs?populate=*&pagination[limit]=100', {
@@ -787,3 +811,58 @@ export async function fetchMubesProkerList(): Promise<MubesSekbidGroup[]> {
  * Backward compatibility alias for fetchMubesProkerList.
  */
 export const fetchMubesProkerData = fetchMubesProkerList;
+
+/**
+ * Fetch MUBES Ketetapan & Dokumen Sidang from Strapi collection api::mubes-sidang
+ */
+export async function fetchMubesSidangData(): Promise<MubesSidangData | null> {
+  const elevatedToken = process.env.STRAPI_ELEVATED_TOKEN;
+  const authHeaders = elevatedToken ? { Authorization: `Bearer ${elevatedToken}` } : undefined;
+
+  try {
+    const res: any = await fetchStrapiAPI('/api/mubes-sidangs?sort=createdAt:desc&pagination[limit]=1', {
+      headers: authHeaders,
+    });
+    const items = res?.data || [];
+    if (items.length > 0) {
+      const item = items[0];
+      const attrs = item.attributes || item;
+      return {
+        id: item.id,
+        documentId: item.documentId,
+        tahun_periode: attrs.tahun_periode || '2025-2026',
+        status_sidang: attrs.status_sidang || 'berlangsung',
+        tata_tertib: attrs.tata_tertib,
+        draft_konsideran: attrs.draft_konsideran,
+        daftar_komisi: attrs.daftar_komisi,
+      };
+    }
+  } catch (err) {
+    console.error('[MUBES Sidang] Error fetching mubes-sidang from Strapi:', err);
+  }
+
+  // Graceful fallback ketetapan sidang jika belum dibuat di Strapi
+  return {
+    tahun_periode: '2025-2026',
+    status_sidang: 'berlangsung',
+    tata_tertib: 'Tata Tertib Sidang Pleno Musyawarah Besar XXI mengatur hak bicara, hak suara, dan mekanisme pengesahan LPJ Seksi Bidang 1 - 8 secara transparan dan akuntabel.',
+    draft_konsideran: 'Draft Konsideran Ketetapan MUBES XXI OSIS SMAIT Fithrah Insani mengenai penerimaan dan evaluasi laporan pertanggungjawaban kepengurusan masa bakti 2025/2026.',
+    daftar_komisi: [
+      {
+        nama_komisi: 'Komisi A (Hukum & AD/ART)',
+        tugas: 'Membahas anggaran dasar, anggaran rumah tangga, dan tata tertib organisasi.',
+        koordinator: 'Presidium Sidang I'
+      },
+      {
+        nama_komisi: 'Komisi B (Program Kerja & LPJ)',
+        tugas: 'Mengevaluasi laporan capaian kegiatan seluruh Sekbid 1 - 8.',
+        koordinator: 'Presidium Sidang II'
+      },
+      {
+        nama_komisi: 'Komisi C (Rekomendasi & Garis Besar Haluan)',
+        tugas: 'Menyusun rekomendasi strategis kepengurusan periode berikutnya.',
+        koordinator: 'Presidium Sidang III'
+      }
+    ]
+  };
+}

@@ -72,3 +72,6 @@ strapi
 
 # Embedded git repos
 other-program/edufest-infinity-link-in-bio-boilerplate/
+
+.codemap/
+.strapi-updater.json

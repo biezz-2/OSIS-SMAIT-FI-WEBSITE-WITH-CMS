@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { getStrapiMediaUrl } from '@/lib/strapi';
@@ -17,7 +17,9 @@ import {
   ShieldCheck,
   Award,
   Clock,
-  Sparkles
+  Sparkles,
+  Maximize2,
+  X
 } from 'lucide-react';
 
 interface MubesProkerFigmaViewProps {
@@ -25,6 +27,12 @@ interface MubesProkerFigmaViewProps {
   lpj: any;
   role: string | null;
   status: string | null;
+}
+
+interface ChairPerson {
+  name: string;
+  role: string;
+  image: string;
 }
 
 export default function MubesProkerFigmaView({
@@ -35,6 +43,8 @@ export default function MubesProkerFigmaView({
 }: MubesProkerFigmaViewProps) {
   const pAttrs = proker?.attributes || proker || {};
   const lpjAttrs = lpj?.attributes || lpj || {};
+
+  const [selectedMedia, setSelectedMedia] = useState<{ url: string; caption?: string; alt?: string } | null>(null);
 
   // Formatter mata uang
   const formatCurrency = (val: number | string | undefined) => {
@@ -50,35 +60,61 @@ export default function MubesProkerFigmaView({
   // Banner image resolution
   const bannerUrl = getStrapiMediaUrl(pAttrs.banner_image, '/images/mubes/bg-medieval.png');
 
-  // Ketua foto resolution
-  let ketuaFotoUrl = '';
-  if (pAttrs.ketua_foto) {
-    if (Array.isArray(pAttrs.ketua_foto)) {
-      ketuaFotoUrl = getStrapiMediaUrl(pAttrs.ketua_foto[0], '');
-    } else if (pAttrs.ketua_foto.data && Array.isArray(pAttrs.ketua_foto.data)) {
-      ketuaFotoUrl = getStrapiMediaUrl(pAttrs.ketua_foto.data[0], '');
-    } else {
-      ketuaFotoUrl = getStrapiMediaUrl(pAttrs.ketua_foto, '');
-    }
-  }
-  if (!ketuaFotoUrl && pAttrs.penanggung_jawab && pAttrs.penanggung_jawab.length > 0) {
-    const pj = pAttrs.penanggung_jawab[0];
-    ketuaFotoUrl = getStrapiMediaUrl(pj.foto || pj.image, '');
-  }
-  if (!ketuaFotoUrl) {
-    ketuaFotoUrl = '/assets/panitia/Photo-Profile/azzam.png'; // fallback avatar default
+  // Baca ketua_foto[] (multiple media) sebagai fallback
+  const rawKetuaFoto = pAttrs.ketua_foto;
+  const ketuaFotoList: string[] = (() => {
+    if (!rawKetuaFoto) return [];
+    const arr = Array.isArray(rawKetuaFoto)
+      ? rawKetuaFoto
+      : (rawKetuaFoto?.data ? rawKetuaFoto.data : [rawKetuaFoto]);
+    return arr.map((f: any) => getStrapiMediaUrl(f, '')).filter(Boolean);
+  })();
+
+  // Baca penanggung_jawab[] (multiple relation ke anggota-osis)
+  const rawPj = pAttrs.penanggung_jawab;
+  const chairs: ChairPerson[] = (() => {
+    if (!rawPj) return [];
+    const arr = Array.isArray(rawPj) ? rawPj : (rawPj?.data ? rawPj.data : [rawPj]);
+    return arr.map((item: any, idx: number) => {
+      const a = item.attributes || item;
+      const fotoRel = a.foto?.data || a.foto;
+      const foto = getStrapiMediaUrl(fotoRel, '') || ketuaFotoList[idx] || '';
+      return {
+        name: a.nama_lengkap || a.nama || 'Pengurus OSIS',
+        role: pAttrs.ketua_jabatan || a.jabatan || 'Penanggung Jawab Program',
+        image: foto,
+      };
+    });
+  })();
+
+  // Fallback: jika tidak ada relasi penanggung_jawab, gunakan ketua_foto[]
+  const finalChairs: ChairPerson[] = chairs.length > 0
+    ? chairs
+    : ketuaFotoList.map((fotoUrl) => ({
+        name: 'Pengurus OSIS',
+        role: pAttrs.ketua_jabatan || 'Penanggung Jawab Program',
+        image: fotoUrl,
+      }));
+
+  // Jika tidak ada data sama sekali, 1 default placeholder
+  if (finalChairs.length === 0) {
+    finalChairs.push({
+      name: pAttrs.ketua_nama || 'Pengurus Seksi Bidang',
+      role: pAttrs.ketua_jabatan || 'Penanggung Jawab Program',
+      image: '/assets/panitia/Photo-Profile/azzam.png',
+    });
   }
 
-  // Dokumentasi images (3 kartu bawah sesuai Figma 1282:2390)
+  // Dokumentasi images (seluruh media dokumentasi dari Strapi tanpa batasan 3 foto)
   const rawDocs: any[] = Array.isArray(pAttrs.dokumentasi)
     ? pAttrs.dokumentasi
     : (pAttrs.dokumentasi?.data || []);
-  const docImages = rawDocs.slice(0, 3).map((d, idx) => {
+  const docImages = rawDocs.map((d, idx) => {
     const url = getStrapiMediaUrl(d, '');
     const caption = d?.attributes?.caption || d?.caption || `Dokumentasi Pelaksanaan 0${idx + 1}`;
     const alt = d?.attributes?.alternativeText || d?.alternativeText || caption;
     return { url, caption, alt };
-  });
+  }).filter((d) => Boolean(d.url));
 
   // Poin-poin tujuan (Tujuan Detail component)
   const goals: Array<{ title: string; desc: string }> = Array.isArray(pAttrs.tujuan_detail)
@@ -92,11 +128,7 @@ export default function MubesProkerFigmaView({
     ? 'Program Insidental'
     : 'Program Rutinan';
 
-  const pjName = pAttrs.penanggung_jawab && pAttrs.penanggung_jawab.length > 0
-    ? pAttrs.penanggung_jawab.map((p: any) => p.nama_lengkap || p.name).join(', ')
-    : (pAttrs.ketua_nama || 'Pengurus Seksi Bidang');
-
-  const pjLabel = pAttrs.ketua_jabatan || 'Koordinator Pelaksana';
+  const pjNamesJoined = finalChairs.map(c => c.name).join(', ');
 
   return (
     <div className="w-full flex flex-col font-sans">
@@ -122,11 +154,18 @@ export default function MubesProkerFigmaView({
           {/* Breadcrumb & Sidang Badge */}
           <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm font-medium text-amber-300/90">
             <Link
-              href="/portal-mubes"
+              href="/program-kerja[mubes]"
               className="hover:text-amber-200 transition-colors flex items-center gap-1.5"
             >
               <ArrowLeft className="w-4 h-4" />
-              <span>Portal MUBES XXI</span>
+              <span>Program Kerja [MUBES]</span>
+            </Link>
+            <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+            <Link
+              href="/portal-mubes"
+              className="hover:text-amber-200 transition-colors"
+            >
+              Portal MUBES XXI
             </Link>
             <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
             <span className="text-slate-300">Detail Pertanggungjawaban</span>
@@ -162,7 +201,7 @@ export default function MubesProkerFigmaView({
             )}
             <div className="flex items-center gap-2">
               <Users className="w-4 h-4 text-amber-400" />
-              <span>{pjName}</span>
+              <span>{pjNamesJoined}</span>
             </div>
           </div>
         </div>
@@ -173,9 +212,8 @@ export default function MubesProkerFigmaView({
           - Background Warm Ivory (#FDFDFB)
           - Border Stroke Halus (#EAECEF, 1px)
           - Corner Radius 24px
-          - Soft Ambient Shadow (radius 36, offset-y 16, alpha 4%)
-          - Heading Outfit Bold 24px/32px (#141F2E)
-          - Body Plus Jakarta Sans Regular 15px/24px (#596678)
+          - Soft Ambient Shadow
+          - Layout Frame Penanggung Jawab Bergaya Website Utama (Rotated Double Cards)
       ========================================================================= */}
       <section className="w-full max-w-6xl mx-auto px-6 sm:px-8 py-12 -mt-8 z-30">
         <div className="w-full bg-[#FDFDFB] rounded-[24px] border border-[#EAECEF] p-8 sm:p-12 shadow-[0_16px_36px_-4px_rgba(13,20,38,0.04)] flex flex-col gap-10">
@@ -206,36 +244,59 @@ export default function MubesProkerFigmaView({
             </div>
           </div>
 
-          {/* Grid Konten LPJ: 2 Kolom (Profil Koordinator & Rincian Sidang) */}
+          {/* Grid Konten LPJ: 2 Kolom (Profil Penanggung Jawab Website Utama Frame & Rincian Sidang) */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-            {/* Kolom Kiri: Kartu Koordinator & Profil (Figma Node 1282:2376 & 1282:2378) */}
-            <div className="lg:col-span-4 flex flex-col gap-5">
-              <div className="relative bg-[#F2C21A] p-6 rounded-[20px] text-slate-950 flex flex-col items-center text-center shadow-md">
-                <div className="relative w-32 h-32 rounded-[20px] overflow-hidden bg-slate-900 border-4 border-white shadow-[0_16px_32px_-6px_rgba(13,26,46,0.16)] mb-4">
-                  <Image
-                    src={ketuaFotoUrl}
-                    alt={pjName}
-                    fill
-                    sizes="128px"
-                    className="object-cover"
-                  />
-                </div>
-                <h3 className="text-lg font-bold text-slate-950 leading-snug">
-                  {pjName}
-                </h3>
-                <span className="text-xs font-semibold uppercase tracking-wider text-slate-800 mt-0.5">
-                  {pjLabel}
-                </span>
-                <div className="w-full mt-4 pt-3 border-t border-black/10 flex items-center justify-around text-xs font-medium text-slate-900">
-                  <span>{kategoriLabel}</span>
-                  <span>•</span>
-                  <span>MUBES XXI</span>
+            {/* Kolom Kiri: Kartu Penanggung Jawab (Frame Rotated Card persis Website Utama) */}
+            <div className="lg:col-span-4 flex flex-col items-center lg:items-start gap-6">
+              <div className="w-full flex flex-col items-center lg:items-start">
+                <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">
+                  {finalChairs.length > 1 ? 'Penanggung Jawab Proker' : 'Penanggung Jawab Proker'}
+                </p>
+
+                {/* Container Kartu Foto Penanggung Jawab */}
+                <div className={`flex flex-row flex-wrap gap-6 ${finalChairs.length === 1 ? 'justify-center' : 'justify-center lg:justify-start'} w-full`}>
+                  {finalChairs.map((chair, idx) => (
+                    <div
+                      key={idx}
+                      className="relative flex-shrink-0 w-[200px] md:w-[220px] h-[280px] md:h-[300px]"
+                    >
+                      {/* Outer Card Background Kuning (#FACC15) dengan rotasi */}
+                      <div
+                        className="absolute inset-0 bg-[#FACC15] rounded-[24px] shadow-md transition-transform duration-300"
+                        style={{ transform: idx % 2 === 0 ? 'rotate(-2.8deg)' : 'rotate(2.8deg)' }}
+                      />
+                      {/* Inner Card Konten dengan rotasi berlawanan & frame gambar */}
+                      <div
+                        className="relative w-full h-full rounded-[24px] overflow-hidden shadow-xl bg-slate-900 border border-white/20 flex flex-col justify-end transition-transform duration-300"
+                        style={{ transform: idx % 2 === 0 ? 'rotate(1.8deg)' : 'rotate(-1.8deg)' }}
+                      >
+                        {chair.image ? (
+                          <img
+                            src={chair.image}
+                            alt={chair.name}
+                            className="w-full h-full object-cover object-top absolute inset-0"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-800 to-slate-950 p-4 text-center">
+                            <div className="w-16 h-16 rounded-full bg-slate-700/60 border border-slate-600 flex items-center justify-center text-yellow-400">
+                              <Users className="w-8 h-8" />
+                            </div>
+                          </div>
+                        )}
+                        {/* Overlay Gradien Nama & Jabatan */}
+                        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent p-4 z-10">
+                          <h3 className="text-white text-sm font-bold leading-tight drop-shadow-sm">{chair.name}</h3>
+                          <p className="text-amber-300 text-xs font-medium mt-0.5">{chair.role}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
 
               {/* Rangkuman Anggaran Proker */}
-              <div className="bg-white p-5 rounded-[20px] border border-[#EAECEF] shadow-xs flex flex-col gap-3">
+              <div className="w-full bg-white p-5 rounded-[20px] border border-[#EAECEF] shadow-xs flex flex-col gap-3">
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
                   Total Realisasi Anggaran
                 </span>
@@ -331,14 +392,11 @@ export default function MubesProkerFigmaView({
 
       {/* =========================================================================
           3. SECTION DOKUMENTASI KEGIATAN (Figma Node 1282:2390)
-          - Judul Playfair Display Bold 28px/36px (#141F2E)
-          - Grid 3 Card Dokumentasi (#FFFFFF, border #E8EDF2, cornerRadius 16)
-          - Elevation Soft Shadow (Y: 8px, blur: 20px, spread: -2px, alpha: 5%)
-          - Card Title 16px/24px (#141F2E)
-          - Subtitle 13.5px/20px (#6B788A)
+          - Menampilkan seluruh dokumentasi foto dari Strapi
+          - Grid adaptif dan Lightbox Preview saat diklik
       ========================================================================= */}
       <section className="w-full max-w-6xl mx-auto px-6 sm:px-8 pb-24 flex flex-col gap-8">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h2 className="text-[28px] leading-[36px] font-bold font-serif text-[#141F2E]">
               Dokumentasi Pelaksanaan Kegiatan
@@ -347,28 +405,32 @@ export default function MubesProkerFigmaView({
               Rekam jejak visual hasil kerja proker yang dipresentasikan pada sidang MUBES XXI.
             </p>
           </div>
-          <div className="text-xs font-semibold px-3 py-1 rounded-lg bg-slate-100 text-slate-700">
+          <div className="text-xs font-semibold px-3.5 py-1.5 rounded-xl bg-amber-50 text-amber-800 border border-amber-200 self-start sm:self-auto">
             {docImages.length} Dokumentasi Terlampir
           </div>
         </div>
 
-        {/* 3 Grid Cards */}
+        {/* Dynamic Grid Cards Dokumentasi */}
         {docImages.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {docImages.map((doc, index) => (
               <div
                 key={index}
-                className="bg-white rounded-[16px] border border-[#E8EDF2] overflow-hidden shadow-[0_8px_20px_-2px_rgba(13,20,38,0.05)] hover:shadow-lg transition-all duration-300 flex flex-col group"
+                onClick={() => setSelectedMedia(doc)}
+                className="bg-white rounded-[16px] border border-[#E8EDF2] overflow-hidden shadow-[0_8px_20px_-2px_rgba(13,20,38,0.05)] hover:shadow-lg transition-all duration-300 flex flex-col group cursor-pointer"
               >
                 {/* Image Frame */}
                 <div className="relative aspect-[16/10] w-full bg-slate-100 overflow-hidden">
-                  <Image
+                  <img
                     src={doc.url}
                     alt={doc.alt}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity w-10 h-10 rounded-full bg-black/60 text-white flex items-center justify-center backdrop-blur-xs">
+                      <Maximize2 className="w-5 h-5" />
+                    </div>
+                  </div>
                 </div>
 
                 {/* Card Text Content */}
@@ -377,7 +439,7 @@ export default function MubesProkerFigmaView({
                     {doc.caption}
                   </h4>
                   <p className="text-[13.5px] leading-[20px] text-[#6B788A] line-clamp-2">
-                    {pAttrs.judul} — Dokumentasi autentik pertanggungjawaban kepanitiaan.
+                    {pAttrs.judul} — Dokumentasi resmi pertanggungjawaban kepanitiaan.
                   </p>
                 </div>
               </div>
@@ -405,6 +467,36 @@ export default function MubesProkerFigmaView({
           </div>
         </div>
       </section>
+
+      {/* Modal Lightbox Preview Media */}
+      {selectedMedia && (
+        <div
+          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-200"
+          onClick={() => setSelectedMedia(null)}
+        >
+          <div
+            className="relative max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col items-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={selectedMedia.url}
+              alt={selectedMedia.alt || 'Dokumentasi'}
+              className="w-full h-auto max-h-[75vh] object-contain rounded-2xl shadow-2xl"
+            />
+            {selectedMedia.caption && (
+              <div className="w-full bg-slate-900/90 text-white text-sm md:text-base px-5 py-3 text-center mt-3 rounded-xl backdrop-blur-md border border-slate-700/50">
+                {selectedMedia.caption}
+              </div>
+            )}
+            <button
+              onClick={() => setSelectedMedia(null)}
+              className="absolute top-3 right-3 text-white bg-black/60 rounded-full p-2 hover:bg-black transition"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

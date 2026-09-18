@@ -9,19 +9,70 @@ const Footer = dynamic(() => import('@/components/Footer'));
 
 export const revalidate = 10800; // ISR: revalidate setiap 3 jam
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://osissmaitfi.biezz.my.id';
+
 const jsonLd = {
   '@context': 'https://schema.org',
-  '@type': 'EducationalOrganization',
-  name: 'OSIS SMAIT Fithrah Insani',
-  alternateName: 'Agora Acta',
-  url: 'https://osissmaitfithrahinsani.sch.id',
-  logo: 'https://osissmaitfithrahinsani.sch.id/icon.png',
-  sameAs: [
-    'https://www.instagram.com/osissmaitfi',
-    'https://www.youtube.com/@osissmaitfithrahinsani9481',
-    'https://www.tiktok.com/@osissmaitfi'
-  ],
-  description: 'Website Resmi OSIS SMAIT Fithrah Insani (Agora Acta)'
+  '@graph': [
+    {
+      '@type': 'EducationalOrganization',
+      '@id': `${siteUrl}/#organization`,
+      name: 'OSIS SMAIT Fithrah Insani',
+      alternateName: [
+        'OSIS SMA IT FI',
+        'OSIS SMAIT FI',
+        'Agora Acta',
+        'OSIS FI',
+        'SMA IT Fithrah Insani',
+        'SMAIT Fithrah Insani'
+      ],
+      url: siteUrl,
+      logo: `${siteUrl}/images/logo-osis.jpg`,
+      image: `${siteUrl}/images/logo-osis.jpg`,
+      telephone: '(022) 87808984',
+      email: 'osissmaitfi@gmail.com',
+      sameAs: [
+        'https://www.instagram.com/osissmaitfi',
+        'https://www.youtube.com/@osissmaitfithrahinsani9481',
+        'https://www.tiktok.com/@osissmaitfi'
+      ],
+      description: 'Website Resmi OSIS SMA IT Fithrah Insani (OSIS SMAIT FI / Agora Acta) - Wadah kegiatan, program kerja, dan kepemimpinan siswa.',
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: 'Jl. H. Gofur No. 10 Tanimulya, Ngamprah',
+        addressLocality: 'Bandung Barat',
+        addressRegion: 'Jawa Barat',
+        postalCode: '40552',
+        addressCountry: 'ID'
+      },
+      parentOrganization: {
+        '@type': 'HighSchool',
+        name: 'SMAIT Fithrah Insani',
+        url: 'https://smait.fithrahinsani.sch.id',
+        telephone: '(022) 87808984',
+        email: 'osissmaitfi@gmail.com',
+        address: {
+          '@type': 'PostalAddress',
+          streetAddress: 'Jl. H. Gofur No. 10 Tanimulya, Ngamprah',
+          addressLocality: 'Bandung Barat',
+          addressRegion: 'Jawa Barat',
+          postalCode: '40552',
+          addressCountry: 'ID'
+        }
+      }
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${siteUrl}/#website`,
+      url: siteUrl,
+      name: 'OSIS SMA IT FI',
+      alternateName: ['OSIS SMAIT FI', 'Agora Acta SMAIT FI', 'OSIS SMAIT Fithrah Insani'],
+      publisher: {
+        '@id': `${siteUrl}/#organization`
+      },
+      inLanguage: 'id-ID'
+    }
+  ]
 };
 
 export default async function Page() {

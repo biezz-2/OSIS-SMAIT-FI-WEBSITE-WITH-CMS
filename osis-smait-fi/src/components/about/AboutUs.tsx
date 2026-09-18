@@ -74,9 +74,9 @@ const AboutUs: React.FC<AboutUsProps> = ({ title = "Agora Acta", initialData }) 
         {/* Left Column: Text Content */}
         <div className="flex-1 w-full flex flex-col justify-center items-start gap-8 max-w-2xl">
           <div className="flex flex-col gap-4 w-full">
-            <h2 className="text-[#101828] dark:text-slate-100 text-4xl md:text-5xl font-extrabold tracking-tight font-sans leading-tight">
+            <h1 className="text-[#101828] dark:text-slate-100 text-4xl md:text-5xl font-extrabold tracking-tight font-sans leading-tight">
               {displayTitle}
-            </h2>
+            </h1>
             <div className="w-20 h-1 bg-[#FA982E] rounded-full animate-pulse" />
           </div>
           

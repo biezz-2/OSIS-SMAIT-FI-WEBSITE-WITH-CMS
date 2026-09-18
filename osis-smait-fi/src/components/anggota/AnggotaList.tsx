@@ -515,7 +515,7 @@ const AnggotaList: React.FC<AnggotaListProps> = ({
 
                       {/* View Team link */}
                       <Link
-                        href={`/sekbid/${sekbidNum}`}
+                        href={`/sekbid/sekbid-${sekbidNum}`}
                         className="text-[10px] font-bold tracking-[1px] uppercase transition-colors hover:text-[#7A9EAD]"
                         style={{ color: '#AACDDC' }}
                       >

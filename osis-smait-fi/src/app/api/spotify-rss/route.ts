@@ -1,8 +1,25 @@
 import { NextResponse } from 'next/server';
 
+const ALLOWED_HOSTS = new Set(['anchor.fm', 'podcasters.spotify.com']);
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const rssUrl = searchParams.get('url') || 'https://anchor.fm/s/1eccd468/podcast/rss';
+  const targetUrl = searchParams.get('url');
+  let rssUrl = 'https://anchor.fm/s/1eccd468/podcast/rss';
+
+  if (targetUrl) {
+    try {
+      const parsed = new URL(targetUrl);
+      if (parsed.protocol === 'https:' && ALLOWED_HOSTS.has(parsed.hostname.toLowerCase())) {
+        rssUrl = targetUrl;
+      } else {
+        return NextResponse.json({ error: 'URL host not allowed' }, { status: 403 });
+      }
+    } catch {
+      return NextResponse.json({ error: 'Invalid URL' }, { status: 400 });
+    }
+  }
+
   const limit = parseInt(searchParams.get('limit') || '5', 10);
 
   try {
