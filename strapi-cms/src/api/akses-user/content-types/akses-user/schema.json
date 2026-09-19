@@ -28,10 +28,11 @@
       "enum": [
         "member",
         "operator",
-        "admin_pembina"
+        "admin_pembina",
+        "developer"
       ]
     },
-    "status": {
+    "status_akses": {
       "type": "enumeration",
       "enum": [
         "pending",

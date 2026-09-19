@@ -6,6 +6,20 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.35] - 2026-09-19
+
+### 🚀 Fitur Baru & RBAC Hardening
+- **Elevasi Akses Pengguna & Developer Role**:
+  - Menambahkan nilai enumerasi `developer` pada atribut `role` skema `akses-user` di Strapi (`strapi-cms/src/api/akses-user/content-types/akses-user/schema.json`).
+  - Memperbarui fungsi normalisasi dan validasi otorisasi (`auth-sync.ts` & `mubes-access.ts`) di Next.js untuk mengakui role `developer` dengan hak akses penuh.
+  - Mengonfigurasi akun `attabi1962@gmail.com` dengan role `developer` dan status `approved` pada basis data `akses_users` serta Clerk `publicMetadata`.
+  - Mendaftarkan akun `attabi1962@gmail.com` sebagai `Super Admin` di tabel `admin_users` Strapi CMS (`admin_roles` id 1) untuk akses dashboard admin penuh.
+- **Sistem Notifikasi Pengajuan Akun Baru di Strapi**:
+  - Mengimplementasikan hook `afterCreate` pada `strapi-cms/src/api/akses-user/content-types/akses-user/lifecycles.ts`.
+  - Otomatis mencatat notifikasi kategori `warning` ke koleksi `notifications` ketika pengguna baru mendaftar dengan `status_akses: 'pending'`, mempermudah admin/developer untuk meninjau dan melakukan approval/reject via Strapi Content Manager.
+
+---
+
 ## [2.1.34] - 2026-09-18
 
 ### 🚀 Fitur Baru: Cloudflare AI Agent Readiness Level 5 (Agent-Native Full Suite)

@@ -10,14 +10,17 @@ interface SyncUserInput {
 }
 
 interface SyncUserResult {
-  role: 'member' | 'operator' | 'admin_pembina' | null;
+  role: 'member' | 'operator' | 'admin_pembina' | 'developer' | null;
   status: 'approved' | 'pending' | 'ditolak';
   matchedAnggotaId: number | null;
 }
 
-function normalizeRole(role: string | null | undefined): 'member' | 'operator' | 'admin_pembina' {
+function normalizeRole(role: string | null | undefined): 'member' | 'operator' | 'admin_pembina' | 'developer' {
   if (!role) return 'member';
   const r = role.toLowerCase();
+  if (r === 'developer' || r === 'dev' || r === 'superadmin') {
+    return 'developer';
+  }
   if (r === 'admin' || r === 'administrator' || r === 'admin_pembina' || r === 'pembina') {
     return 'admin_pembina';
   }
@@ -119,7 +122,7 @@ export async function syncUserOnAuth(input: SyncUserInput): Promise<SyncUserResu
     if (record) {
       // User exists in Strapi. Check if updates needed
       const currentRole = record.role;
-      const currentStatus = record.status || 'pending';
+      const currentStatus = record.status_akses || record.status || 'pending';
       const matchedId = record.matched_anggota?.id || null;
 
       const needsUpdate =
@@ -206,7 +209,7 @@ export async function syncUserOnAuth(input: SyncUserInput): Promise<SyncUserResu
           nama_lengkap_input: fullName || email || 'Pengguna Baru',
           email: email || undefined,
           role: defaultRole,
-          status: defaultStatus,
+          status_akses: defaultStatus,
           matched_anggota: matchedMemberId ? { id: matchedMemberId } : undefined,
         },
       }),

@@ -7,7 +7,7 @@ export interface MubesAccessResult {
   userId: string | null;
   email: string | null;
   fullName: string | null;
-  role: 'member' | 'operator' | 'admin_pembina' | 'admin' | 'administrator' | 'bph' | null;
+  role: 'member' | 'operator' | 'admin_pembina' | 'admin' | 'administrator' | 'bph' | 'developer' | null;
   status: 'approved' | 'pending' | 'ditolak' | null;
 }
 
@@ -93,7 +93,8 @@ export async function getMubesAccess(): Promise<MubesAccessResult> {
       role === 'bph' ||
       role === 'member' ||
       role === 'operator' ||
-      role === 'admin_pembina';
+      role === 'admin_pembina' ||
+      role === 'developer';
 
     return {
       allowed: Boolean(isApproved && hasValidRole),
