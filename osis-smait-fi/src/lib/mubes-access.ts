@@ -24,7 +24,7 @@ export async function getMubesAccess(): Promise<MubesAccessResult> {
       role?: string;
     };
 
-    // 1. Ambil detail user Clerk untuk identitas & sinkronisasi
+    // 1. Ambil metadata terbaru langsung dari Clerk Client / User API (agar tidak terjebak cache JWT lama)
     let userDetails: any = null;
     try {
       userDetails = await currentUser();
@@ -32,17 +32,17 @@ export async function getMubesAccess(): Promise<MubesAccessResult> {
       console.warn('[getMubesAccess] Non-fatal currentUser check:', err?.message);
     }
 
-    // 2. Jika metadata belum ada di session token, ambil dari Clerk API
-    if (!metadata.status || !metadata.role) {
-      try {
-        const client = await clerkClient();
-        const user = userDetails || (await client.users.getUser(userId));
-        if (user?.publicMetadata) {
-          metadata = user.publicMetadata as { status?: string; role?: string };
-        }
-      } catch (err: any) {
-        console.warn('[getMubesAccess] Non-fatal user metadata check:', err?.message);
+    try {
+      const client = await clerkClient();
+      const freshUser = await client.users.getUser(userId);
+      if (freshUser?.publicMetadata) {
+        metadata = {
+          ...metadata,
+          ...(freshUser.publicMetadata as { status?: string; role?: string }),
+        };
       }
+    } catch (err: any) {
+      console.warn('[getMubesAccess] Non-fatal user metadata check:', err?.message);
     }
 
     const email =

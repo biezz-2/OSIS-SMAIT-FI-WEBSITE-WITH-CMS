@@ -6,6 +6,10 @@ export interface MubesLpjData {
   realisasi_anggaran?: number | string;
   sumber_dana?: string;
   evaluasi_internal?: string;
+  pendahuluan?: string;
+  golongan_target?: string;
+  tujuan_detail?: Array<{ title?: string; deskripsi?: string }> | any;
+  teknis_pelaksanaan?: string;
   kendala_solusi?: Array<{ kendala?: string; solusi?: string }> | string | null;
   nota_kwitansi?: any[];
   status_pengesahan?: 'draft' | 'ditinjau' | 'disahkan';
@@ -748,6 +752,10 @@ function normalizeLpj(item: any): { prokerKeys: string[]; lpjData: MubesLpjData 
     realisasi_anggaran: attrs.realisasi_anggaran,
     sumber_dana: attrs.sumber_dana,
     evaluasi_internal: attrs.evaluasi_internal,
+    pendahuluan: attrs.pendahuluan,
+    golongan_target: attrs.golongan_target,
+    tujuan_detail: attrs.tujuan_detail,
+    teknis_pelaksanaan: attrs.teknis_pelaksanaan,
     kendala_solusi: attrs.kendala_solusi,
     nota_kwitansi: attrs.nota_kwitansi?.data || attrs.nota_kwitansi || [],
     status_pengesahan: attrs.status_pengesahan || 'draft',

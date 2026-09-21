@@ -96,6 +96,8 @@ export async function POST(req: Request) {
 
       const existingData = existingRes.ok ? await existingRes.json() : null;
       const existingRecord = existingData?.data?.[0];
+      const prevStatus = existingRecord?.status_akses || existingRecord?.status;
+      const preservedStatus = prevStatus || assignedStatus;
 
       if (existingRecord?.documentId) {
         // Update record
@@ -110,7 +112,7 @@ export async function POST(req: Request) {
               nama_lengkap_input: inputFullName,
               email,
               matched_anggota: matchedMemberId ? { id: matchedMemberId } : undefined,
-              status: existingRecord.status === 'approved' ? 'approved' : assignedStatus,
+              status_akses: preservedStatus,
               role: existingRecord.role ? existingRecord.role : assignedRole,
             },
           }),
@@ -129,7 +131,7 @@ export async function POST(req: Request) {
               nama_lengkap_input: inputFullName,
               email,
               role: assignedRole,
-              status: assignedStatus,
+              status_akses: assignedStatus,
               matched_anggota: matchedMemberId ? { id: matchedMemberId } : undefined,
             },
           }),
@@ -139,7 +141,7 @@ export async function POST(req: Request) {
       // 3. Sinkronkan publicMetadata di Clerk Cloud
       await clerkClient.users.updateUserMetadata(clerkUserId, {
         publicMetadata: {
-          status: existingRecord?.status === 'approved' ? 'approved' : assignedStatus,
+          status: preservedStatus,
           role: existingRecord?.role ? existingRecord.role : assignedRole,
         },
       });

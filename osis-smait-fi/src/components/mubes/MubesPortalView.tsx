@@ -31,15 +31,11 @@ export default function MubesPortalView({
 
   // Evaluasi apakah user sudah login namun belum diapprove
   const isUserAuthenticated = Boolean(accessState?.userId || (isLoaded && isSignedIn));
+  const effectiveStatus = accessState?.status || (user?.publicMetadata?.status as string) || 'pending';
   const isPendingOrDitolak =
     isUserAuthenticated &&
     !accessState?.allowed &&
-    (accessState?.status === 'pending' ||
-      accessState?.status === 'ditolak' ||
-      (user?.publicMetadata?.status as string) === 'pending' ||
-      (user?.publicMetadata?.status as string) === 'ditolak' ||
-      // Fallback default jika user login tapi status belum approved
-      (user?.publicMetadata?.status as string) !== 'approved');
+    effectiveStatus !== 'approved';
 
   return (
     <div className="relative min-h-screen w-full bg-[#0d0a08] overflow-x-hidden flex flex-col justify-between selection:bg-[#e3bd7d]/30 selection:text-[#faf0db]">

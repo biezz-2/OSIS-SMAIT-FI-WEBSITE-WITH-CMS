@@ -6,6 +6,25 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.36] - 2026-09-21
+
+### 🚀 Fitur Baru & Otorisasi MUBES Hardening
+- **Kelengkapan Skema & Data Mapping LPJ MUBES (`mubes-lpj`)**:
+  - Menambahkan atribut `pendahuluan` (richtext) dan `teknis_pelaksanaan` (richtext) pada skema `strapi-cms/src/api/mubes-lpj/content-types/mubes-lpj/schema.json`.
+  - Menambahkan atribut `golongan_target` (string) serta komponen repeatable `tujuan_detail` (`shared.tujuan-detail`) untuk rincian tujuan program kerja.
+  - Memperbarui interface `MubesLpjData` dan fungsi normalizer `normalizeLpj()` di `osis-smait-fi/src/lib/mubes-proker.ts` agar data LPJ lengkap terpetakan ke komponen frontend.
+- **Pembaruan Akses MUBES dari Metadata Clerk Terbaru (Anti-Stale JWT)**:
+  - Mengubah `getMubesAccess()` di `osis-smait-fi/src/lib/mubes-access.ts` untuk selalu memanggil langsung `client.users.getUser(userId)` tanpa fallback ke `currentUser()`, mencegah keputusan otorisasi dari cache JWT yang kedaluwarsa.
+  - Memperbaiki prioritas otorisasi di `MubesPortalView.tsx` dengan memprioritaskan `accessState?.status` dari server di atas metadata client.
+- **Sinkronisasi Webhook Clerk & Status Preservation**:
+  - Memperbarui `osis-smait-fi/src/app/api/webhooks/clerk/route.ts` untuk menggunakan atribut `status_akses` (dengan fallback `status` lama) dan mempertahankan status penolakan (`ditolak`) saat event `user.updated` terpanggil.
+- **Respon Kartu Status Approval yang Lebih Handal (`MubesApprovalStatusCard`)**:
+  - Mengubah tombol *Perbarui Status Akun* menjadi async berurutan: menyelesaikan `POST /api/auth/sync` terlebih dahulu sebelum memanggil `user.reload()`, lalu menyegarkan halaman.
+- **Penyelarasan Skrip Pengujian Skema**:
+  - Memperbarui `scripts/verify-mubes-schemas.js` untuk memvalidasi atribut `status_akses` pada `akses-user` dan `target_document_id` pada `audit-log`.
+
+---
+
 ## [2.1.35] - 2026-09-19
 
 ### 🚀 Fitur Baru & RBAC Hardening

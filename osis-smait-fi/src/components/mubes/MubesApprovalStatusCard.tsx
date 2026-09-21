@@ -58,9 +58,21 @@ export default function MubesApprovalStatusCard({
     }
   };
 
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
     setIsRefreshing(true);
-    window.location.reload();
+    try {
+      const res = await fetch('/api/auth/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      if (res.ok && user) {
+        await user.reload();
+      }
+    } catch (e) {
+      console.warn('[MubesApprovalStatusCard] Refresh error:', e);
+    } finally {
+      window.location.reload();
+    }
   };
 
   return (

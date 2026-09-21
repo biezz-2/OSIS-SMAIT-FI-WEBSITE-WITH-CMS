@@ -5,7 +5,7 @@ const auditLogSchema = require('../strapi-cms/src/api/audit-log/content-types/au
 assert.strictEqual(auditLogSchema.kind, 'collectionType');
 assert.strictEqual(auditLogSchema.options.draftAndPublish, false);
 assert.ok(auditLogSchema.attributes.content_type, 'content_type must exist in audit-log');
-assert.ok(auditLogSchema.attributes.document_id, 'document_id must exist in audit-log');
+assert.ok(auditLogSchema.attributes.target_document_id, 'target_document_id must exist in audit-log');
 assert.ok(auditLogSchema.attributes.action, 'action must exist in audit-log');
 assert.deepStrictEqual(
   auditLogSchema.attributes.action.enum,
@@ -17,7 +17,7 @@ const aksesUserSchema = require('../strapi-cms/src/api/akses-user/content-types/
 assert.strictEqual(aksesUserSchema.kind, 'collectionType');
 assert.strictEqual(aksesUserSchema.attributes.clerk_user_id.unique, true);
 assert.strictEqual(aksesUserSchema.attributes.clerk_user_id.required, true);
-assert.strictEqual(aksesUserSchema.attributes.status.default, 'pending');
+assert.strictEqual(aksesUserSchema.attributes.status_akses.default, 'pending');
 
 // 3. Mubes LPJ Schema Validation
 const mubesLpjSchema = require('../strapi-cms/src/api/mubes-lpj/content-types/mubes-lpj/schema.json');

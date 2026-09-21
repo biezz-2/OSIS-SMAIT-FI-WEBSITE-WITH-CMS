@@ -30,6 +30,20 @@
       "type": "richtext",
       "required": true
     },
+    "pendahuluan": {
+      "type": "richtext"
+    },
+    "golongan_target": {
+      "type": "string"
+    },
+    "tujuan_detail": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.tujuan-detail"
+    },
+    "teknis_pelaksanaan": {
+      "type": "richtext"
+    },
     "kendala_solusi": {
       "type": "json"
     },
