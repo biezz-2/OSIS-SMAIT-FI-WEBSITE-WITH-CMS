@@ -15,9 +15,13 @@ export async function POST(req: Request) {
     return new Response('Missing svix verification headers', { status: 400 });
   }
 
-  const webhookSecret = process.env.CLERK_WEBHOOK_SECRET;
+  // Clerk Dashboard may label this "Signing Secret"; both env names accepted.
+  const webhookSecret =
+    process.env.CLERK_WEBHOOK_SECRET || process.env.CLERK_WEBHOOK_SIGNING_SECRET;
   if (!webhookSecret) {
-    console.error('CLERK_WEBHOOK_SECRET is not configured');
+    console.error(
+      'CLERK_WEBHOOK_SECRET is not configured — set whsec_… from Clerk Dashboard → Webhooks'
+    );
     return new Response('Server configuration error', { status: 500 });
   }
 

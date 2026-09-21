@@ -6,6 +6,17 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.37] - 2026-09-22
+
+### Fixed
+- **MubesLoginForm**: pesan error `couldn't find your account` diganti arahan eksplisit ke "Ajukan Akses Halaman" (Sign Up) agar INTI tidak terjebak di form login.
+- **auth-sync**: baca `STRAPI_ELEVATED_TOKEN` / `STRAPI_INTERNAL_URL` / Clerk secret saat runtime (bukan cache module-level) agar restart PM2 selalu memuat `.env.local` terbaru.
+- **Clerk webhook**: terima alias `CLERK_WEBHOOK_SIGNING_SECRET`; log jelas jika Signing Secret belum diisi.
+- **Env production**: tambah `STRAPI_INTERNAL_URL` di `.env.local` (fallback 127.0.0.1:1337 tetap ada).
+
+### Notes
+- `CLERK_WEBHOOK_SECRET` (whsec_…) masih harus diisi manual dari Clerk Dashboard → Webhooks. Tanpa itu webhook ditolak; jalur `/api/auth/sync` tetap menyimpan pendaftar ke Strapi.
+
 ## [2.1.36] - 2026-09-21
 
 ### 🚀 Fitur Baru & Otorisasi MUBES Hardening

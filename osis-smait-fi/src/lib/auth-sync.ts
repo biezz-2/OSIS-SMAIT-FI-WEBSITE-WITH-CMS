@@ -30,9 +30,17 @@ function normalizeRole(role: string | null | undefined): 'member' | 'operator' |
   return 'member';
 }
 
-const strapiBaseUrl = process.env.STRAPI_INTERNAL_URL || 'http://127.0.0.1:1337';
-const elevatedToken = process.env.STRAPI_ELEVATED_TOKEN;
-const clerkClient = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY! });
+function getStrapiBaseUrl() {
+  return (process.env.STRAPI_INTERNAL_URL || 'http://127.0.0.1:1337').replace(/\/$/, '');
+}
+
+function getElevatedToken() {
+  return process.env.STRAPI_ELEVATED_TOKEN || '';
+}
+
+function getClerkClient() {
+  return createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY! });
+}
 
 /**
  * Record a login audit event in Strapi (login_events collection).
@@ -44,8 +52,10 @@ export async function recordLoginEvent(params: {
   userAgent?: string;
   success: boolean;
 }) {
+  const elevatedToken = getElevatedToken();
   if (!elevatedToken) return;
 
+  const strapiBaseUrl = getStrapiBaseUrl();
   try {
     await fetch(`${strapiBaseUrl}/api/login-events`, {
       method: 'POST',
@@ -77,6 +87,8 @@ export async function recordLoginEvent(params: {
  */
 export async function syncUserOnAuth(input: SyncUserInput): Promise<SyncUserResult> {
   const { clerkUserId, email, fullName, ipAddress, userAgent, roleHint } = input;
+  const elevatedToken = getElevatedToken();
+  const strapiBaseUrl = getStrapiBaseUrl();
 
   if (!elevatedToken || !clerkUserId) {
     return { role: null, status: 'pending', matchedAnggotaId: null };
@@ -149,7 +161,7 @@ export async function syncUserOnAuth(input: SyncUserInput): Promise<SyncUserResu
 
       // Sync to Clerk publicMetadata if not aligned
       try {
-        await clerkClient.users.updateUserMetadata(clerkUserId, {
+        await getClerkClient().users.updateUserMetadata(clerkUserId, {
           publicMetadata: {
             status: currentStatus,
             role: currentRole,
@@ -221,7 +233,7 @@ export async function syncUserOnAuth(input: SyncUserInput): Promise<SyncUserResu
 
     // 5. Update Clerk publicMetadata
     try {
-      await clerkClient.users.updateUserMetadata(clerkUserId, {
+      await getClerkClient().users.updateUserMetadata(clerkUserId, {
         publicMetadata: {
           status: defaultStatus,
           role: defaultRole,

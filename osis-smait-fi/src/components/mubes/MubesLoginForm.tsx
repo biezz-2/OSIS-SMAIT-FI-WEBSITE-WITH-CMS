@@ -134,11 +134,25 @@ export default function MubesLoginForm({ onSwitchToSignUp, onOpenHelp }: MubesLo
         }
       }
     } catch (err: any) {
-      const msg =
+      const code = err?.errors?.[0]?.code || '';
+      const raw =
         err?.errors?.[0]?.longMessage ||
         err?.errors?.[0]?.message ||
         'Gagal masuk. Periksa kembali email/nama pengguna dan kata sandi Anda.';
-      setErrorMessage(msg);
+      const lower = String(raw).toLowerCase();
+      // Clerk: identifier belum terdaftar → arahkan ke form Ajukan Akses (Sign Up)
+      if (
+        code === 'form_identifier_not_found' ||
+        lower.includes("couldn't find your account") ||
+        lower.includes('could not find') ||
+        lower.includes('identifier not found')
+      ) {
+        setErrorMessage(
+          'Akun belum terdaftar. Klik "Ajukan Akses Halaman" di bawah untuk mendaftar terlebih dahulu, lalu tunggu persetujuan Presidium.'
+        );
+      } else {
+        setErrorMessage(raw);
+      }
     } finally {
       setIsLoading(false);
     }
