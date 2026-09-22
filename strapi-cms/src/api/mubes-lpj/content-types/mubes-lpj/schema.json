@@ -5,7 +5,7 @@
     "singularName": "mubes-lpj",
     "pluralName": "mubes-lpjs",
     "displayName": "🏛️ [MUBES] LPJ & Anggaran Proker",
-    "description": "Sensitive evaluation data for program kerja — body via repeatable sections (Tujuan, Teknis, Capaian, Evaluasi, …)"
+    "description": "LPJ body via repeatable sections (Tujuan, Teknis, Capaian, Evaluasi, …). Legacy fields kept optional for existing entries."
   },
   "options": {
     "draftAndPublish": true
@@ -32,6 +32,18 @@
       "required": false
     },
     "evaluasi_internal": {
+      "type": "richtext",
+      "required": false
+    },
+    "pendahuluan": {
+      "type": "richtext",
+      "required": false
+    },
+    "golongan_target": {
+      "type": "string",
+      "required": false
+    },
+    "teknis_pelaksanaan": {
       "type": "richtext",
       "required": false
     },
