@@ -42,6 +42,23 @@ function getClerkClient() {
   return createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY! });
 }
 
+/** fetch dengan retry singkat — Strapi kadang ECONNREFUSED saat restart PM2 */
+async function strapiFetch(path: string, init?: RequestInit, attempts = 3): Promise<Response> {
+  const base = getStrapiBaseUrl();
+  const url = path.startsWith('http') ? path : `${base}${path.startsWith('/') ? '' : '/'}${path}`;
+  let lastErr: unknown;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      const res = await fetch(url, init);
+      return res;
+    } catch (err) {
+      lastErr = err;
+      await new Promise((r) => setTimeout(r, 250 * (i + 1)));
+    }
+  }
+  throw lastErr instanceof Error ? lastErr : new Error(String(lastErr));
+}
+
 /**
  * Record a login audit event in Strapi (login_events collection).
  */
@@ -55,9 +72,8 @@ export async function recordLoginEvent(params: {
   const elevatedToken = getElevatedToken();
   if (!elevatedToken) return;
 
-  const strapiBaseUrl = getStrapiBaseUrl();
   try {
-    await fetch(`${strapiBaseUrl}/api/login-events`, {
+    await strapiFetch('/api/login-events', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -88,11 +104,12 @@ export async function recordLoginEvent(params: {
 export async function syncUserOnAuth(input: SyncUserInput): Promise<SyncUserResult> {
   const { clerkUserId, email, fullName, ipAddress, userAgent, roleHint } = input;
   const elevatedToken = getElevatedToken();
-  const strapiBaseUrl = getStrapiBaseUrl();
 
   if (!elevatedToken || !clerkUserId) {
     return { role: null, status: 'pending', matchedAnggotaId: null };
   }
+
+  const authHeader = { Authorization: `Bearer ${elevatedToken}` };
 
   try {
     // 1. Record login event in Strapi
@@ -105,12 +122,9 @@ export async function syncUserOnAuth(input: SyncUserInput): Promise<SyncUserResu
     });
 
     // 2. Check if user already exists in Strapi akses_users
-    const existingRes = await fetch(
-      `${strapiBaseUrl}/api/akses-users?filters[clerk_user_id][$eq]=${encodeURIComponent(clerkUserId)}&populate=*`,
-      {
-        headers: { Authorization: `Bearer ${elevatedToken}` },
-        cache: 'no-store',
-      }
+    const existingRes = await strapiFetch(
+      `/api/akses-users?filters[clerk_user_id][$eq]=${encodeURIComponent(clerkUserId)}&populate=*`,
+      { headers: authHeader, cache: 'no-store' }
     );
 
     const existingData = existingRes.ok ? await existingRes.json() : null;
@@ -118,12 +132,9 @@ export async function syncUserOnAuth(input: SyncUserInput): Promise<SyncUserResu
 
     // Fallback: check by email if clerk_user_id not matched yet
     if (!record && email) {
-      const emailRes = await fetch(
-        `${strapiBaseUrl}/api/akses-users?filters[email][$eq]=${encodeURIComponent(email)}&populate=*`,
-        {
-          headers: { Authorization: `Bearer ${elevatedToken}` },
-          cache: 'no-store',
-        }
+      const emailRes = await strapiFetch(
+        `/api/akses-users?filters[email][$eq]=${encodeURIComponent(email)}&populate=*`,
+        { headers: authHeader, cache: 'no-store' }
       );
       const emailData = emailRes.ok ? await emailRes.json() : null;
       if (emailData?.data?.[0]) {
@@ -143,11 +154,11 @@ export async function syncUserOnAuth(input: SyncUserInput): Promise<SyncUserResu
         (fullName && record.nama_lengkap_input !== fullName);
 
       if (needsUpdate) {
-        await fetch(`${strapiBaseUrl}/api/akses-users/${record.documentId}`, {
+        await strapiFetch(`/api/akses-users/${record.documentId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${elevatedToken}`,
+            ...authHeader,
           },
           body: JSON.stringify({
             data: {
@@ -183,12 +194,9 @@ export async function syncUserOnAuth(input: SyncUserInput): Promise<SyncUserResu
     let matchedMemberId: number | null = null;
 
     if (normalizedName) {
-      const anggotaRes = await fetch(
-        `${strapiBaseUrl}/api/anggota-oses?pagination[limit]=150`,
-        {
-          headers: { Authorization: `Bearer ${elevatedToken}` },
-          cache: 'no-store',
-        }
+      const anggotaRes = await strapiFetch(
+        '/api/anggota-oses?pagination[limit]=150',
+        { headers: authHeader, cache: 'no-store' }
       );
 
       if (anggotaRes.ok) {
@@ -209,11 +217,11 @@ export async function syncUserOnAuth(input: SyncUserInput): Promise<SyncUserResu
     const defaultStatus = 'pending';
 
     // 4. Create new akses_user in Strapi
-    const createRes = await fetch(`${strapiBaseUrl}/api/akses-users`, {
+    const createRes = await strapiFetch('/api/akses-users', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${elevatedToken}`,
+        ...authHeader,
       },
       body: JSON.stringify({
         data: {

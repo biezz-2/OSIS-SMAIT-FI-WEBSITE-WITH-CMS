@@ -6,6 +6,14 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.39] - 2026-09-22
+
+### Fixed
+- **Root cause Sign Up → Strapi kosong**: instance Clerk mewajibkan `username`; form Sign Up sebelumnya tidak mengirimnya sehingga user tidak pernah terbentuk di Clerk (`couldn't find your account`) dan `/api/auth/sync` tidak jalan. Sekarang username di-derive dari local-part email.
+- **finishSignUp**: `await` `/api/auth/sync` (bukan fire-and-forget) agar baris `akses-users` tertulis sebelum redirect portal.
+- **auth-sync**: `strapiFetch` retry 3× untuk mitigasi `ECONNREFUSED` saat Strapi/PM2 restart.
+- **Data recovery**: akun uji `biezzpanel@gmail.com` dibuat di Clerk (`user_3JfdMEn8gMW6ggvW0j7Rtq0wuau`, verified) + baris Strapi `status_akses=pending` (documentId `zrxols8e28576mb198efx9we`).
+
 ## [2.1.38] - 2026-09-22
 
 ### Fixed

@@ -35,11 +35,19 @@ export default function MubesSignUpForm({ onSwitchToLogin, onOpenHelp }: MubesSi
   const finishSignUp = async (sessionId?: string | null) => {
     if (sessionId && setActive) {
       await setActive({ session: sessionId });
-      fetch('/api/auth/sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ roleHint: role }),
-      }).catch(() => {});
+      // Tunggu sync ke Strapi agar baris akses-users muncul sebelum masuk portal
+      try {
+        const res = await fetch('/api/auth/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ roleHint: role }),
+        });
+        if (!res.ok) {
+          console.error('[SignUp] auth/sync failed', res.status, await res.text().catch(() => ''));
+        }
+      } catch (syncErr) {
+        console.error('[SignUp] auth/sync network error', syncErr);
+      }
       router.push('/portal-mubes');
       return true;
     }
@@ -133,12 +141,21 @@ export default function MubesSignUpForm({ onSwitchToLogin, onOpenHelp }: MubesSi
       const parts = fullName.trim().split(/\s+/);
       const firstName = parts[0] || fullName;
       const lastName = parts.slice(1).join(' ') || '';
+      // Instance Clerk mewajibkan username — derive dari email (aman URL/identifier)
+      const emailLocal = emailAddress.split('@')[0] || '';
+      const username =
+        emailLocal
+          .toLowerCase()
+          .replace(/[^a-z0-9._-]/g, '')
+          .replace(/^[._-]+|[._-]+$/g, '')
+          .slice(0, 32) || `user${Date.now().toString(36).slice(-8)}`;
 
       await signUp.create({
         emailAddress,
         password,
         firstName,
         lastName,
+        username,
         unsafeMetadata: {
           role,
           intendedRole: role,
@@ -149,10 +166,23 @@ export default function MubesSignUpForm({ onSwitchToLogin, onOpenHelp }: MubesSi
       await signUp.prepareEmailAddressVerification({ strategy: 'email_code' });
       setPendingVerification(true);
     } catch (err: any) {
+      const code = err?.errors?.[0]?.code || '';
       const msg =
         err?.errors?.[0]?.longMessage ||
         err?.errors?.[0]?.message ||
         'Gagal mengajukan pendaftaran. Pastikan data yang dimasukkan valid.';
+      const lower = String(msg).toLowerCase();
+      // Sudah terdaftar di Clerk → arahkan ke login
+      if (
+        code === 'form_identifier_exists' ||
+        lower.includes('already exists') ||
+        lower.includes('is taken') ||
+        lower.includes('already been taken')
+      ) {
+        setErrorMessage('Email/username sudah terdaftar. Silakan masuk lewat form Login.');
+        setTimeout(() => onSwitchToLogin(), 1200);
+        return;
+      }
       setErrorMessage(msg);
     } finally {
       setIsLoading(false);
