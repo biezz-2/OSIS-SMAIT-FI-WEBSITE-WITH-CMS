@@ -30,9 +30,12 @@ export async function GET(
   const slugLower = normalizedSlug.toLowerCase();
 
   try {
+    // Deep-populate sections + media so dynamic LPJ body reaches the UI
+    const populate =
+      'populate[sections]=true&populate[nota_kwitansi]=true&populate[program_kerja][fields][0]=slug&populate[program_kerja][fields][1]=judul';
     const filterQuery = `filters[$or][0][program_kerja][slug][$eq]=${encodeURIComponent(normalizedSlug)}&filters[$or][1][program_kerja][slug][$eq]=${encodeURIComponent(slugLower)}`;
     const res = await fetch(
-      `${strapiBaseUrl}/api/mubes-lpjs?${filterQuery}&populate=*`,
+      `${strapiBaseUrl}/api/mubes-lpjs?${filterQuery}&${populate}`,
       {
         headers: {
           Authorization: `Bearer ${elevatedToken}`,
@@ -50,7 +53,45 @@ export async function GET(
     }
 
     const payload = await res.json();
-    const lpj = payload?.data?.[0] || null;
+    const raw = payload?.data?.[0] || null;
+    const attrs = raw ? raw.attributes || raw : null;
+
+    const sectionsRaw = attrs?.sections;
+    const sectionsList = Array.isArray(sectionsRaw)
+      ? sectionsRaw
+      : Array.isArray(sectionsRaw?.data)
+        ? sectionsRaw.data
+        : [];
+
+    const lpj = attrs
+      ? {
+          id: raw.id,
+          documentId: raw.documentId || attrs.documentId,
+          realisasi_anggaran: attrs.realisasi_anggaran ?? null,
+          sumber_dana: attrs.sumber_dana ?? null,
+          evaluasi_internal: attrs.evaluasi_internal ?? null,
+          kendala_solusi: attrs.kendala_solusi ?? null,
+          status_pengesahan: attrs.status_pengesahan || 'draft',
+          nota_kwitansi: attrs.nota_kwitansi?.data || attrs.nota_kwitansi || [],
+          sections: sectionsList
+            .map((s: any, i: number) => {
+              const row = s?.attributes || s || {};
+              const judul = String(row.judul ?? '').trim();
+              const isi = String(row.isi ?? '').trim();
+              if (!judul && !isi) return null;
+              const order =
+                typeof row.order === 'number' ? row.order : row.order != null ? Number(row.order) : i;
+              return {
+                id: s?.id ?? i,
+                judul: judul || `Bagian ${i + 1}`,
+                isi,
+                order: Number.isFinite(order) ? order : i,
+              };
+            })
+            .filter(Boolean)
+            .sort((a: { order?: number }, b: { order?: number }) => (a.order ?? 0) - (b.order ?? 0)),
+        }
+      : null;
 
     return NextResponse.json({
       allowed: true,

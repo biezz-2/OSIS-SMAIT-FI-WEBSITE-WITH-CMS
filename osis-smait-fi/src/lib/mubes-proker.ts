@@ -1,14 +1,23 @@
 import { fetchStrapiAPI, getStrapiMediaUrl } from './strapi';
 
+export interface MubesLpjSectionBlock {
+  id?: number | string;
+  judul: string;
+  isi: string;
+  order?: number;
+}
+
 export interface MubesLpjData {
   id?: number | string;
   documentId?: string;
-  realisasi_anggaran?: number | string;
-  sumber_dana?: string;
-  evaluasi_internal?: string;
+  realisasi_anggaran?: number | string | null;
+  sumber_dana?: string | null;
+  evaluasi_internal?: string | null;
   kendala_solusi?: Array<{ kendala?: string; solusi?: string }> | string | null;
   nota_kwitansi?: any[];
   status_pengesahan?: 'draft' | 'ditinjau' | 'disahkan';
+  /** Dynamic LPJ body blocks (Tujuan, Teknis & Waktu, Capaian, Evaluasi & Solusi, …) */
+  sections?: MubesLpjSectionBlock[];
 }
 
 export interface MubesPenanggungJawab {
@@ -704,6 +713,35 @@ function normalizeProgramKerja(item: any, lpjByProker: Map<string, MubesLpjData>
 }
 
 /**
+ * Flatten Strapi repeatable component `sections` (v4 nested or v5 flat).
+ */
+function normalizeLpjSections(raw: unknown): MubesLpjSectionBlock[] {
+  if (!raw) return [];
+  const list = Array.isArray(raw)
+    ? raw
+    : Array.isArray((raw as { data?: unknown }).data)
+      ? ((raw as { data: unknown[] }).data as unknown[])
+      : [];
+
+  const blocks: MubesLpjSectionBlock[] = [];
+  list.forEach((item: any, index: number) => {
+    const row = item?.attributes || item || {};
+    const judul = String(row.judul ?? row.title ?? '').trim();
+    const isi = String(row.isi ?? row.deskripsi ?? row.content ?? '').trim();
+    if (!judul && !isi) return;
+    const orderNum =
+      typeof row.order === 'number' ? row.order : row.order != null ? Number(row.order) : index;
+    blocks.push({
+      id: item?.id ?? index,
+      judul: judul || `Bagian ${index + 1}`,
+      isi,
+      order: Number.isFinite(orderNum) ? orderNum : index,
+    });
+  });
+  return blocks.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+}
+
+/**
  * Normalizes raw Strapi LPJ item into typed MubesLpjData.
  */
 function normalizeLpj(item: any): { prokerKeys: string[]; lpjData: MubesLpjData } {
@@ -720,13 +758,14 @@ function normalizeLpj(item: any): { prokerKeys: string[]; lpjData: MubesLpjData 
 
   const lpjData: MubesLpjData = {
     id: item.id,
-    documentId: item.documentId,
+    documentId: item.documentId || attrs.documentId,
     realisasi_anggaran: attrs.realisasi_anggaran,
     sumber_dana: attrs.sumber_dana,
     evaluasi_internal: attrs.evaluasi_internal,
     kendala_solusi: attrs.kendala_solusi,
     nota_kwitansi: attrs.nota_kwitansi?.data || attrs.nota_kwitansi || [],
     status_pengesahan: attrs.status_pengesahan || 'draft',
+    sections: normalizeLpjSections(attrs.sections),
   };
 
   return { prokerKeys, lpjData };
@@ -745,9 +784,12 @@ export async function fetchMubesProkerList(): Promise<MubesSekbidGroup[]> {
       fetchStrapiAPI('/api/program-kerjas?populate=*&pagination[limit]=100', {
         headers: authHeaders,
       }).catch(() => null),
-      fetchStrapiAPI('/api/mubes-lpjs?populate=*&pagination[limit]=100', {
-        headers: authHeaders,
-      }).catch(() => null),
+      fetchStrapiAPI(
+        '/api/mubes-lpjs?populate[sections]=true&populate[nota_kwitansi]=true&populate[program_kerja][fields][0]=slug&populate[program_kerja][fields][1]=judul&pagination[limit]=100',
+        {
+          headers: authHeaders,
+        }
+      ).catch(() => null),
       fetchStrapiAPI('/api/sekbids?populate=*&sort=nomor:asc', {
         headers: authHeaders,
       }).catch(() => null),

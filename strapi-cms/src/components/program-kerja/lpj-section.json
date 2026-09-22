@@ -1,0 +1,24 @@
+{
+  "collectionName": "components_program_kerja_lpj_sections",
+  "info": {
+    "displayName": "Bagian LPJ",
+    "description": "Blok dinamis LPJ (judul + isi). Contoh: Tujuan, Teknis & Waktu, Capaian, Evaluasi & Solusi.",
+    "icon": "layer"
+  },
+  "options": {},
+  "attributes": {
+    "judul": {
+      "type": "string",
+      "required": true
+    },
+    "isi": {
+      "type": "text",
+      "required": true
+    },
+    "order": {
+      "type": "integer",
+      "required": false,
+      "default": 0
+    }
+  }
+}

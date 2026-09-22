@@ -5,7 +5,7 @@
     "singularName": "mubes-lpj",
     "pluralName": "mubes-lpjs",
     "displayName": "🏛️ [MUBES] LPJ & Anggaran Proker",
-    "description": "Sensitive evaluation data for program kerja"
+    "description": "Sensitive evaluation data for program kerja — body via repeatable sections (Tujuan, Teknis, Capaian, Evaluasi, …)"
   },
   "options": {
     "draftAndPublish": true
@@ -16,19 +16,24 @@
       "relation": "oneToOne",
       "target": "api::program-kerja.program-kerja"
     },
+    "sections": {
+      "type": "component",
+      "repeatable": true,
+      "component": "program-kerja.lpj-section"
+    },
     "realisasi_anggaran": {
       "type": "decimal",
       "precision": 14,
       "scale": 2,
-      "required": true
+      "required": false
     },
     "sumber_dana": {
       "type": "string",
-      "required": true
+      "required": false
     },
     "evaluasi_internal": {
       "type": "richtext",
-      "required": true
+      "required": false
     },
     "kendala_solusi": {
       "type": "json"

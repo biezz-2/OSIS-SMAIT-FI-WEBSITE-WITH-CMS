@@ -6,6 +6,15 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.17] - 2026-09-22
+
+### ✨ Fitur (LPJ MUBES — Bagian Dinamis)
+- **Strapi `mubes-lpj`**: field `sections` (repeatable component `program-kerja.lpj-section`: `judul`, `isi`, `order`) menjadi body utama LPJ; field lama (`realisasi_anggaran`, `sumber_dana`, `evaluasi_internal`) dibuat opsional agar tidak memaksa kolom tetap.
+- **BFF `/api/mubes/lpj/[slug]`**: deep-populate `sections` + normalisasi payload agar frontend menerima daftar bagian siap-render.
+- **UI `MubesLpjSection`**: render berurutan seperti dokumen (Tujuan → Teknis & Waktu → Capaian → Evaluasi & Solusi, dst.); fallback legacy hanya jika `sections` kosong.
+
+---
+
 ## [2.1.16] - 2026-09-12
 
 ### 🎨 Tampilan & UI (Pembersihan Header Dokumentasi)
