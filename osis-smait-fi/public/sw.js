@@ -1,4 +1,4 @@
-const CACHE_NAME = 'osis-v3';
+const CACHE_NAME = 'osis-v4';
 const ASSETS_TO_CACHE = [
   '/',
   '/favicon.ico',

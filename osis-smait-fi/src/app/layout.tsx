@@ -117,7 +117,14 @@ export default async function RootLayout({
         <meta name="theme-color" content="#2E90FA" />
       </head>
       <body className="min-h-full flex flex-col">
-        <ClerkProvider>
+        <ClerkProvider
+          signInUrl="/portal-mubes"
+          signUpUrl="/portal-mubes?mode=signup"
+          signInFallbackRedirectUrl="/portal-mubes"
+          signUpFallbackRedirectUrl="/portal-mubes"
+          signInForceRedirectUrl="/portal-mubes"
+          signUpForceRedirectUrl="/portal-mubes"
+        >
           <MubesSessionBanner />
           <TelemetryTracker />
           <ImageQualityProvider>

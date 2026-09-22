@@ -6,6 +6,16 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.19] - 2026-09-22
+
+### 🐛 Perbaikan (Deploy Auth Portal MUBES)
+- **Clerk URL kustom**: `signInUrl` / `signUpUrl` diarahkan ke `/portal-mubes` agar komponen Clerk tidak membuka Account Portal `accounts.dev`.
+- **Navbar Masuk/Daftar**: `<a href="/portal-mubes">` native, tidak dibungkus `SignedOut`/`SignInButton` (handshake Clerk ke `accounts.dev`).
+- **Produksi**: rebuild Next.js + restart PM2 `osis-next-frontend`.
+- **SW cache** `osis-v4` agar JS navbar lama tidak tertahan di browser.
+
+---
+
 ## [2.1.18] - 2026-09-22
 
 ### 🐛 Perbaikan (Auth Portal MUBES)

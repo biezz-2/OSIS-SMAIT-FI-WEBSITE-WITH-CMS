@@ -27,7 +27,7 @@ import {
     ShoppingBag,
     Tv
 } from 'lucide-react';
-import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
+import { UserButton, useUser } from '@clerk/nextjs';
 
 // Nav items standar (di luar Mega Menu)
 const defaultNavItems = [
@@ -127,6 +127,7 @@ const Navbar = () => {
     const [expandedAccordion, setExpandedAccordion] = useState<string | null>(null);
     const drawerRef = useRef<HTMLDivElement>(null);
     const pathname = usePathname();
+    const { isSignedIn } = useUser();
 
     const [programKerjaCards, setProgramKerjaCards] = useState<MegaMenuCard[]>(initialProgramKerjaCards);
     const [galeriCards, setGaleriCards] = useState<MegaMenuCard[]>(initialGaleriCards);
@@ -409,25 +410,26 @@ const Navbar = () => {
                     />
                     <AnimatedThemeToggler variant="diamond" />
 
-                    {/* Auth → Portal MUBES (login/daftar khusus, bukan modal Clerk generik) */}
+                    {/* Auth: <a> native ke /portal-mubes. Jangan bungkus SignInButton/SignedOut — handshake Clerk ke accounts.dev. */}
                     <div className="flex items-center gap-2 pl-1">
-                        <SignedOut>
-                            <Link
-                                href="/portal-mubes"
-                                className="px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-white text-xs font-semibold font-[Inter,sans-serif] transition-colors no-underline"
-                            >
-                                Masuk
-                            </Link>
-                            <Link
-                                href="/portal-mubes?mode=signup"
-                                className="px-3 py-1.5 rounded-lg bg-[#2E90FA] hover:bg-[#1570EF] text-white text-xs font-semibold font-[Inter,sans-serif] transition-colors no-underline"
-                            >
-                                Daftar
-                            </Link>
-                        </SignedOut>
-                        <SignedIn>
+                        {isSignedIn ? (
                             <UserButton />
-                        </SignedIn>
+                        ) : (
+                            <>
+                                <a
+                                    href="/portal-mubes"
+                                    className="px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-white text-xs font-semibold font-[Inter,sans-serif] transition-colors no-underline"
+                                >
+                                    Masuk
+                                </a>
+                                <a
+                                    href="/portal-mubes?mode=signup"
+                                    className="px-3 py-1.5 rounded-lg bg-[#2E90FA] hover:bg-[#1570EF] text-white text-xs font-semibold font-[Inter,sans-serif] transition-colors no-underline"
+                                >
+                                    Daftar
+                                </a>
+                            </>
+                        )}
                     </div>
                 </div>
 
@@ -518,32 +520,31 @@ const Navbar = () => {
 
                 {/* Mobile Nav Links Sesuai Urutan Presisi */}
                 <div className="flex flex-col py-2">
-                    {/* Mobile Auth → Portal MUBES */}
+                    {/* Mobile Auth: <a> native ke portal MUBES */}
                     <div className="px-5 py-3 border-b border-gray-100 flex items-center justify-between">
-                        <SignedOut>
+                        {isSignedIn ? (
+                            <div className="flex items-center justify-between w-full">
+                                <span className="text-xs font-semibold text-gray-700 font-[Inter,sans-serif]">Akun Pengguna</span>
+                                <UserButton />
+                            </div>
+                        ) : (
                             <div className="flex items-center gap-2 w-full">
-                                <Link
+                                <a
                                     href="/portal-mubes"
                                     onClick={() => setMobileOpen(false)}
                                     className="flex-1 py-2 text-center rounded-lg border border-gray-200 text-[#1A1A1A] text-xs font-semibold font-[Inter,sans-serif] hover:bg-gray-50 active:bg-gray-100 transition-colors no-underline"
                                 >
                                     Masuk
-                                </Link>
-                                <Link
+                                </a>
+                                <a
                                     href="/portal-mubes?mode=signup"
                                     onClick={() => setMobileOpen(false)}
                                     className="flex-1 py-2 text-center rounded-lg bg-[#2E90FA] text-white text-xs font-semibold font-[Inter,sans-serif] hover:bg-[#1570EF] active:bg-[#1849A9] transition-colors no-underline"
                                 >
                                     Daftar
-                                </Link>
+                                </a>
                             </div>
-                        </SignedOut>
-                        <SignedIn>
-                            <div className="flex items-center justify-between w-full">
-                                <span className="text-xs font-semibold text-gray-700 font-[Inter,sans-serif]">Akun Pengguna</span>
-                                <UserButton />
-                            </div>
-                        </SignedIn>
+                        )}
                     </div>
 
                     {/* 1. HOME */}
