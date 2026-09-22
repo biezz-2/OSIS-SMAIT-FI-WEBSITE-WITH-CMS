@@ -31,7 +31,7 @@ export default function MubesLoginForm({ onSwitchToSignUp, onOpenHelp }: MubesLo
       await signIn.authenticateWithRedirect({
         strategy: 'oauth_google',
         redirectUrl: '/sso-callback',
-        redirectUrlComplete: '/',
+        redirectUrlComplete: '/portal-mubes',
       });
     } catch (err: any) {
       const msg =

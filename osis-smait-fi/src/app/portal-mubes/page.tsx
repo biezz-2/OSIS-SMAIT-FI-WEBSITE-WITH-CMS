@@ -29,13 +29,18 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function PortalMubesPage() {
+export default async function PortalMubesPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ mode?: string }>;
+}) {
   const access = await getMubesAccess();
+  const params = (await searchParams) || {};
+  const initialMode = params.mode === 'signup' ? 'signup' : 'login';
 
-  // Proteksi akses Sidang MUBES: Jika pengguna belum login atau belum disetujui,
-  // tampilkan portal autentikasi (MubesPortalView) tanpa membocorkan data LPJ
+  // Belum login / belum disetujui → form auth MUBES (tanpa data LPJ)
   if (!access.allowed) {
-    return <MubesPortalView initialMode="login" />;
+    return <MubesPortalView initialMode={initialMode} />;
   }
 
   const [mubesConfig, prokerGroups] = await Promise.all([
@@ -45,16 +50,11 @@ export default async function PortalMubesPage() {
 
   return (
     <main className="min-h-screen bg-white dark:bg-slate-950 flex flex-col justify-between selection:bg-amber-500/30 selection:text-amber-200">
-      {/* 1. Global Navbar OSIS (Sama seperti tampilan visitor) */}
+      {/* Navbar global hanya untuk peserta yang sudah terdaftar & approved */}
       <Navbar />
 
-      {/* 2. Hero Section Sidang Dinamis dari Strapi (Manageable: BG, Teks, Judul) */}
       <MubesPresentationHero initialData={mubesConfig} />
-
-      {/* 3. Area Presentasi Sidang & Ekstensi LPJ Per Program Kerja */}
       <MubesPresentationViewer initialGroups={prokerGroups} />
-
-      {/* 4. Global Footer OSIS */}
       <Footer />
     </main>
   );

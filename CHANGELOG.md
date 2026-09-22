@@ -6,6 +6,17 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.18] - 2026-09-22
+
+### 🐛 Perbaikan (Auth Portal MUBES)
+- **Navbar Masuk/Daftar**: tidak lagi membuka modal Clerk generik; mengarahkan ke `/portal-mubes` (login) dan `/portal-mubes?mode=signup` (daftar).
+- **Google OAuth login**: `redirectUrlComplete` diarahkan ke `/portal-mubes` (sebelumnya `/`).
+- **Shortcut Ctrl+Shift+M** di halaman proker: buka portal MUBES, bukan modal Clerk.
+- **`getMubesAccess`**: fallback baca `publicMetadata` via Clerk API jika claims JWT tidak memuat status/role.
+- **Navbar portal**: tetap hanya untuk sesi `approved`; banner MUBES hanya tampil setelah status approved.
+
+---
+
 ## [2.1.17] - 2026-09-22
 
 ### ✨ Fitur (LPJ MUBES — Bagian Dinamis)

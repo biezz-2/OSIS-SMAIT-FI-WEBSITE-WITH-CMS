@@ -5,7 +5,8 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { fetchProgramKerjaFromStrapi, getStrapiMediaUrl } from '@/lib/strapi';
 import { useImageQuality } from '@/context/ImageQualityContext';
-import { useClerk, useUser } from '@clerk/nextjs';
+import { useUser } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
 import MubesLpjSection from '@/components/program-kerja/MubesLpjSection';
 
 export interface ChairPerson {
@@ -232,7 +233,7 @@ export default function ProgramKerjaDetailPage({ slug, initialData }: { slug: st
   const [selectedMedia, setSelectedMedia] = useState<{ url: string; isVideo: boolean; caption?: string } | null>(null);
   const { getOptimizedImageUrl } = useImageQuality();
 
-  const { openSignIn } = useClerk();
+  const router = useRouter();
   const { isSignedIn } = useUser();
   const [mubesPayload, setMubesPayload] = useState<{ allowed: boolean; role: string | null; lpj: any } | null>(null);
 
@@ -243,12 +244,12 @@ export default function ProgramKerjaDetailPage({ slug, initialData }: { slug: st
       }
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'M' || e.key === 'm')) {
         e.preventDefault();
-        openSignIn();
+        router.push('/portal-mubes');
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [openSignIn]);
+  }, [router]);
 
   useEffect(() => {
     if (!isSignedIn || !slug) {

@@ -14,6 +14,8 @@ export default function MubesSessionBanner() {
 
   const metadata = (user?.publicMetadata || {}) as { role?: string; status?: string; is_shared_account?: boolean };
   const isApproved = metadata.status === 'approved';
+  // Banner MUBES hanya untuk akun yang sudah terdaftar & disetujui di sistem
+  if (!isApproved) return null;
   const role = metadata.role || 'member';
 
   return (
@@ -64,10 +66,10 @@ export default function MubesSessionBanner() {
 
           <div className="flex items-center justify-between gap-2 pt-1">
             <Link
-              href="/program-kerja"
+              href="/portal-mubes"
               className="text-[11px] text-[#E0BA7A] hover:text-[#F2D194] underline underline-offset-2 transition-colors"
             >
-              LPJ Proker →
+              Portal MUBES →
             </Link>
             <button
               type="button"

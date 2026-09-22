@@ -70,7 +70,7 @@ Agents **must not** enable Public `find` on any of the above “for convenience.
 | Gate helper | `getMubesAccess()` in `osis-smait-fi/src/lib/mubes-access.ts` | Middleware on `/mubes/*` only |
 | Role source at request time | **`sessionClaims.publicMetadata`** (`status`, `role`) | Live query to `akses-user` on every LPJ GET |
 | Whitelist DB | Strapi `api::akses-user` + Clerk webhook + lifecycle sync | Email-only whitelist inside BFF |
-| Operator UI login | `/portal-mubes` forms + `Ctrl+Shift+M` → Clerk `openSignIn()` | `/mubes/login`, `MubesLoginModal` + Strapi password |
+| Operator UI login | `/portal-mubes` forms + Navbar Masuk/Daftar + `Ctrl+Shift+M` → `/portal-mubes` | `/mubes/login`, modal Clerk generik, `MubesLoginModal` + Strapi password |
 
 ### `getMubesAccess()` rules (code-exact)
 
