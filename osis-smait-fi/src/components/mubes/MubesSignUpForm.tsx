@@ -32,6 +32,24 @@ export default function MubesSignUpForm({ onSwitchToLogin, onOpenHelp }: MubesSi
   const [resendSuccess, setResendSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const finishSignUp = async (sessionId?: string | null) => {
+    if (sessionId && setActive) {
+      await setActive({ session: sessionId });
+      fetch('/api/auth/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ roleHint: role }),
+      }).catch(() => {});
+      router.push('/portal-mubes');
+      return true;
+    }
+    // Session / setActive tidak tersedia — arahkan ke form login
+    setErrorMessage(null);
+    setPendingVerification(false);
+    onSwitchToLogin();
+    return false;
+  };
+
   const handleResendCode = async () => {
     if (!isLoaded || isResending) return;
     setIsResending(true);
@@ -39,14 +57,34 @@ export default function MubesSignUpForm({ onSwitchToLogin, onOpenHelp }: MubesSi
     setResendSuccess(false);
 
     try {
+      // Jika verifikasi sudah selesai, jangan kirim ulang — selesaikan sesi
+      if (signUp.status === 'complete' && signUp.createdSessionId) {
+        await finishSignUp(signUp.createdSessionId);
+        return;
+      }
       await signUp.prepareEmailAddressVerification({ strategy: 'email_code' });
       setResendSuccess(true);
       setTimeout(() => setResendSuccess(false), 5000);
     } catch (err: any) {
+      const code = err?.errors?.[0]?.code || '';
       const msg =
         err?.errors?.[0]?.longMessage ||
         err?.errors?.[0]?.message ||
         'Gagal mengirim ulang kode. Silakan coba lagi.';
+      const lower = String(msg).toLowerCase();
+      if (
+        code === 'verification_already_verified' ||
+        lower.includes('already been verified') ||
+        lower.includes('already verified')
+      ) {
+        if (signUp.status === 'complete' || signUp.createdSessionId) {
+          await finishSignUp(signUp.createdSessionId);
+          return;
+        }
+        setErrorMessage('Email sudah terverifikasi. Silakan masuk dengan akun Anda.');
+        setTimeout(() => onSwitchToLogin(), 1200);
+        return;
+      }
       setErrorMessage(msg);
     } finally {
       setIsResending(false);
@@ -128,28 +166,67 @@ export default function MubesSignUpForm({ onSwitchToLogin, onOpenHelp }: MubesSi
     setErrorMessage(null);
 
     try {
+      // Sudah complete dari percobaan sebelumnya (double-submit / reload)
+      if (signUp.status === 'complete' && signUp.createdSessionId) {
+        await finishSignUp(signUp.createdSessionId);
+        return;
+      }
+
       const completeSignUp = await signUp.attemptEmailAddressVerification({
         code,
       });
 
       if (completeSignUp.status === 'complete') {
-        await setActive({ session: completeSignUp.createdSessionId });
-        fetch('/api/auth/sync', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            roleHint: role,
-          }),
-        }).catch(() => {});
-        router.push('/portal-mubes');
-      } else {
-        setErrorMessage('Verifikasi belum selesai. Silakan periksa kembali kode Anda.');
+        await finishSignUp(completeSignUp.createdSessionId);
+        return;
       }
+
+      // Missing requirements (mis. phone) — coba reload status
+      try {
+        const reloaded = await signUp.reload();
+        if (reloaded.status === 'complete' && reloaded.createdSessionId) {
+          await finishSignUp(reloaded.createdSessionId);
+          return;
+        }
+      } catch {
+        /* ignore reload failure */
+      }
+
+      setErrorMessage('Verifikasi belum selesai. Silakan periksa kembali kode Anda.');
     } catch (err: any) {
+      const errCode = err?.errors?.[0]?.code || '';
       const msg =
         err?.errors?.[0]?.longMessage ||
         err?.errors?.[0]?.message ||
         'Kode verifikasi salah atau kedaluwarsa.';
+      const lower = String(msg).toLowerCase();
+
+      // Clerk: OTP sudah dipakai / verifikasi sudah selesai
+      if (
+        errCode === 'verification_already_verified' ||
+        lower.includes('already been verified') ||
+        lower.includes('already verified') ||
+        lower.includes('verification has already')
+      ) {
+        try {
+          const reloaded = await signUp.reload();
+          if (reloaded.status === 'complete' && reloaded.createdSessionId) {
+            await finishSignUp(reloaded.createdSessionId);
+            return;
+          }
+          if (signUp.createdSessionId) {
+            await finishSignUp(signUp.createdSessionId);
+            return;
+          }
+        } catch {
+          /* fall through */
+        }
+        // Akun sudah valid di Clerk — arahkan ke login slider
+        setErrorMessage('Email sudah terverifikasi. Mengalihkan ke halaman masuk…');
+        setTimeout(() => onSwitchToLogin(), 900);
+        return;
+      }
+
       setErrorMessage(msg);
     } finally {
       setIsLoading(false);

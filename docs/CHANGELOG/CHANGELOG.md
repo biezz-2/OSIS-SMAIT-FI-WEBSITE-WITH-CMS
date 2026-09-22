@@ -6,6 +6,13 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.38] - 2026-09-22
+
+### Fixed
+- **MubesLoginForm UX**: banner “Belum punya akun?” + CTA **Daftar Sekarang →** saat identifier tidak ditemukan.
+- **MubesSignUpForm OTP**: tangani verifikasi sudah selesai (“already been verified”) → auto-login ke portal MUBES atau alih ke form login; sinkron Strapi via `/api/auth/sync`.
+
+
 ## [2.1.37] - 2026-09-22
 
 ### Fixed

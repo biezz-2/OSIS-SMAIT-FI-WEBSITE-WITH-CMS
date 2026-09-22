@@ -32,6 +32,8 @@ export default function MubesLoginForm({ onSwitchToSignUp, onOpenHelp }: MubesLo
   const [isResending, setIsResending] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  /** True when Clerk reports identifier not found → show Sign Up CTA */
+  const [needsSignUp, setNeedsSignUp] = useState(false);
 
   const handleGoogleSignIn = async () => {
     if (!isLoaded) return;
@@ -60,6 +62,7 @@ export default function MubesLoginForm({ onSwitchToSignUp, onOpenHelp }: MubesLo
     if (!isLoaded) return;
     setIsLoading(true);
     setErrorMessage(null);
+    setNeedsSignUp(false);
 
     try {
       if (authMethod === 'email_code') {
@@ -145,12 +148,15 @@ export default function MubesLoginForm({ onSwitchToSignUp, onOpenHelp }: MubesLo
         code === 'form_identifier_not_found' ||
         lower.includes("couldn't find your account") ||
         lower.includes('could not find') ||
-        lower.includes('identifier not found')
+        lower.includes('identifier not found') ||
+        lower.includes('no user found')
       ) {
+        setNeedsSignUp(true);
         setErrorMessage(
-          'Akun belum terdaftar. Klik "Ajukan Akses Halaman" di bawah untuk mendaftar terlebih dahulu, lalu tunggu persetujuan Presidium.'
+          'Akun belum terdaftar di portal MUBES. Daftar dulu lewat "Ajukan Akses Halaman", lalu tunggu persetujuan Presidium/BPH sebelum login.'
         );
       } else {
+        setNeedsSignUp(false);
         setErrorMessage(raw);
       }
     } finally {
@@ -260,14 +266,47 @@ export default function MubesLoginForm({ onSwitchToSignUp, onOpenHelp }: MubesLo
         <div className="justify-start text-[#B8AB99] text-xs font-normal font-['Inter'] text-center">
           {pendingVerification
             ? `Masukkan kode verifikasi yang dikirim ke ${targetEmail || identifier}`
-            : 'Masuk untuk memverifikasi dan mengakses halaman.'}
+            : 'Masuk hanya jika akun sudah pernah diajukan & disetujui Presidium.'}
         </div>
       </div>
 
+      {/* First-time user notice */}
+      {!pendingVerification && (
+        <div className="relative z-10 self-stretch p-3 rounded-lg bg-amber-950/50 backdrop-blur-md border border-[#D8B270]/35 text-[#F2D194] text-[11px] sm:text-xs leading-relaxed font-['Inter'] shadow-[0_4px_12px_rgba(0,0,0,0.25)]">
+          <p className="font-semibold text-[#E0BA7A] mb-1">Belum punya akun?</p>
+          <p className="text-[#D1BA94]/95">
+            Jangan login dulu. Klik tombol{' '}
+            <button
+              type="button"
+              onClick={onSwitchToSignUp}
+              className="underline underline-offset-2 text-[#F9EFDB] hover:text-white font-semibold cursor-pointer"
+            >
+              Ajukan Akses Halaman →
+            </button>{' '}
+            di bawah untuk mendaftar. Setelah Presidium menyetujui, barulah bisa masuk di sini.
+          </p>
+        </div>
+      )}
+
       {/* Error Feedback */}
       {errorMessage && (
-        <div className="relative z-10 self-stretch p-3 rounded-lg bg-red-950/70 backdrop-blur-md border border-red-800/60 text-red-200 text-xs text-center font-['Inter'] shadow-[0_4px_12px_rgba(0,0,0,0.3)]">
-          {errorMessage}
+        <div
+          className={`relative z-10 self-stretch p-3 rounded-lg backdrop-blur-md text-xs text-center font-['Inter'] shadow-[0_4px_12px_rgba(0,0,0,0.3)] ${
+            needsSignUp
+              ? 'bg-amber-950/70 border border-[#D8B270]/50 text-[#F2D194]'
+              : 'bg-red-950/70 border border-red-800/60 text-red-200'
+          }`}
+        >
+          <p>{errorMessage}</p>
+          {needsSignUp && (
+            <button
+              type="button"
+              onClick={onSwitchToSignUp}
+              className="mt-2.5 w-full py-2 px-3 rounded-lg bg-gradient-to-r from-[#E3BD7D] via-[#C99E5B] to-[#997038] text-[#1E160C] text-xs font-bold font-['Cinzel'] tracking-wide hover:brightness-110 active:scale-[0.99] cursor-pointer transition-all"
+            >
+              Daftar Sekarang →
+            </button>
+          )}
         </div>
       )}
 
@@ -339,6 +378,7 @@ export default function MubesLoginForm({ onSwitchToSignUp, onOpenHelp }: MubesLo
               onClick={() => {
                 setAuthMethod('password');
                 setErrorMessage(null);
+                setNeedsSignUp(false);
               }}
               className={`flex-1 py-1.5 text-xs font-semibold font-['Inter'] rounded-md transition-all cursor-pointer ${
                 authMethod === 'password'
@@ -353,6 +393,7 @@ export default function MubesLoginForm({ onSwitchToSignUp, onOpenHelp }: MubesLo
               onClick={() => {
                 setAuthMethod('email_code');
                 setErrorMessage(null);
+                setNeedsSignUp(false);
               }}
               className={`flex-1 py-1.5 text-xs font-semibold font-['Inter'] rounded-md transition-all cursor-pointer ${
                 authMethod === 'email_code'
@@ -515,16 +556,21 @@ export default function MubesLoginForm({ onSwitchToSignUp, onOpenHelp }: MubesLo
         <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#D8B270]/30 to-transparent" />
       </div>
 
-      {/* Secondary Button */}
-      <button
-        type="button"
-        onClick={onSwitchToSignUp}
-        className="relative z-10 self-stretch h-12 bg-white/[0.02] hover:bg-[#E0BA7A]/[0.08] active:scale-[0.99] rounded-lg border border-[#D8B270]/30 hover:border-[#D8B270]/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] inline-flex justify-center items-center overflow-hidden transition-all duration-200 cursor-pointer"
-      >
-        <span className="justify-start text-[#F2D194] text-sm font-bold font-['Cinzel'] tracking-wide">
-          Ajukan Akses Halaman →
-        </span>
-      </button>
+      {/* Secondary: first-time registration */}
+      <div className="relative z-10 self-stretch flex flex-col gap-1.5">
+        <p className="text-center text-[10px] sm:text-[11px] text-[#A59989] font-['Inter']">
+          Anggota INTI / OSIS yang belum pernah mendaftar wajib ajukan akses dulu.
+        </p>
+        <button
+          type="button"
+          onClick={onSwitchToSignUp}
+          className="self-stretch h-12 bg-white/[0.02] hover:bg-[#E0BA7A]/[0.08] active:scale-[0.99] rounded-lg border border-[#D8B270]/30 hover:border-[#D8B270]/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] inline-flex justify-center items-center overflow-hidden transition-all duration-200 cursor-pointer"
+        >
+          <span className="justify-start text-[#F2D194] text-sm font-bold font-['Cinzel'] tracking-wide">
+            Ajukan Akses Halaman →
+          </span>
+        </button>
+      </div>
     </div>
   );
 }
