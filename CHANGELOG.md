@@ -6,24 +6,16 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
-## [2.1.19] - 2026-09-22
-
-### 🐛 Perbaikan (Deploy Auth Portal MUBES)
-- **Clerk URL kustom**: `signInUrl` / `signUpUrl` diarahkan ke `/portal-mubes` agar komponen Clerk tidak membuka Account Portal `accounts.dev`.
-- **Navbar Masuk/Daftar**: `<a href="/portal-mubes">` native, tidak dibungkus `SignedOut`/`SignInButton` (handshake Clerk ke `accounts.dev`).
-- **Produksi**: rebuild Next.js + restart PM2 `osis-next-frontend`.
-- **SW cache** `osis-v4` agar JS navbar lama tidak tertahan di browser.
-
----
-
-## [2.1.18] - 2026-09-22
+## [2.1.40] - 2026-09-22
 
 ### 🐛 Perbaikan (Auth Portal MUBES)
-- **Navbar Masuk/Daftar**: tidak lagi membuka modal Clerk generik; mengarahkan ke `/portal-mubes` (login) dan `/portal-mubes?mode=signup` (daftar).
-- **Google OAuth login**: `redirectUrlComplete` diarahkan ke `/portal-mubes` (sebelumnya `/`).
-- **Shortcut Ctrl+Shift+M** di halaman proker: buka portal MUBES, bukan modal Clerk.
-- **`getMubesAccess`**: fallback baca `publicMetadata` via Clerk API jika claims JWT tidak memuat status/role.
-- **Navbar portal**: tetap hanya untuk sesi `approved`; banner MUBES hanya tampil setelah status approved.
+- **Navbar Masuk/Daftar**: `<a href="/portal-mubes">` native (login) dan `/portal-mubes?mode=signup` (daftar) — bukan modal Clerk / Account Portal `accounts.dev`.
+- **Clerk URL kustom**: `signInUrl` / `signUpUrl` / force-redirect diarahkan ke `/portal-mubes`.
+- **Google OAuth login**: `redirectUrlComplete` ke `/portal-mubes` (sebelumnya `/`).
+- **Shortcut Ctrl+Shift+M** di halaman proker: buka portal MUBES.
+- **`getMubesAccess`**: fallback Clerk API jika JWT tanpa `publicMetadata`.
+- **Navbar + banner MUBES**: hanya setelah status `approved`.
+- **Produksi**: rebuild Next.js + restart PM2 `osis-next-frontend`; SW cache `osis-v4`.
 
 ---
 
