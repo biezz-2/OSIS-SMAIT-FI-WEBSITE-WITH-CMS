@@ -6,6 +6,15 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.41] - 2026-09-22
+
+### 📚 Pembaruan Dokumentasi & Laporan Analisis Kode Komprehensif
+- **Laporan Analisis Kode Komprehensif Baru**: Membuat laporan audit komprehensif `docs/reports/ANALISIS_KODE_KOMPREHENSIF_AGORAACTA.md` yang mencakup arsitektur monorepo, sistem keamanan MUBES Dual-Layer, audit trail middleware Strapi v5, dan strategi rendering Next.js 16.
+- **Pembaruan Sistem & Arsitektur (`docs/SYSTEM_ANALYSIS.md` & `docs/ARCHITECTURE.md`)**: Menyinkronkan dokumen analisis arsitektur dengan status terkini (Next.js 16.2, Strapi 5.51, Clerk Auth, dan PostgreSQL 16).
+- **Sinkronisasi Changelog Workspace**: Menyetarakan catatan rilis di `CHANGELOG.md` dan `docs/CHANGELOG/CHANGELOG.md`.
+
+---
+
 ## [2.1.40] - 2026-09-22
 
 ### 🐛 Perbaikan (Auth Portal MUBES)

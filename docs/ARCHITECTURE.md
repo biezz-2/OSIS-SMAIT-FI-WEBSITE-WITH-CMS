@@ -1,8 +1,8 @@
 # 🏛️ Arsitektur Sistem & Panduan Teknis
 ## Portal Web OSIS SMAIT Fithrah Insani (Agora Acta 2025)
 
-> **Versi Dokumen**: 3.0.0
-> **Terakhir Diperbarui**: 06 September 2026
+> **Versi Dokumen**: 3.1.0
+> **Terakhir Diperbarui**: 22 September 2026
 
 Dokumen ini mendokumentasikan keputusan arsitektural, tata letak kode, sistem styling, integrasi **Strapi Headless CMS v5 (PostgreSQL 16)**, **Sistem MUBES Dual-Layer (Clerk + BFF)**, arsitektur rendering 3D, serta mekanisme *caching* untuk portal web **OSIS SMAIT Fithrah Insani (Agora Acta 2025)**.
 
