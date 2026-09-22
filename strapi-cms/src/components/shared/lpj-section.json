@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_shared_lpj_sections",
+  "info": {
+    "displayName": "LPJ Section",
+    "description": "Section tambahan untuk dokumen pertanggungjawaban"
+  },
+  "options": {},
+  "attributes": {
+    "judul": {
+      "type": "string",
+      "required": true
+    },
+    "isi": {
+      "type": "richtext",
+      "required": true
+    }
+  }
+}

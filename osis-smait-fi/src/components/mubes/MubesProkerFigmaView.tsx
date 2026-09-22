@@ -226,12 +226,13 @@ export default function MubesProkerFigmaView({
               </div>
               <div>
                 <span className="text-xs font-bold uppercase tracking-wider text-amber-600 block">
-                  Sidang Komisi Pertanggungjawaban
+                  {lpjAttrs.label_judul_sidang || 'Sidang Komisi Pertanggungjawaban'}
                 </span>
                 <h2 className="text-2xl font-bold font-serif text-[#141F2E]">
-                  Dokumen Evaluasi & Realisasi Anggaran
+                  {lpjAttrs.label_dokumen_evaluasi || 'Dokumen Evaluasi & Realisasi Anggaran'}
                 </h2>
               </div>
+            </div>
             </div>
 
             {/* Status Pengesahan Badge */}
@@ -298,7 +299,7 @@ export default function MubesProkerFigmaView({
               {/* Rangkuman Anggaran Proker */}
               <div className="w-full bg-white p-5 rounded-[20px] border border-[#EAECEF] shadow-xs flex flex-col gap-3">
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                  Total Realisasi Anggaran
+                  {lpjAttrs.label_total_anggaran || 'Total Realisasi Anggaran'}
                 </span>
                 <div className="text-2xl font-black text-[#141F2E] font-serif">
                   {formatCurrency(lpjAttrs.realisasi_anggaran)}
@@ -370,6 +371,18 @@ export default function MubesProkerFigmaView({
                   {lpjAttrs.evaluasi_internal || pAttrs.evaluasi_deskripsi || 'Evaluasi menyeluruh terhadap efisiensi waktu, partisipasi peserta, dan kesesuaian anggaran sidang.'}
                 </div>
               </div>
+
+              {/* Additional Dynamic Sections from Strapi */}
+              {Array.isArray(lpjAttrs.additional_sections) && lpjAttrs.additional_sections.map((section: any, idx: number) => (
+                <div key={idx} className="flex flex-col gap-2.5">
+                  <h3 className="text-[24px] leading-[32px] font-bold text-[#141F2E] font-serif">
+                    {idx + 6}. {section.judul || section.attributes?.judul || 'Section Tambahan'}
+                  </h3>
+                  <div className="text-[15px] leading-[24px] text-[#596678] whitespace-pre-line">
+                    {section.isi || section.attributes?.isi || ''}
+                  </div>
+                </div>
+              ))}
 
               {/* Point 6: Kendala & Solusi (Jika ada) */}
               {lpjAttrs.kendala_solusi && (

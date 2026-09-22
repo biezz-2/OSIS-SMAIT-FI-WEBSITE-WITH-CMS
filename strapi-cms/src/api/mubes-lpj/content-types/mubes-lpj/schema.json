@@ -64,6 +64,23 @@
       ],
       "default": "draft",
       "required": true
+    },
+    "label_judul_sidang": {
+      "type": "string",
+      "default": "Sidang Komisi Pertanggungjawaban"
+    },
+    "label_dokumen_evaluasi": {
+      "type": "string",
+      "default": "Dokumen Evaluasi & Realisasi Anggaran"
+    },
+    "label_total_anggaran": {
+      "type": "string",
+      "default": "Total Realisasi Anggaran"
+    },
+    "additional_sections": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.lpj-section"
     }
   }
 }
