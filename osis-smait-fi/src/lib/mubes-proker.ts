@@ -160,6 +160,12 @@ export const FALLBACK_MUBES_PROKER: MubesProgramKerja[] = [
     lokasi: 'SMAIT Fithrah Insani',
     sekbid_nomor: 1,
     sekbid_judul: 'Kerohanian',
+    lpj: {
+      id: 1,
+      realisasi_anggaran: 434000,
+      sumber_dana: 'Kas OSIS / Proposal (rancangan dokumen)',
+      status_pengesahan: 'ditinjau',
+    },
   },
 
   // Sekbid 2: Kaderisasi
@@ -217,6 +223,12 @@ export const FALLBACK_MUBES_PROKER: MubesProgramKerja[] = [
     lokasi: 'SMAIT Fithrah Insani',
     sekbid_nomor: 2,
     sekbid_judul: 'Kaderisasi',
+    lpj: {
+      id: 3,
+      realisasi_anggaran: 318000,
+      sumber_dana: 'Swadaya / pemasukan acara Guidelight',
+      status_pengesahan: 'ditinjau',
+    },
   },
   {
     id: 118527,
@@ -230,7 +242,7 @@ export const FALLBACK_MUBES_PROKER: MubesProgramKerja[] = [
     sekbid_judul: 'Kaderisasi',
     lpj: {
       id: 2,
-      realisasi_anggaran: 1,
+      // nominal total penggalangan belum tercantum di rekap LPJ — biarkan kosong
       sumber_dana: 'Kas OSIS & Swadaya',
       evaluasi_internal: 'Laporan penyaluran dana telah disusun dan diverifikasi panitia.',
       status_pengesahan: 'draft',
@@ -395,6 +407,12 @@ export const FALLBACK_MUBES_PROKER: MubesProgramKerja[] = [
     lokasi: 'SMA IT FITHRAH INSANI',
     sekbid_nomor: 5,
     sekbid_judul: 'Minat & Bakat',
+    lpj: {
+      id: 4,
+      realisasi_anggaran: 548000,
+      sumber_dana: 'Kas OSIS / Kepanitiaan Classmeet',
+      status_pengesahan: 'ditinjau',
+    },
   },
   {
     id: 118549,
@@ -542,6 +560,12 @@ export const FALLBACK_MUBES_PROKER: MubesProgramKerja[] = [
     lokasi: 'SMA IT FITHRAH INSANI',
     sekbid_nomor: 7,
     sekbid_judul: 'Kewirausahaan',
+    lpj: {
+      id: 5,
+      realisasi_anggaran: 125000,
+      sumber_dana: 'Kas OSIS / Kewirausahaan',
+      status_pengesahan: 'ditinjau',
+    },
   },
   {
     id: 118557,

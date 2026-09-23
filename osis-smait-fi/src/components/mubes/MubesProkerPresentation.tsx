@@ -208,30 +208,34 @@ function AnggaranNotaBlock({ proker }: { proker: MubesProgramKerja }) {
         <DollarSign className="w-4 h-4" />
         Anggaran &amp; Nota
       </h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {(hasAnggaran || hasSumber) && (
-          <>
+      {(hasAnggaran || hasSumber) && (
+        <div
+          className={`grid gap-3 ${
+            hasAnggaran && hasSumber ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'
+          }`}
+        >
+          {hasAnggaran ? (
             <div className="bg-white/70 dark:bg-slate-900/40 border border-emerald-200/60 dark:border-emerald-800/40 p-4 rounded-xl">
               <span className="text-xs text-emerald-700 dark:text-emerald-400 font-bold uppercase block">
                 Realisasi Anggaran
               </span>
               <span className="text-xl sm:text-2xl font-bold font-mono text-emerald-900 dark:text-emerald-200 mt-1 block">
-                {hasAnggaran
-                  ? `Rp ${Number(lpj.realisasi_anggaran).toLocaleString('id-ID')}`
-                  : 'Rp 0 / Swadaya'}
+                {`Rp ${Number(lpj.realisasi_anggaran).toLocaleString('id-ID')}`}
               </span>
             </div>
+          ) : null}
+          {hasSumber ? (
             <div className="bg-white/70 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700 p-4 rounded-xl">
               <span className="text-xs text-slate-500 dark:text-slate-400 font-bold uppercase block">
                 Sumber Dana
               </span>
               <span className="text-base font-bold text-slate-800 dark:text-slate-200 mt-1 block break-words">
-                {lpj.sumber_dana || 'Kas OSIS / Sekolah'}
+                {lpj.sumber_dana}
               </span>
             </div>
-          </>
-        )}
-      </div>
+          ) : null}
+        </div>
+      )}
       {hasNota ? (
         <div>
           <h4 className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2 flex items-center gap-2">

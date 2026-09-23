@@ -6,6 +6,15 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.52] - 2026-09-23
+
+### ✨ UX & Data (MUBES — kolom Anggaran per proker)
+- **Kartu proker** di `/portal-mubes`: kolom **Anggaran** hanya tampil jika `lpj.realisasi_anggaran > 0`; jika kosong, kolom disembunyikan (hanya Pengesahan).
+- **Presentasi sidang** (`AnggaranNotaBlock`): Realisasi / Sumber Dana / Nota masing-masing hide jika kosong — tanpa fallback palsu “Rp 0 / Swadaya”.
+- **Strapi `mubes-lpj`** (🏛️ [MUBES] LPJ & Anggaran Proker): seed pengeluaran dari dokumen LPJ/Proposal:
+  - `ramadhan-ceria` Rp434.000 · `phbn` Rp318.000 · `classmeet` Rp548.000 · `Direct-Marketing` Rp125.000
+- Script: `scripts/seed-mubes-anggaran.mjs`. Manage lanjutan lewat Strapi Admin pada entry LPJ masing-masing proker.
+
 ## [2.1.51] - 2026-09-23
 
 ### 🎨 UX (MUBES PJ profile + text selection)

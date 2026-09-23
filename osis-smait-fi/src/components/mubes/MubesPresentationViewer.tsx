@@ -111,6 +111,10 @@ export default function MubesPresentationViewer({
               const fullHref = proker.slug
                 ? `/portal-mubes/proker/${encodeURIComponent(proker.slug)}`
                 : null;
+              const rawAnggaran = proker.lpj?.realisasi_anggaran;
+              const anggaranNum =
+                rawAnggaran != null && rawAnggaran !== '' ? Number(rawAnggaran) : NaN;
+              const hasAnggaran = Number.isFinite(anggaranNum) && anggaranNum > 0;
 
               return (
                 <div
@@ -166,17 +170,21 @@ export default function MubesPresentationViewer({
                         </div>
                       )}
 
-                      <div className="mt-2 pt-3 border-t border-slate-100 dark:border-slate-700/60 grid grid-cols-2 gap-2 text-xs">
-                        <div className="bg-slate-50 dark:bg-slate-900/50 p-2.5 rounded-xl">
-                          <span className="text-[10px] text-slate-400 uppercase font-semibold block">
-                            Anggaran
-                          </span>
-                          <span className="font-bold text-slate-800 dark:text-slate-200">
-                            {proker.lpj?.realisasi_anggaran
-                              ? `Rp ${Number(proker.lpj.realisasi_anggaran).toLocaleString('id-ID')}`
-                              : 'Tercatat di LPJ'}
-                          </span>
-                        </div>
+                      <div
+                        className={`mt-2 pt-3 border-t border-slate-100 dark:border-slate-700/60 grid gap-2 text-xs ${
+                          hasAnggaran ? 'grid-cols-2' : 'grid-cols-1'
+                        }`}
+                      >
+                        {hasAnggaran ? (
+                          <div className="bg-emerald-50/80 dark:bg-emerald-950/30 p-2.5 rounded-xl border border-emerald-200/50 dark:border-emerald-800/40">
+                            <span className="text-[10px] text-emerald-700 dark:text-emerald-400 uppercase font-semibold block">
+                              Anggaran
+                            </span>
+                            <span className="font-bold font-mono text-emerald-900 dark:text-emerald-200">
+                              {`Rp ${anggaranNum.toLocaleString('id-ID')}`}
+                            </span>
+                          </div>
+                        ) : null}
                         <div className="bg-slate-50 dark:bg-slate-900/50 p-2.5 rounded-xl">
                           <span className="text-[10px] text-slate-400 uppercase font-semibold block">
                             Pengesahan
