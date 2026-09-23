@@ -1,0 +1,194 @@
+{
+  "generated_at": "2026-09-23T05:14:03.835Z",
+  "api": "http://127.0.0.1:1337",
+  "ok": 7,
+  "fail": 0,
+  "total": 7,
+  "results": [
+    {
+      "slug": "tilawah-osis",
+      "status": "ok",
+      "proker_documentId": "k6f16glv7jhal5u4lu1cvozf",
+      "lpj_documentId": "opbcadrff19nh9jsh8n5v5vp",
+      "published_lpj": true,
+      "published_proker": true,
+      "error": null,
+      "sections_preview": {
+        "tujuan_len": 181,
+        "teknis_len": 285,
+        "capaian_len": 246,
+        "evaluasi_len": 61
+      },
+      "publish_lpj_error": null,
+      "publish_proker_error": null,
+      "evaluasi_deskripsi_len": 61,
+      "verbatim": {
+        "tujuan": "Bertujuan memperbanyak dan memperlancar tilawah Al-Qur'an OSIS SMA IT Fithrah Insani\nTarget: Membuat OSIS SMA IT Fithrah Insani menjadi lebih meningkatkan interaksi dengan Al-Qur'an",
+        "teknis": "Online: Setiap hari, 06.00–19.00; Offline: Rapat umum, menyesuaikan jadwal rapat umum\nProposal (T1): Setiap anggota OSIS mengisi daftar hadir melalui Google Form serta mencatat tercapai/tidaknya target tilawah per hari; diwajibkan tilawah sejak pagi (Senin–Jumat, 17–21 November 2025).",
+        "capaian": "Memenuhi target karena membuat pengurus OSIS dapat menambah tilawah bacaan. Rekapitulasi 1 Januari – 23 Agustus mencakup seluruh pengurus (contoh: Rizqy Muhammad Zarkasy 275 hal, Zalfa Nur Afifa Zakauha 302 hal, Adhiena Zahra Rizkya 78 hal, dst.)",
+        "evaluasi": "-(tidak terisi pada dokumen LPJ untuk Evaluasi/Solusi TILSIS)",
+        "evaluasi_deskripsi": "-(tidak terisi pada dokumen LPJ untuk Evaluasi/Solusi TILSIS)"
+      },
+      "verified_published_match": true
+    },
+    {
+      "slug": "takhosus",
+      "status": "ok",
+      "proker_documentId": "txufqdex3nmhbwqagic4gcmz",
+      "lpj_documentId": "tbehaweomg89jcygnei9bykd",
+      "published_lpj": true,
+      "published_proker": true,
+      "error": null,
+      "sections_preview": {
+        "tujuan_len": 96,
+        "teknis_len": 165,
+        "capaian_len": 272,
+        "evaluasi_len": 345
+      },
+      "publish_lpj_error": null,
+      "publish_proker_error": null,
+      "evaluasi_deskripsi_len": 250,
+      "verbatim": {
+        "tujuan": "Menambah dan menguatkan hafalan Al-Qur'an secara intensif hingga mencapai target yang diinginkan",
+        "teknis": "Fokus pada intensitas hafalan dan penguasaan mendalam terhadap Al-Qur'an melalui metode yang terstruktur dan terarah; pelaksanaan Selasa–Kamis (27 Januari 2026 dst.)",
+        "capaian": "Kegiatan terlaksana sebanyak 41 kali. Berdasarkan kuesioner dari 184 responden: 40,2% setuju, 28,8% sangat setuju, 22,3% netral/ragu-ragu, 6% tidak setuju, 2,7% sangat tidak setuju bahwa program Takhosus dapat membantu siswa-siswi menambah dan muraja'ah hafalan Al-Qur'an.",
+        "evaluasi": "EVALUASI\n(1) Daftar hadir belum di print saat Takhosus; (2) Banyak siswa/i masih terlambat datang ke masjid; (3) Waktu takhosus bertabrakan dengan proker/kegiatan lain.\nSOLUSI\n(1) Print daftar hadir sebelum kegiatan; (2) Mengingatkan kembali bahwa takhosus dilaksanakan pukul 06.30 WIB; (3) Menyesuaikan lagi waktu takhosus dengan kegiatan lain.",
+        "evaluasi_deskripsi": "EVALUASI (1) Daftar hadir belum di print saat Takhosus; (2) Banyak siswa/i masih terlambat datang ke masjid; (3) Waktu takhosus bertabrakan dengan proker/kegiatan lain. SOLUSI (1) Print daftar hadir sebelum kegiatan; (2) Mengingatkan kembali bahwa ta"
+      },
+      "verified_published_match": true
+    },
+    {
+      "slug": "pendampingan-rohis",
+      "status": "ok",
+      "proker_documentId": "kytb0rcpjmy3fwpb6ibb9p4w",
+      "lpj_documentId": "rlck518uo9g8w26uy6xmftwj",
+      "published_lpj": true,
+      "published_proker": true,
+      "error": null,
+      "sections_preview": {
+        "tujuan_len": 223,
+        "teknis_len": 330,
+        "capaian_len": 253,
+        "evaluasi_len": 28
+      },
+      "publish_lpj_error": null,
+      "publish_proker_error": null,
+      "evaluasi_deskripsi_len": 28,
+      "verbatim": {
+        "tujuan": "Dengan adanya proker ini siswa/i menumbuhkan semangat religius dan kepedulian sosial siswa melalui kegiatan keagamaan yang rutin dan aplikatif\nTarget: Meningkatkan pemahaman dan wawasan keislaman siswa melalui program rohis",
+        "teknis": "AL-KAHFI (Jumat pengondisian pagi...); ISLAMIC OF THE MONTH (IOTM, Jumat pekan ke-4...); KEAKHWATAN (Jumat setelah Salat Dzuhur...); PENGELOLAAN INFAK (tiap Jumat pekan ke-4...).\nProposal: Al-Kahfi Jumat 06.45–06.55 WIB; IOTM Jumat 06.45–07.00 WIB; Keakhwatan Jumat 12.00–13.00 WIB; Pengelolaan infaq setiap hari saat Salat Dzuhur",
+        "capaian": "Berdasarkan kuesioner 184 responden: 42,9% setuju, 37% netral/ragu-ragu, 11,4% sangat setuju, 4,9% tidak setuju, 3,8% sangat tidak setuju bahwa program kerja Rohis dapat meningkatkan pemahaman, pengamalan, dan kecintaan siswa-siswi terhadap nilai Islam.",
+        "evaluasi": "-(tidak terisi pada dokumen)",
+        "evaluasi_deskripsi": "-(tidak terisi pada dokumen)"
+      },
+      "verified_published_match": true
+    },
+    {
+      "slug": "kultum",
+      "status": "ok",
+      "proker_documentId": "s48pw0i5pzboszszxzdgntl4",
+      "lpj_documentId": "ukk9n4uzzx6c3l49jwa5oxpw",
+      "published_lpj": true,
+      "published_proker": true,
+      "error": null,
+      "sections_preview": {
+        "tujuan_len": 291,
+        "teknis_len": 291,
+        "capaian_len": 130,
+        "evaluasi_len": 475
+      },
+      "publish_lpj_error": null,
+      "publish_proker_error": null,
+      "evaluasi_deskripsi_len": 250,
+      "verbatim": {
+        "tujuan": "Tujuan: Siswa/i SMA IT Fithrah Insani dapat mengetahui dan memperluas pengetahuannya mengenai pengetahuan keagamaan, dan juga melatih rasa percaya diri\nTarget: Siswa/i dapat menambah ilmu pengetahuan agamanya bagi yang mengisi kultum dan yang mendengarkannya, serta melatih rasa percaya diri",
+        "teknis": "Pelaksanaan (contoh dari dokumen): Senin 10 Nov 2025 (Kematian), Selasa 11 Nov 2025 (Sedekah), Rabu 12 Nov 2025 (Puasa sunah), Kamis 13 Nov 2025 (Haji), Jumat 14 Nov 2025 Akhwat (Larangan ghibah), Senin 17 Nov 2025 (Surga), Selasa 18 Nov 2025 (Sabar), Rabu 19 Nov 2025 (Sholat tahajud), dst.",
+        "capaian": "Capaian (LPJ): Target tercapai karena membuat siswa/i menambah dan memperluas ilmu agama, serta melatih rasa percaya diri siswa/i.",
+        "evaluasi": "EVALUASI\n(1) Kurang lengkapnya dokumentasi saat pelaksanaan kultum; (2) Tidak terlaksananya kultum sesuai jadwal yang dibuat; (3) Terdapat persamaan tema/judul di hari dan bulan yang berbeda.\nSOLUSI\n(1) Persiapan peralatan sholat & handphone dokumentasi lebih matang, sekbid 1 lebih inisiatif mendokumentasikan; (2) Mengingatkan & mengonfirmasi pengisi kultum, sekbid 1 menggantikan jika tidak ada pengisi; (3) Mengecek kembali jadwal dan mengubah jika ada kesamaan/keliruan.",
+        "evaluasi_deskripsi": "EVALUASI (1) Kurang lengkapnya dokumentasi saat pelaksanaan kultum; (2) Tidak terlaksananya kultum sesuai jadwal yang dibuat; (3) Terdapat persamaan tema/judul di hari dan bulan yang berbeda. SOLUSI (1) Persiapan peralatan sholat & handphone dokument"
+      },
+      "verified_published_match": true
+    },
+    {
+      "slug": "hadist-of-the-week",
+      "status": "ok",
+      "proker_documentId": "c7hky7fdigfh9b3xj3016uvr",
+      "lpj_documentId": "stlna857ir4qgg3u1hfytwx1",
+      "published_lpj": true,
+      "published_proker": true,
+      "error": null,
+      "sections_preview": {
+        "tujuan_len": 160,
+        "teknis_len": 460,
+        "capaian_len": 296,
+        "evaluasi_len": 222
+      },
+      "publish_lpj_error": null,
+      "publish_proker_error": null,
+      "evaluasi_deskripsi_len": 222,
+      "verbatim": {
+        "tujuan": "Tujuan: Menjadikan siswa/i SMA IT Fithrah Insani mengetahui hadits-hadits\nTarget: Siswa/i dapat mengetahui hadits dan mengamalkannya dalam kehidupan sehari-hari",
+        "teknis": "Teknis (Proposal): Hadits disampaikan melalui radio sekolah dan poster yang diposting di akun Instagram OSIS SMAIT Fithrah Insani\nPelaksanaan (LPJ): Jumat 23 Jan 2026 (Mencintai Saudara), Jumat 6 Feb 2026 (Jangan Marah), Jumat 10 Apr 2026 (Amalan yang Dicintai Allah dan Manusia), Jumat 8 Mei 2026 (Orang yang Harus Diperangi), Jumat 31 Jul 2026 (Berkata Baik atau Diam), Jumat 7 Ags 2026 (Agama adalah Nasihat), Jumat 14 Ags 2026 (Larangan Bid'ah Dalam Agama)",
+        "capaian": "Capaian (LPJ): Kegiatan terlaksana sebanyak 7 kali selama satu periode. Kuesioner 184 responden: 12,5% sangat setuju, 37% setuju, 38% netral/ragu-ragu, 5,4% tidak setuju, 7,1% sangat tidak setuju bahwa HOTW dapat menambah pengetahuan tentang hadits; rata-rata viewers 345 di story Instagram OSIS.",
+        "evaluasi": "EVALUASI\nTerdapat perubahan teknis; waktu penyampaian HOTW mengalami perubahan; pengerjaan dan pengajuan poster mepet dengan jadwal.\nSOLUSI\nPersiapan lebih ditingkatkan dan lebih cepat dalam membuat serta mengajukan tugas.",
+        "evaluasi_deskripsi": "EVALUASI Terdapat perubahan teknis; waktu penyampaian HOTW mengalami perubahan; pengerjaan dan pengajuan poster mepet dengan jadwal. SOLUSI Persiapan lebih ditingkatkan dan lebih cepat dalam membuat serta mengajukan tugas."
+      },
+      "verified_published_match": true
+    },
+    {
+      "slug": "ramadhan-ceria",
+      "status": "ok",
+      "proker_documentId": "e7nwbdowmktvd2jt54hu4i7t",
+      "lpj_documentId": "vo3esagf1hwx1mpda9l5w0fm",
+      "published_lpj": true,
+      "published_proker": true,
+      "error": null,
+      "sections_preview": {
+        "tujuan_len": 284,
+        "teknis_len": 773,
+        "capaian_len": 130,
+        "evaluasi_len": 391
+      },
+      "publish_lpj_error": null,
+      "publish_proker_error": null,
+      "evaluasi_deskripsi_len": 250,
+      "verbatim": {
+        "tujuan": "Tujuan: Meningkatnya pemahaman keislaman serta tumbuhnya sikap kebersamaan dan kepedulian sosial pada siswa-siswi melalui kegiatan Ramadhan Ceria\nNama Kegiatan: Ramadhan Ceria; Tema: Keagamaan, Edukasi; Judul Acara: POHON KURMA (Penguatan Olah Hati, Niti, dan Karakter Mulia Ramadhan)",
+        "teknis": "Waktu & Tempat: Senin, 09 Maret 2026, 06.45–14.30 WIB dan Selasa, 10 Maret 2026, 13.00–17.00 WIB, di SMA IT & SMK Informatika Fithrah Insani\nPeserta: Seluruh siswa/i SMA IT & SMK Informatika Fithrah Insani\nRancangan Anggaran (dokumen): TOTAL Rp434.000,00 (rincian bidang Acara, Lomba, dan Konsumsi tercantum di proposal)\nKepanitiaan: Pelindung: Khaerul Anwar, S.Pd.I.; Waka Kesiswaan/Kurikulum: Eka Prasetio Sapaat, S.Pd. & Imas Raninsih S.Pd.; Penasehat: Nur Laila Jufri, S.Pd.; Penanggung jawab: Surya Sigit, Aisha Ghassani Shaliha, Rizka Rasyidah, M. Hammam Jundurrahman; Steering Committee: Novel Windu Fajrian, Adhiena Zahra Rizkya, Qaila Nusyabah Amani, Aisha Ghassani Shaliha, Fatiya Kayisah Az-Zahra, Irsyad Muthi, Faqih Ibrahim, M. Hammam Jundurrahman, Surya Sigit",
+        "capaian": "Hasil/LPJ: Kegiatan berisi kegiatan bermanfaat seperti perlombaan islami, mabit, dan kajian islami yang dilaksanakan selama 2 hari",
+        "evaluasi": "EVALUASI\nMiskomunikasi antar divisi, lomba dimulai lebih awal dari jadwal, kurangnya kedisiplinan panitia, dokumen kurang teliti, masalah teknis lomba (sound system, kesiapan soal, kejelasan juklak/juknis)\nSOLUSI\nMeningkatkan komunikasi antar divisi, mengatur peserta lomba sesuai rancangan acara, instruksi tegas kepada panitia, ketelitian dokumen, kebutuhan teknis dipersiapkan lebih awal.",
+        "evaluasi_deskripsi": "EVALUASI Miskomunikasi antar divisi, lomba dimulai lebih awal dari jadwal, kurangnya kedisiplinan panitia, dokumen kurang teliti, masalah teknis lomba (sound system, kesiapan soal, kejelasan juklak/juknis) SOLUSI Meningkatkan komunikasi antar divisi,"
+      },
+      "verified_published_match": true
+    },
+    {
+      "slug": "phbi",
+      "status": "ok",
+      "proker_documentId": "itx95n2ul0ghkyuqsgonufjy",
+      "lpj_documentId": "sf59n4c3ixrw2ci1cqb2du2o",
+      "published_lpj": true,
+      "published_proker": true,
+      "error": null,
+      "sections_preview": {
+        "tujuan_len": 686,
+        "teknis_len": 366,
+        "capaian_len": 463,
+        "evaluasi_len": 590
+      },
+      "publish_lpj_error": null,
+      "publish_proker_error": null,
+      "evaluasi_deskripsi_len": 250,
+      "verbatim": {
+        "tujuan": "PHBI (Peringatan Hari Besar Islam) — tujuan bersama: menumbuhkan pemahaman dan semangat siswa/i dalam mengetahui makna, sejarah maupun amalan di hari besar Islam dengan kegiatan positif.\n(a) Isra' Mi'raj — Proposal: Jumat, 16 Januari 2026, Online.\n(b) Idul Fitri — Proposal: Jumat, 21 Maret 2026, 07.30–15.15, di Sekolah.\n(c) Idul Adha — Proposal: Rabu, 27 Mei 2026, 07.30–15.15, di Sekolah. Tujuan: menumbuhkan pemahaman dan semangat siswa/i, serta mengumpulkan sedekah qurban bagi pengurus OSIS SMA IT Fithrah Insani.\n(d) Muharram — Proposal: Selasa, 16 Juni 2026, 07.30–15.15, di Sekolah. Tema: Keagamaan.\n(e) Maulid Nabi — Proposal: Selasa, 25 Agustus 2026, Online. Tema: Keagamaan.",
+        "teknis": "a. Isra' Mi'raj — Proposal: Jumat, 16 Januari 2026, Online.\nb. Idul Fitri — Proposal: Jumat, 21 Maret 2026, 07.30–15.15, di Sekolah.\nc. Idul Adha — Proposal: Rabu, 27 Mei 2026, 07.30–15.15, di Sekolah.\nd. Muharram — Proposal: Selasa, 16 Juni 2026, 07.30–15.15, di Sekolah. Tema: Keagamaan.\ne. Maulid Nabi — Proposal: Selasa, 25 Agustus 2026, Online. Tema: Keagamaan.",
+        "capaian": "a. Isra' Mi'raj — LPJ Capaian: membuat poster Isra Mi'raj dan konten tentang Isra Mi'raj.\nb. Idul Fitri — LPJ Capaian: Poster Idul Fitri tersampaikan kepada murid SMA IT Fithrah Insani dan terlaksanakannya kegiatan Halal Bi Halal.\nc. Idul Adha — LPJ: (file LPJ PHBI Idul Adha tidak dapat dibaca/di-extract — hanya tersedia versi docx revisasi di folder)\nd. Muharram — LPJ Capaian: membuat poster Muharram.\ne. Maulid Nabi — LPJ Capaian: membuat poster Maulid Nabi.",
+        "evaluasi": "a. Isra' Mi'raj — Evaluasi: terdapat miskom dan waktu pengerjaan konten dadakan. Solusi: lebih ditingkatkan komunikasinya, lebih sigap dalam membuat rencana.\nb. Idul Fitri — Evaluasi: pengerjaan poster mepet dengan waktu yang sudah ditentukan. Solusi: lebih sigap mengerjakan tugas.\nc. Idul Adha — (LPJ tidak dapat dibaca/di-extract)\nd. Muharram — Evaluasi: kurangnya komunikasi antar PJ. Solusi: lebih ditingkatkan komunikasinya.\ne. Maulid Nabi — Evaluasi: poster telah dibuat tetapi belum sempat dibagikan ke grup OSIS. Solusi: membagikan poster lebih awal agar tersampaikan ke grup OSIS.",
+        "evaluasi_deskripsi": "a. Isra' Mi'raj — Evaluasi: terdapat miskom dan waktu pengerjaan konten dadakan. Solusi: lebih ditingkatkan komunikasinya, lebih sigap dalam membuat rencana. b. Idul Fitri — Evaluasi: pengerjaan poster mepet dengan waktu yang sudah ditentukan. Solusi"
+      },
+      "verified_published_match": true
+    }
+  ],
+  "published_ok": 7,
+  "published_fail": 0,
+  "note": "PUT with status=published (actions/publish returns 405 on this Strapi). Content verified on published entries."
+}

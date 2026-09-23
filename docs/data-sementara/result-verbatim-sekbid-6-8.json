@@ -1,0 +1,200 @@
+{
+  "api": "http://127.0.0.1:1337",
+  "generated_at": "2026-09-23T05:14:28.427Z",
+  "ok": 19,
+  "fail": 0,
+  "skip": 0,
+  "total_targets": 19,
+  "results": [
+    {
+      "slug": "cleaning-day",
+      "status": "ok",
+      "proker": true,
+      "lpj": true,
+      "lpj_publish_err": "POST /api/mubes-lpjs/e00d2easj1qkbtro7z4lf75s/actions/publish → 405: Method Not Allowed",
+      "proker_publish_err": "POST /api/program-kerjas/i4o5qi51ljjpu8nylh1ed4kd/actions/publish → 405: Method Not Allowed",
+      "lpjDocumentId": "e00d2easj1qkbtro7z4lf75s",
+      "prokerDocumentId": "i4o5qi51ljjpu8nylh1ed4kd"
+    },
+    {
+      "slug": "Breakfast-Time",
+      "status": "ok",
+      "proker": true,
+      "lpj": true,
+      "lpj_publish_err": "POST /api/mubes-lpjs/s7h1j2c9n1zt06q9oh31zv3w/actions/publish → 405: Method Not Allowed",
+      "proker_publish_err": "POST /api/program-kerjas/pzf61d7fomxzk6w6e6bk3pl9/actions/publish → 405: Method Not Allowed",
+      "lpjDocumentId": "s7h1j2c9n1zt06q9oh31zv3w",
+      "prokerDocumentId": "pzf61d7fomxzk6w6e6bk3pl9"
+    },
+    {
+      "slug": "Health-Report",
+      "status": "ok",
+      "proker": true,
+      "lpj": true,
+      "lpj_publish_err": "POST /api/mubes-lpjs/w0ionk59fhqpqj1v3tmpqy4v/actions/publish → 405: Method Not Allowed",
+      "proker_publish_err": "POST /api/program-kerjas/qn2yhlq92pr8cpb3pzp60oy5/actions/publish → 405: Method Not Allowed",
+      "lpjDocumentId": "w0ionk59fhqpqj1v3tmpqy4v",
+      "prokerDocumentId": "qn2yhlq92pr8cpb3pzp60oy5"
+    },
+    {
+      "slug": "Healty-Station",
+      "status": "ok",
+      "proker": true,
+      "lpj": true,
+      "lpj_publish_err": "POST /api/mubes-lpjs/f0pj7sl3ve6lk1xftynkzrke/actions/publish → 405: Method Not Allowed",
+      "proker_publish_err": "POST /api/program-kerjas/nma8uxdapokqn1vwj1lzr2ks/actions/publish → 405: Method Not Allowed",
+      "lpjDocumentId": "f0pj7sl3ve6lk1xftynkzrke",
+      "prokerDocumentId": "nma8uxdapokqn1vwj1lzr2ks"
+    },
+    {
+      "slug": "healthy-station",
+      "status": "ok",
+      "proker": true,
+      "lpj": true,
+      "lpj_publish_err": "POST /api/mubes-lpjs/sjqf7ak319v706wadvdk798m/actions/publish → 405: Method Not Allowed",
+      "proker_publish_err": "POST /api/program-kerjas/mrbshvpreshoxqdppqi886tx/actions/publish → 405: Method Not Allowed",
+      "lpjDocumentId": "sjqf7ak319v706wadvdk798m",
+      "prokerDocumentId": "mrbshvpreshoxqdppqi886tx"
+    },
+    {
+      "slug": "healthy-movement",
+      "status": "ok",
+      "proker": true,
+      "lpj": true,
+      "lpj_publish_err": "POST /api/mubes-lpjs/scow1nye4vaosvkmrhkxe11n/actions/publish → 405: Method Not Allowed",
+      "proker_publish_err": "POST /api/program-kerjas/pofj9qj910mah6vtihkl9lbz/actions/publish → 405: Method Not Allowed",
+      "lpjDocumentId": "scow1nye4vaosvkmrhkxe11n",
+      "prokerDocumentId": "pofj9qj910mah6vtihkl9lbz"
+    },
+    {
+      "slug": "environment-day",
+      "status": "ok",
+      "proker": true,
+      "lpj": true,
+      "lpj_publish_err": "POST /api/mubes-lpjs/g56gmnbyd4zb4qw3qbdgbxhj/actions/publish → 405: Method Not Allowed",
+      "proker_publish_err": "POST /api/program-kerjas/uyphv1s2utk37xevge79my7z/actions/publish → 405: Method Not Allowed",
+      "lpjDocumentId": "g56gmnbyd4zb4qw3qbdgbxhj",
+      "prokerDocumentId": "uyphv1s2utk37xevge79my7z"
+    },
+    {
+      "slug": "Healthy-Day",
+      "status": "ok",
+      "proker": true,
+      "lpj": true,
+      "lpj_publish_err": "POST /api/mubes-lpjs/cois5anx5d3c316iqu5d0qdw/actions/publish → 405: Method Not Allowed",
+      "proker_publish_err": "POST /api/program-kerjas/h1iis5dpxdes0db70h6k6za0/actions/publish → 405: Method Not Allowed",
+      "lpjDocumentId": "cois5anx5d3c316iqu5d0qdw",
+      "prokerDocumentId": "h1iis5dpxdes0db70h6k6za0"
+    },
+    {
+      "slug": "Nutrition-day",
+      "status": "ok",
+      "proker": true,
+      "lpj": true,
+      "lpj_publish_err": "POST /api/mubes-lpjs/b81xa5elx10t5sw99maq1wvj/actions/publish → 405: Method Not Allowed",
+      "proker_publish_err": "POST /api/program-kerjas/i1rqrqkl4qsy5z6f5cyqcviz/actions/publish → 405: Method Not Allowed",
+      "lpjDocumentId": "b81xa5elx10t5sw99maq1wvj",
+      "prokerDocumentId": "i1rqrqkl4qsy5z6f5cyqcviz"
+    },
+    {
+      "slug": "weekly-market",
+      "status": "ok",
+      "proker": true,
+      "lpj": true,
+      "lpj_publish_err": "POST /api/mubes-lpjs/phalzkj9zywz9laq6ekk98rt/actions/publish → 405: Method Not Allowed",
+      "proker_publish_err": "POST /api/program-kerjas/n99mmjf3mr5b5q2s345cfhy4/actions/publish → 405: Method Not Allowed",
+      "lpjDocumentId": "phalzkj9zywz9laq6ekk98rt",
+      "prokerDocumentId": "n99mmjf3mr5b5q2s345cfhy4"
+    },
+    {
+      "slug": "ngobrol-bisnis",
+      "status": "ok",
+      "proker": true,
+      "lpj": true,
+      "lpj_publish_err": "POST /api/mubes-lpjs/iuiyittmg187ayh68m2nppn5/actions/publish → 405: Method Not Allowed",
+      "proker_publish_err": "POST /api/program-kerjas/utmxzlsjo1psp321gdfpal35/actions/publish → 405: Method Not Allowed",
+      "lpjDocumentId": "iuiyittmg187ayh68m2nppn5",
+      "prokerDocumentId": "utmxzlsjo1psp321gdfpal35"
+    },
+    {
+      "slug": "Direct-Marketing",
+      "status": "ok",
+      "proker": true,
+      "lpj": true,
+      "lpj_publish_err": "POST /api/mubes-lpjs/i7du5e3jsosex61ln6p8zsfe/actions/publish → 405: Method Not Allowed",
+      "proker_publish_err": "POST /api/program-kerjas/ewkrc2j6ceetqkicl7asfx0z/actions/publish → 405: Method Not Allowed",
+      "lpjDocumentId": "i7du5e3jsosex61ln6p8zsfe",
+      "prokerDocumentId": "ewkrc2j6ceetqkicl7asfx0z"
+    },
+    {
+      "slug": "Market-Day",
+      "status": "ok",
+      "proker": true,
+      "lpj": true,
+      "lpj_publish_err": "POST /api/mubes-lpjs/z134ahtrq59mv0b6es5epfva/actions/publish → 405: Method Not Allowed",
+      "proker_publish_err": "POST /api/program-kerjas/mjmjxe4xgoy7m91pgafptii9/actions/publish → 405: Method Not Allowed",
+      "lpjDocumentId": "z134ahtrq59mv0b6es5epfva",
+      "prokerDocumentId": "mjmjxe4xgoy7m91pgafptii9"
+    },
+    {
+      "slug": "FI-Flick",
+      "status": "ok",
+      "proker": true,
+      "lpj": true,
+      "lpj_publish_err": "POST /api/mubes-lpjs/nnz2bag9jl5m9dhj51gjlk1a/actions/publish → 405: Method Not Allowed",
+      "proker_publish_err": "POST /api/program-kerjas/v5f6jh928hza3v2a28wbg9hk/actions/publish → 405: Method Not Allowed",
+      "lpjDocumentId": "nnz2bag9jl5m9dhj51gjlk1a",
+      "prokerDocumentId": "v5f6jh928hza3v2a28wbg9hk"
+    },
+    {
+      "slug": "school-announcement",
+      "status": "ok",
+      "proker": true,
+      "lpj": true,
+      "lpj_publish_err": "POST /api/mubes-lpjs/fakckc4076ac3zocb4nad4bs/actions/publish → 405: Method Not Allowed",
+      "proker_publish_err": "POST /api/program-kerjas/tkt6uf4cpa4v2qgm70ilhst6/actions/publish → 405: Method Not Allowed",
+      "lpjDocumentId": "fakckc4076ac3zocb4nad4bs",
+      "prokerDocumentId": "tkt6uf4cpa4v2qgm70ilhst6"
+    },
+    {
+      "slug": "studio-osis",
+      "status": "ok",
+      "proker": true,
+      "lpj": true,
+      "lpj_publish_err": "POST /api/mubes-lpjs/cbxano4t3072td3vjzfs1yqc/actions/publish → 405: Method Not Allowed",
+      "proker_publish_err": "POST /api/program-kerjas/vmh1yenla8y3hrqzpfxqmgsg/actions/publish → 405: Method Not Allowed",
+      "lpjDocumentId": "cbxano4t3072td3vjzfs1yqc",
+      "prokerDocumentId": "vmh1yenla8y3hrqzpfxqmgsg"
+    },
+    {
+      "slug": "sites-stream",
+      "status": "ok",
+      "proker": true,
+      "lpj": true,
+      "lpj_publish_err": "POST /api/mubes-lpjs/j3841058homhgqt3qsqhxv0a/actions/publish → 405: Method Not Allowed",
+      "proker_publish_err": "POST /api/program-kerjas/l1oik0lwfgj11vcryfb4qhwh/actions/publish → 405: Method Not Allowed",
+      "lpjDocumentId": "j3841058homhgqt3qsqhxv0a",
+      "prokerDocumentId": "l1oik0lwfgj11vcryfb4qhwh"
+    },
+    {
+      "slug": "mading",
+      "status": "ok",
+      "proker": true,
+      "lpj": true,
+      "lpj_publish_err": "POST /api/mubes-lpjs/gouzcwjcb0zlga0nnz317a42/actions/publish → 405: Method Not Allowed",
+      "proker_publish_err": "POST /api/program-kerjas/qsgidfhane1t5k8u69v7yvla/actions/publish → 405: Method Not Allowed",
+      "lpjDocumentId": "gouzcwjcb0zlga0nnz317a42",
+      "prokerDocumentId": "qsgidfhane1t5k8u69v7yvla"
+    },
+    {
+      "slug": "social-media",
+      "status": "ok",
+      "proker": true,
+      "lpj": true,
+      "lpj_publish_err": "POST /api/mubes-lpjs/nu07a5mizmd6yarrff1r0gbn/actions/publish → 405: Method Not Allowed",
+      "proker_publish_err": "POST /api/program-kerjas/d3vw4s01nuae69g9p845xzyl/actions/publish → 405: Method Not Allowed",
+      "lpjDocumentId": "nu07a5mizmd6yarrff1r0gbn",
+      "prokerDocumentId": "d3vw4s01nuae69g9p845xzyl"
+    }
+  ]
+}

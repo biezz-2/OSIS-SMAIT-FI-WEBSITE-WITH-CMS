@@ -6,6 +6,14 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.50] - 2026-09-23
+
+### ✨ Data (MUBES LPJ — teks verbatim LPJ/Proposal)
+- Seed ulang 48 proker dari rekap `docs/data-sementara/README.md` **tanpa rewrite**: Tujuan, Teknis & Waktu, Capaian, Evaluasi & Solusi sesuai dokumen asli.
+- Navbar: satu link MUBES gated (desktop + mobile), hapus duplikat.
+
+---
+
 ## [2.1.49] - 2026-09-23
 
 ### ✨ Data & UX (MUBES — data asli profesional + foto PJ + navbar gated)

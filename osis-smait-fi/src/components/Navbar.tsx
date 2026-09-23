@@ -426,25 +426,6 @@ const Navbar = () => {
                         cards={galeriCards}
                     />
 
-                    {/* MUBES Link - Gated untuk pengguna yang sudah login & terdaftar di server */}
-                    {isMubesApproved && (
-                        <Link href="/portal-mubes" className="no-underline">
-                            <div
-                                className="px-3 xl:px-3.5 py-1.5 rounded transition-all duration-200 flex items-center justify-center cursor-pointer hover:opacity-90 shrink-0 border border-amber-400/40 shadow-sm"
-                                style={{
-                                    background: isActive('/portal-mubes')
-                                        ? 'linear-gradient(135deg, #D97706 0%, #B45309 100%)'
-                                        : 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
-                                }}
-                            >
-                                <span className="text-white text-xs font-bold font-[Inter,sans-serif] leading-4 whitespace-nowrap tracking-wide flex items-center gap-1.5">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                                    MUBES
-                                </span>
-                            </div>
-                        </Link>
-                    )}
-
                     <GooeyInput
                         placeholder="Cari..."
                         collapsedWidth={105}
@@ -753,21 +734,6 @@ const Navbar = () => {
                             </div>
                         </div>
                     </div>
-
-                    {/* MUBES Link - Gated Mobile */}
-                    {isMubesApproved && (
-                        <Link href="/portal-mubes" className="no-underline" onClick={() => setMobileOpen(false)}>
-                            <div className={`flex items-center justify-between px-5 py-3.5 transition-colors duration-200 ${isActive('/portal-mubes') ? 'bg-amber-500/15 text-amber-600' : 'text-amber-700 hover:bg-amber-500/10'}`}>
-                                <span className="text-sm font-bold font-[Inter,sans-serif] flex items-center gap-2">
-                                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-                                    PORTAL MUBES
-                                </span>
-                                <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-700">
-                                    Sidang
-                                </span>
-                            </div>
-                        </Link>
-                    )}
                 </div>
 
                 {/* Mobile Footer */}

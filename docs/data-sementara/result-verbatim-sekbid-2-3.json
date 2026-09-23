@@ -1,0 +1,195 @@
+{
+  "api": "http://127.0.0.1:1337",
+  "source": "docs/data-sementara/README.md (VERBATIM LPJ/Proposal rekap SEKBID 2+3)",
+  "updated": 11,
+  "failed": 0,
+  "results": [
+    {
+      "slug": "sidak-tata-tertib",
+      "ok": true,
+      "proker_documentId": "zmnv0bb1u31zgkh5d36tbse8",
+      "lpj_documentId": "xmfbvvvvjnu5ubw592igv01d",
+      "lpj_updated": true,
+      "lpj_publish_error": "POST /api/mubes-lpjs/xmfbvvvvjnu5ubw592igv01d/actions/publish → 405: Method Not Allowed",
+      "proker_updated": true,
+      "proker_publish_error": "POST /api/program-kerjas/zmnv0bb1u31zgkh5d36tbse8/actions/publish → 405: Method Not Allowed",
+      "sections": [
+        "Tujuan",
+        "Teknis & Waktu",
+        "Capaian",
+        "Evaluasi & Solusi"
+      ],
+      "tujuan_preview": "Menguatkan fondasi karakter anggota OSIS agar senantiasa disiplin, bertanggung jawab, dan menjunjung tinggi etika, baik "
+    },
+    {
+      "slug": "kompas-osis",
+      "ok": true,
+      "proker_documentId": "aous93esz9djnu5f3aeondgu",
+      "lpj_documentId": "cjlce81wos2b00mxwlc7p5ny",
+      "lpj_updated": true,
+      "lpj_publish_error": "POST /api/mubes-lpjs/cjlce81wos2b00mxwlc7p5ny/actions/publish → 405: Method Not Allowed",
+      "proker_updated": true,
+      "proker_publish_error": "POST /api/program-kerjas/aous93esz9djnu5f3aeondgu/actions/publish → 405: Method Not Allowed",
+      "sections": [
+        "Tujuan",
+        "Teknis & Waktu",
+        "Capaian",
+        "Evaluasi & Solusi"
+      ],
+      "tujuan_preview": "Menjadikan seluruh anggota OSIS lebih disiplin dan mengikuti peraturan yang sesuai dengan sekolah; menertibkan siswa/i t"
+    },
+    {
+      "slug": "class-of-discipline",
+      "ok": true,
+      "proker_documentId": "pzlienzerdl5zilakn4snvqo",
+      "lpj_documentId": "jmpbo7grxdl756040ng95dky",
+      "lpj_updated": true,
+      "lpj_publish_error": "POST /api/mubes-lpjs/jmpbo7grxdl756040ng95dky/actions/publish → 405: Method Not Allowed",
+      "proker_updated": true,
+      "proker_publish_error": "POST /api/program-kerjas/pzlienzerdl5zilakn4snvqo/actions/publish → 405: Method Not Allowed",
+      "sections": [
+        "Tujuan",
+        "Teknis & Waktu",
+        "Capaian",
+        "Evaluasi & Solusi"
+      ],
+      "tujuan_preview": "Untuk mengapresiasi dan menghargai siswa/i yang sudah mengikuti peraturan di lingkungan sekolah\nTarget: Siswa/i menjadi "
+    },
+    {
+      "slug": "piket-kedisiplinan",
+      "ok": true,
+      "proker_documentId": "xyommbei7316ti65iotgeckf",
+      "lpj_documentId": "fndydo5v1x5s8292nw0fe75c",
+      "lpj_updated": true,
+      "lpj_publish_error": "POST /api/mubes-lpjs/fndydo5v1x5s8292nw0fe75c/actions/publish → 405: Method Not Allowed",
+      "proker_updated": true,
+      "proker_publish_error": "POST /api/program-kerjas/xyommbei7316ti65iotgeckf/actions/publish → 405: Method Not Allowed",
+      "sections": [
+        "Tujuan",
+        "Teknis & Waktu",
+        "Capaian",
+        "Evaluasi & Solusi"
+      ],
+      "tujuan_preview": "Mentertibkan siswa/i terkait peraturan di sekolah, baik kerapihan, kelengkapan, dan disiplin waktu (salat maupun kedatan"
+    },
+    {
+      "slug": "bakti-sosial",
+      "ok": true,
+      "proker_documentId": "axsknpq0csx95z4i252j355d",
+      "lpj_documentId": "y13b7vy4nqx677f9zykziqe3",
+      "lpj_updated": true,
+      "lpj_publish_error": "POST /api/mubes-lpjs/y13b7vy4nqx677f9zykziqe3/actions/publish → 405: Method Not Allowed",
+      "proker_updated": true,
+      "proker_publish_error": "POST /api/program-kerjas/axsknpq0csx95z4i252j355d/actions/publish → 405: Method Not Allowed",
+      "sections": [
+        "Tujuan",
+        "Teknis & Waktu",
+        "Capaian",
+        "Evaluasi & Solusi"
+      ],
+      "tujuan_preview": "Melatih siswa/i untuk berempati dan berbagi dengan sesama"
+    },
+    {
+      "slug": "phbn",
+      "ok": true,
+      "proker_documentId": "saxuamatilpmuvxc0e76pwnw",
+      "lpj_documentId": "uu6n4j2yaj7gnm1gjws5pabz",
+      "lpj_updated": true,
+      "lpj_publish_error": "POST /api/mubes-lpjs/uu6n4j2yaj7gnm1gjws5pabz/actions/publish → 405: Method Not Allowed",
+      "proker_updated": true,
+      "proker_publish_error": "POST /api/program-kerjas/saxuamatilpmuvxc0e76pwnw/actions/publish → 405: Method Not Allowed",
+      "sections": [
+        "Tujuan",
+        "Teknis & Waktu",
+        "Capaian",
+        "Evaluasi & Solusi"
+      ],
+      "tujuan_preview": "a. Hari Guru — \"Guidelight\": menjadikan siswa/i dapat menghormati jasa dan memberikan apresiasi kepada guru dengan membe"
+    },
+    {
+      "slug": "notifikasi-edukasi",
+      "ok": true,
+      "proker_documentId": "f11hrkw1x5w4fk7hdj7y32ky",
+      "lpj_documentId": "ha78pnr0ucqf32u3jd5duaa5",
+      "lpj_updated": true,
+      "lpj_publish_error": "POST /api/mubes-lpjs/ha78pnr0ucqf32u3jd5duaa5/actions/publish → 405: Method Not Allowed",
+      "proker_updated": true,
+      "proker_publish_error": "POST /api/program-kerjas/f11hrkw1x5w4fk7hdj7y32ky/actions/publish → 405: Method Not Allowed",
+      "sections": [
+        "Tujuan",
+        "Teknis & Waktu",
+        "Capaian",
+        "Evaluasi & Solusi"
+      ],
+      "tujuan_preview": "Menjadi wadah bagi siswa/i SMAIT Fithrah Insani untuk memperoleh informasi seputar beasiswa, lomba-lomba pendidikan, ser"
+    },
+    {
+      "slug": "study-club",
+      "ok": true,
+      "proker_documentId": "pq8gfljrs9hkxewi32ydv4sv",
+      "lpj_documentId": "wwlardgs6kgeu1zt2twdnwfn",
+      "lpj_updated": true,
+      "lpj_publish_error": "POST /api/mubes-lpjs/wwlardgs6kgeu1zt2twdnwfn/actions/publish → 405: Method Not Allowed",
+      "proker_updated": true,
+      "proker_publish_error": "POST /api/program-kerjas/pq8gfljrs9hkxewi32ydv4sv/actions/publish → 405: Method Not Allowed",
+      "sections": [
+        "Tujuan",
+        "Teknis & Waktu",
+        "Capaian",
+        "Evaluasi & Solusi"
+      ],
+      "tujuan_preview": "Meningkatkan pemahaman akademik siswa/i serta membantu siswa/i mempersiapkan ujian PTS/PAS melalui pembahasan soal bersa"
+    },
+    {
+      "slug": "two-minutes-class",
+      "ok": true,
+      "proker_documentId": "o71pswojzuwrwdwuoqw8et09",
+      "lpj_documentId": "k3snfyuobkzpffoa7zb6il0d",
+      "lpj_updated": true,
+      "lpj_publish_error": "POST /api/mubes-lpjs/k3snfyuobkzpffoa7zb6il0d/actions/publish → 405: Method Not Allowed",
+      "proker_updated": true,
+      "proker_publish_error": "POST /api/program-kerjas/o71pswojzuwrwdwuoqw8et09/actions/publish → 405: Method Not Allowed",
+      "sections": [
+        "Tujuan",
+        "Teknis & Waktu",
+        "Capaian",
+        "Evaluasi & Solusi"
+      ],
+      "tujuan_preview": "Meningkatkan pemahaman materi pelajaran siswa/i melalui konten fun fact atau tips & trick pembelajaran yang mudah diakse"
+    },
+    {
+      "slug": "hari-pendidikan",
+      "ok": true,
+      "proker_documentId": "nzny5524tjl1oy7vztv6247n",
+      "lpj_documentId": "e5a75usq5pmh8oxnaofyz64m",
+      "lpj_updated": true,
+      "lpj_publish_error": "POST /api/mubes-lpjs/e5a75usq5pmh8oxnaofyz64m/actions/publish → 405: Method Not Allowed",
+      "proker_updated": true,
+      "proker_publish_error": "POST /api/program-kerjas/nzny5524tjl1oy7vztv6247n/actions/publish → 405: Method Not Allowed",
+      "sections": [
+        "Tujuan",
+        "Teknis & Waktu",
+        "Capaian",
+        "Evaluasi & Solusi"
+      ],
+      "tujuan_preview": "Siswa/i dapat memperingati Hari Pendidikan Nasional serta meningkatkan kesadaran akan pentingnya pendidikan melalui publ"
+    },
+    {
+      "slug": "university-day",
+      "ok": true,
+      "proker_documentId": "n0mwircqi804c1ef2emwunaw",
+      "lpj_documentId": "cb8yopzktxcdczvl0pq9gdmv",
+      "lpj_updated": true,
+      "lpj_publish_error": "POST /api/mubes-lpjs/cb8yopzktxcdczvl0pq9gdmv/actions/publish → 405: Method Not Allowed",
+      "proker_updated": true,
+      "proker_publish_error": "POST /api/program-kerjas/n0mwircqi804c1ef2emwunaw/actions/publish → 405: Method Not Allowed",
+      "sections": [
+        "Tujuan",
+        "Teknis & Waktu",
+        "Capaian",
+        "Evaluasi & Solusi"
+      ],
+      "tujuan_preview": "Memberikan informasi kepada siswa/i mengenai berbagai pilihan perguruan tinggi (menghadirkan alumni untuk berbagi pengal"
+    }
+  ]
+}

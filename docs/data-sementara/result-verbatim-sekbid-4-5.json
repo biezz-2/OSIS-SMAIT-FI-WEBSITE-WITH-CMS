@@ -1,0 +1,236 @@
+{
+  "generatedAt": "2026-09-23T05:14:07.594Z",
+  "api": "http://127.0.0.1:1337",
+  "sekbid": "4+5",
+  "targets": [
+    "write-your-ideas",
+    "suara-sastra",
+    "enlightment-trip",
+    "quotes-of-the-month",
+    "hari-buku",
+    "ulti-multi-language",
+    "program-kerja",
+    "ourself-journey",
+    "The-Rising-Talent",
+    "talent-showcase",
+    "classmeet"
+  ],
+  "resolvedTargets": [
+    "write-your-ideas",
+    "suara-sastra",
+    "enlightment-trip",
+    "quotes-of-the-month",
+    "hari-buku",
+    "ulti-multi-language",
+    "program-kerja",
+    "ourself-journey",
+    "The-Rising-Talent",
+    "talent-showcase",
+    "classmeet"
+  ],
+  "results": [
+    {
+      "slug": "write-your-ideas",
+      "status": "ok",
+      "prokerDocumentId": "uapsbvjjchec7z34kqi8ra7j",
+      "judul": "Write Your Ideas (WYI)",
+      "lpjDocumentId": "vtu3as30ee4uyo9xxcp6ee33",
+      "lpjPut": "ok",
+      "lpjPublish": "POST /api/mubes-lpjs/vtu3as30ee4uyo9xxcp6ee33/actions/publish → 405: Method Not Allowed",
+      "prokerPut": "ok",
+      "prokerPublish": "POST /api/program-kerjas/uapsbvjjchec7z34kqi8ra7j/actions/publish → 405: Method Not Allowed",
+      "sectionsOrders": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "tujuanPreview": "Program karya sastra — banyak anak usia muda punya kemampuan menulis karya tetap"
+    },
+    {
+      "slug": "suara-sastra",
+      "status": "ok",
+      "prokerDocumentId": "o4j2lbtdz9ta51pp0y2tacxt",
+      "judul": "Suara Sastra",
+      "lpjDocumentId": "zsa8ui8ayrqsoogywh0diycn",
+      "lpjPut": "ok",
+      "lpjPublish": "POST /api/mubes-lpjs/zsa8ui8ayrqsoogywh0diycn/actions/publish → 405: Method Not Allowed",
+      "prokerPut": "ok",
+      "prokerPublish": "POST /api/program-kerjas/o4j2lbtdz9ta51pp0y2tacxt/actions/publish → 405: Method Not Allowed",
+      "sectionsOrders": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "tujuanPreview": "Folder hanya berisi sub-folder tanggal dokumentasi (25 Feb, 24 Apr, 17 Jun, 6 Ag"
+    },
+    {
+      "slug": "enlightment-trip",
+      "status": "ok",
+      "prokerDocumentId": "xq2pwwljr38jobp81spal9nk",
+      "judul": "Enlightment Trip (ET)",
+      "lpjDocumentId": "vii5f9bp6vefo6sjuk9askwg",
+      "lpjPut": "ok",
+      "lpjPublish": "POST /api/mubes-lpjs/vii5f9bp6vefo6sjuk9askwg/actions/publish → 405: Method Not Allowed",
+      "prokerPut": "ok",
+      "prokerPublish": "POST /api/program-kerjas/xq2pwwljr38jobp81spal9nk/actions/publish → 405: Method Not Allowed",
+      "sectionsOrders": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "tujuanPreview": "Mendorong siswa/i SMA IT Fithrah Insani memiliki keterampilan berliterasi tinggi"
+    },
+    {
+      "slug": "quotes-of-the-month",
+      "status": "ok",
+      "prokerDocumentId": "cd8cihxpycl1aww8wxtrvda3",
+      "judul": "Quotes of the Month (QOTM)",
+      "lpjDocumentId": "ihvpltebs63j0wvoptsinrxz",
+      "lpjPut": "ok",
+      "lpjPublish": "POST /api/mubes-lpjs/ihvpltebs63j0wvoptsinrxz/actions/publish → 405: Method Not Allowed",
+      "prokerPut": "ok",
+      "prokerPublish": "POST /api/program-kerjas/cd8cihxpycl1aww8wxtrvda3/actions/publish → 405: Method Not Allowed",
+      "sectionsOrders": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "tujuanPreview": "Menumbuhkan semangat dan motivasi belajar siswa, menanamkan nilai-nilai positif,"
+    },
+    {
+      "slug": "hari-buku",
+      "status": "ok",
+      "prokerDocumentId": "f9xs22jlmghmxx4ce38v9uoz",
+      "judul": "Hari Buku",
+      "lpjDocumentId": "eph5wjakxjat3pqlpq6jeqkv",
+      "lpjPut": "ok",
+      "lpjPublish": "POST /api/mubes-lpjs/eph5wjakxjat3pqlpq6jeqkv/actions/publish → 405: Method Not Allowed",
+      "prokerPut": "ok",
+      "prokerPublish": "POST /api/program-kerjas/f9xs22jlmghmxx4ce38v9uoz/actions/publish → 405: Method Not Allowed",
+      "sectionsOrders": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "tujuanPreview": "Meningkatkan partisipasi siswa dalam kegiatan literasi sekolah melalui program B"
+    },
+    {
+      "slug": "ulti-multi-language",
+      "status": "ok",
+      "prokerDocumentId": "adgvx0mb3zky4ts8ep99qtxc",
+      "judul": "Multi Language Competition (ULTI)",
+      "lpjDocumentId": "svve7j7m05gf4dnv0sedsyup",
+      "lpjPut": "ok",
+      "lpjPublish": "POST /api/mubes-lpjs/svve7j7m05gf4dnv0sedsyup/actions/publish → 405: Method Not Allowed",
+      "prokerPut": "ok",
+      "prokerPublish": "POST /api/program-kerjas/adgvx0mb3zky4ts8ep99qtxc/actions/publish → 405: Method Not Allowed",
+      "sectionsOrders": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "tujuanPreview": "Folder ADMINISTRASI ULTI berisi dokumen berjudul \"PROPOSAL/LPJ GEMA MERDEKA (har"
+    },
+    {
+      "slug": "program-kerja",
+      "status": "ok",
+      "prokerDocumentId": "dkg28yvbbakivtunoaxmsuak",
+      "judul": "Raga dan Nada",
+      "lpjDocumentId": "msodhe9lbtc6uzenknol294b",
+      "lpjPut": "ok",
+      "lpjPublish": "POST /api/mubes-lpjs/msodhe9lbtc6uzenknol294b/actions/publish → 405: Method Not Allowed",
+      "prokerPut": "ok",
+      "prokerPublish": "POST /api/program-kerjas/dkg28yvbbakivtunoaxmsuak/actions/publish → 405: Method Not Allowed",
+      "sectionsOrders": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "tujuanPreview": "Membantu meningkatkan pemahaman siswa/i mengenai materi yang berkaitan dengan bi"
+    },
+    {
+      "slug": "ourself-journey",
+      "status": "ok",
+      "prokerDocumentId": "ayag20o2rjsydlx2b0igycfj",
+      "judul": "Ourself Journey (OJ)",
+      "lpjDocumentId": "w86x2yt1lk3qbo63gvkiebtq",
+      "lpjPut": "ok",
+      "lpjPublish": "POST /api/mubes-lpjs/w86x2yt1lk3qbo63gvkiebtq/actions/publish → 405: Method Not Allowed",
+      "prokerPut": "ok",
+      "prokerPublish": "POST /api/program-kerjas/ayag20o2rjsydlx2b0igycfj/actions/publish → 405: Method Not Allowed",
+      "sectionsOrders": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "tujuanPreview": "Membantu siswa/i dalam memahami diri, meningkatkan kemampuan diri, minat, serta "
+    },
+    {
+      "slug": "The-Rising-Talent",
+      "status": "ok",
+      "prokerDocumentId": "dereyy03vetffbt5g7r6cftr",
+      "judul": "The Rising Talent",
+      "lpjDocumentId": "jbk5scj7mytayjxseqir1fkp",
+      "lpjPut": "ok",
+      "lpjPublish": "POST /api/mubes-lpjs/jbk5scj7mytayjxseqir1fkp/actions/publish → 405: Method Not Allowed",
+      "prokerPut": "ok",
+      "prokerPublish": "POST /api/program-kerjas/dereyy03vetffbt5g7r6cftr/actions/publish → 405: Method Not Allowed",
+      "sectionsOrders": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "tujuanPreview": "Memberikan informasi lomba-lomba non akademik untuk siswa/i"
+    },
+    {
+      "slug": "talent-showcase",
+      "status": "ok",
+      "prokerDocumentId": "yptksrkhya8jzhh51b974suz",
+      "judul": "Talent Showcase",
+      "lpjDocumentId": "ar07zk12irrr7xpyfos2jubq",
+      "lpjPut": "ok",
+      "lpjPublish": "POST /api/mubes-lpjs/ar07zk12irrr7xpyfos2jubq/actions/publish → 405: Method Not Allowed",
+      "prokerPut": "ok",
+      "prokerPublish": "POST /api/program-kerjas/yptksrkhya8jzhh51b974suz/actions/publish → 405: Method Not Allowed",
+      "sectionsOrders": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "tujuanPreview": "Menyediakan panggung dan fasilitas bagi peserta untuk mengasah dan menampilkan b"
+    },
+    {
+      "slug": "classmeet",
+      "status": "ok",
+      "prokerDocumentId": "rzi7iz8x8d7uti1wp1tl2201",
+      "judul": "Classmeet x Market Day — Dynamite",
+      "lpjDocumentId": "afzvwrafdqcni9umzuj9tjvq",
+      "lpjPut": "ok",
+      "lpjPublish": "POST /api/mubes-lpjs/afzvwrafdqcni9umzuj9tjvq/actions/publish → 405: Method Not Allowed",
+      "prokerPut": "ok",
+      "prokerPublish": "POST /api/program-kerjas/rzi7iz8x8d7uti1wp1tl2201/actions/publish → 405: Method Not Allowed",
+      "sectionsOrders": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "tujuanPreview": "Memberi ruang bagi siswa berkembang melalui pengalaman langsung — berkompetisi s"
+    }
+  ],
+  "summary": {
+    "ok": 11,
+    "error": 0,
+    "other": 0
+  }
+}
