@@ -6,6 +6,12 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.51] - 2026-09-23
+
+### 🎨 UX (MUBES PJ profile + text selection)
+- **Penanggung Jawab MUBES**: kartu portrait miring kuning (`PjPortraitCard`) diselaraskan dengan halaman publik `/program-kerja/[slug]` (ukuran, rotasi, overlay nama/jabatan) — mengganti avatar bulat kecil di MetaStrip.
+- **Seleksi teks**: `::selection` global + override portal MUBES agar highlight amber kontras (teks gelap di light mode, cream di dark) — seleksi tidak lagi menyatu dengan background.
+
 ## [2.1.50] - 2026-09-23
 
 ### ✨ Data (MUBES LPJ — teks verbatim LPJ/Proposal)

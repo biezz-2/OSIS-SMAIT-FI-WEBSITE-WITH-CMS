@@ -18,7 +18,7 @@ export default function MubesPortalView({ initialMode = 'login' }: MubesPortalVi
   const [isHelpOpen, setIsHelpOpen] = useState(false);
 
   return (
-    <div className="relative min-h-screen w-full bg-[#0d0a08] overflow-x-hidden flex flex-col justify-between selection:bg-[#e3bd7d]/30 selection:text-[#faf0db]">
+    <div className="relative min-h-screen w-full bg-[#0d0a08] overflow-x-hidden flex flex-col justify-between selection:bg-[#e3bd7d]/45 selection:text-[#fff8e7]">
       {/* 1. Background Enchanted Castle/Hall Image */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <Image

@@ -173,6 +173,29 @@ body {
   overflow-x: hidden;
 }
 
+/* Text selection: readable contrast on light & dark surfaces */
+::selection {
+  background-color: rgba(245, 158, 11, 0.45);
+  color: #0f172a;
+}
+
+::-moz-selection {
+  background-color: rgba(245, 158, 11, 0.45);
+  color: #0f172a;
+}
+
+html.dark ::selection,
+.dark ::selection {
+  background-color: rgba(251, 191, 36, 0.5);
+  color: #fffbeb;
+}
+
+html.dark ::-moz-selection,
+.dark ::-moz-selection {
+  background-color: rgba(251, 191, 36, 0.5);
+  color: #fffbeb;
+}
+
 /* Edufest Specific Theme Scoping */
 .edufest-theme {
   --background: #f8f9fd;

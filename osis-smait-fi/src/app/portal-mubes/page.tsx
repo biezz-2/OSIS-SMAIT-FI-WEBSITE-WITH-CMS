@@ -49,7 +49,7 @@ export default async function PortalMubesPage({
   ]);
 
   return (
-    <main className="min-h-screen bg-white dark:bg-slate-950 flex flex-col justify-between selection:bg-amber-500/30 selection:text-amber-200">
+    <main className="min-h-screen bg-white dark:bg-slate-950 flex flex-col justify-between selection:bg-amber-500/45 selection:text-slate-900 dark:selection:bg-amber-400/50 dark:selection:text-amber-50">
       {/* Navbar: sesi Clerk aktif. LPJ tetap gated via includeLpj=access.allowed */}
       <Navbar />
 

@@ -94,11 +94,58 @@ function EmptyHint({ children }: { children: React.ReactNode }) {
   return <span className="text-slate-400 italic">{children}</span>;
 }
 
-function PjInitials(name?: string) {
-  const parts = (name || 'PJ').trim().split(/\s+/).filter(Boolean);
-  const a = parts[0]?.[0] || 'P';
-  const b = parts.length > 1 ? parts[parts.length - 1][0] : (parts[0]?.[1] || 'J');
-  return `${a}${b}`.toUpperCase();
+/** Kartu PJ mirror public `/program-kerja/[slug]` (ProgramKerjaDetailPage chairs). */
+function PjPortraitCard({
+  name,
+  role,
+  foto,
+  idx,
+}: {
+  name: string;
+  role?: string;
+  foto?: string;
+  idx: number;
+}) {
+  const even = idx % 2 === 0;
+  return (
+    <div className="relative flex-shrink-0 w-[160px] sm:w-[180px] md:w-[200px] h-[220px] sm:h-[250px] md:h-[280px]">
+      <div
+        className="absolute inset-0 bg-[#FACC15] rounded-[24px] shadow-md"
+        style={{ transform: even ? 'rotate(-2.8deg)' : 'rotate(2.8deg)' }}
+        aria-hidden
+      />
+      <div
+        className="relative w-full h-full rounded-[24px] overflow-hidden shadow-xl bg-slate-900 border border-white/20 flex flex-col justify-end"
+        style={{ transform: even ? 'rotate(1.8deg)' : 'rotate(-1.8deg)' }}
+      >
+        {foto ? (
+          <Image
+            src={foto}
+            alt={name}
+            fill
+            className="object-cover object-top absolute inset-0"
+            sizes="(max-width: 640px) 160px, 200px"
+          />
+        ) : (
+          <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-800 to-slate-950 p-4 text-center">
+            <div className="w-16 h-16 rounded-full bg-slate-700/60 border border-slate-600 flex items-center justify-center text-yellow-400">
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" aria-hidden>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+                />
+              </svg>
+            </div>
+          </div>
+        )}
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-3 sm:p-4 z-10">
+          <h3 className="text-white text-sm font-bold leading-tight break-words">{name}</h3>
+          {role ? <p className="text-gray-300 text-xs font-medium mt-0.5 break-words">{role}</p> : null}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function MetaStrip({ proker }: { proker: MubesProgramKerja }) {
@@ -107,44 +154,35 @@ function MetaStrip({ proker }: { proker: MubesProgramKerja }) {
     : [{ nama_lengkap: 'Pengurus Sekbid', jabatan: undefined, foto: undefined }];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
-      <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
-        <span className="text-xs text-slate-400 font-semibold block uppercase">Kategori</span>
-        <span className="text-base font-bold capitalize mt-1 block">{proker.kategori}</span>
+    <div className="flex flex-col gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
+          <span className="text-xs text-slate-400 font-semibold block uppercase tracking-widest">Kategori</span>
+          <span className="text-base font-bold capitalize mt-1 block">{proker.kategori}</span>
+        </div>
+        <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
+          <span className="text-xs text-slate-400 font-semibold block uppercase tracking-widest">Lokasi</span>
+          <span className="text-base font-bold mt-1 block break-words">{proker.lokasi || 'SMAIT FI'}</span>
+        </div>
       </div>
-      <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
-        <span className="text-xs text-slate-400 font-semibold block uppercase">Lokasi</span>
-        <span className="text-base font-bold mt-1 block break-words">{proker.lokasi || 'SMAIT FI'}</span>
-      </div>
-      <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
-        <span className="text-xs text-slate-400 font-semibold block uppercase mb-2">Penanggung Jawab</span>
-        <ul className="flex flex-col gap-2.5">
-          {pjs.map((p, i) => {
-            const name = p.nama_lengkap || 'Pengurus Sekbid';
-            return (
-              <li key={`${name}-${i}`} className="flex items-center gap-2.5 min-w-0">
-                {p.foto ? (
-                  <span className="relative w-9 h-9 shrink-0 rounded-full overflow-hidden ring-2 ring-amber-500/40 bg-slate-200 dark:bg-slate-700">
-                    <Image src={p.foto} alt={name} fill className="object-cover" sizes="36px" />
-                  </span>
-                ) : (
-                  <span
-                    className="w-9 h-9 shrink-0 rounded-full bg-amber-600 text-white text-[11px] font-bold flex items-center justify-center ring-2 ring-amber-500/30"
-                    aria-hidden
-                  >
-                    {PjInitials(name)}
-                  </span>
-                )}
-                <span className="min-w-0 flex flex-col">
-                  <span className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate">{name}</span>
-                  {p.jabatan ? (
-                    <span className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{p.jabatan}</span>
-                  ) : null}
-                </span>
-              </li>
-            );
-          })}
-        </ul>
+
+      <div className="flex flex-col gap-3">
+        <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Penanggung Jawab</p>
+        <div
+          className={`flex flex-row flex-wrap gap-5 ${
+            pjs.length === 1 ? 'justify-center sm:justify-start' : 'justify-start'
+          }`}
+        >
+          {pjs.map((p, i) => (
+            <PjPortraitCard
+              key={`${p.nama_lengkap || 'pj'}-${i}`}
+              name={p.nama_lengkap || 'Pengurus Sekbid'}
+              role={p.jabatan || 'Penanggung Jawab Program'}
+              foto={p.foto}
+              idx={i}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
