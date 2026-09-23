@@ -996,7 +996,7 @@ export async function fetchMubesProkerList(opts?: {
   const authHeaders = elevatedToken ? { Authorization: `Bearer ${elevatedToken}` } : undefined;
 
   try {
-    // Deep populate: all MUBES UI fields (PJ foto, dokumentasi_items.media, LPJ sections+nota)
+    // Deep populate: PJ foto, dokumentasi_items.media, LPJ sections (incl. jenis) + nota
     const prokerQs =
       '/api/program-kerjas?pagination[limit]=100' +
       '&populate[banner_image]=true' +
@@ -1005,11 +1005,7 @@ export async function fetchMubesProkerList(opts?: {
       '&populate[penanggung_jawab][populate][foto]=true' +
       '&populate[ketua_foto]=true' +
       '&populate[sekbid]=true' +
-      '&populate[tujuan_detail]=true' +
-      '&fields[0]=judul&fields[1]=slug&fields[2]=kategori' +
-      '&fields[3]=tujuan&fields[4]=golongan_target&fields[5]=teknis_pelaksanaan' +
-      '&fields[6]=evaluasi_form_url&fields[7]=evaluasi_deskripsi&fields[8]=capaian' +
-      '&fields[9]=lokasi&fields[10]=status';
+      '&populate[tujuan_detail]=true';
     const legacyProkerQs =
       '/api/program-kerjas?pagination[limit]=100&populate=*';
 
@@ -1018,11 +1014,9 @@ export async function fetchMubesProkerList(opts?: {
       '&populate[sections]=true' +
       '&populate[nota_kwitansi]=true' +
       '&populate[program_kerja][fields][0]=slug' +
-      '&populate[program_kerja][fields][1]=judul' +
-      '&fields[0]=realisasi_anggaran&fields[1]=sumber_dana' +
-      '&fields[2]=status_pengesahan&fields[3]=pendahuluan' +
-      '&fields[4]=golongan_target&fields[5]=teknis_pelaksanaan' +
-      '&fields[6]=evaluasi_internal&fields[7]=kendala_solusi';
+      '&populate[program_kerja][fields][1]=judul';
+    const legacyLpjQs =
+      '/api/mubes-lpjs?pagination[limit]=100&populate=*';
 
     const [prokerRes, lpjRes, sekbidRes]: [any, any, any] = await Promise.all([
       (async () => {
@@ -1033,7 +1027,13 @@ export async function fetchMubesProkerList(opts?: {
         return fetchStrapiAPI(legacyProkerQs, { headers: authHeaders });
       })(),
       includeLpj
-        ? fetchStrapiAPI(lpjQs, { headers: authHeaders }).catch(() => null)
+        ? (async () => {
+            const preferred = await fetchStrapiAPI<{ data?: unknown[] }>(lpjQs, {
+              headers: authHeaders,
+            }).catch(() => null);
+            if (preferred?.data) return preferred;
+            return fetchStrapiAPI(legacyLpjQs, { headers: authHeaders }).catch(() => null);
+          })()
         : Promise.resolve(null),
       fetchStrapiAPI('/api/sekbids?populate=*&sort=nomor:asc', {
         headers: authHeaders,

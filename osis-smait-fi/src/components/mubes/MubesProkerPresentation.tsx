@@ -41,7 +41,7 @@ function firstText(...candidates: Array<string | null | undefined>): string | nu
 function CapaianBody({ text }: { text: string }) {
   const lines = text
     .split(/\n+/)
-    .map((l) => l.replace(/^[-•*]\s*/, '').trim())
+    .map((l) => l.replace(/^[-•*\d.)\s]+/, '').trim())
     .filter(Boolean);
   const shortChips =
     lines.length >= 2 && lines.length <= 8 && lines.every((l) => l.length <= 48);
@@ -51,7 +51,7 @@ function CapaianBody({ text }: { text: string }) {
         {lines.map((line, i) => (
           <span
             key={`${line}-${i}`}
-            className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-800 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+            className="rounded-lg border border-[#DDDDDD] bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
           >
             {line}
           </span>
@@ -59,7 +59,11 @@ function CapaianBody({ text }: { text: string }) {
       </div>
     );
   }
-  return <ProseBlock>{text}</ProseBlock>;
+  return (
+    <div className="rounded-xl border border-[#DDDDDD] bg-white p-4 dark:border-slate-700 dark:bg-slate-900">
+      <ProseBlock>{text}</ProseBlock>
+    </div>
+  );
 }
 
 function formatKendalaSolusi(raw: unknown): string | null {
@@ -195,7 +199,7 @@ function AnggaranNotaBlock({ proker }: { proker: MubesProgramKerja }) {
   return (
     <section
       aria-labelledby="anggaran-heading"
-      className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900"
+      className="rounded-2xl border border-[#DDDDDD] bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900"
     >
       <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
         <CircleDollarSign className="h-4 w-4" aria-hidden="true" />
@@ -249,15 +253,43 @@ function AnggaranNotaBlock({ proker }: { proker: MubesProgramKerja }) {
   );
 }
 
-function DokumentasiGallery({ proker }: { proker: MubesProgramKerja }) {
-  const docs =
-    proker.dokumentasi_items && proker.dokumentasi_items.length > 0
-      ? proker.dokumentasi_items
-      : [];
+type DocCard = {
+  id?: string | number;
+  url: string;
+  judul: string;
+  deskripsi?: string;
+  isVideo?: boolean;
+};
 
+function resolveDokumentasi(proker: MubesProgramKerja): DocCard[] {
+  if (proker.dokumentasi_items?.length) return proker.dokumentasi_items;
+  const raw = proker.dokumentasi;
+  if (!Array.isArray(raw) || raw.length === 0) return [];
+  return raw
+    .map((item: unknown, i: number): DocCard | null => {
+      const url = getStrapiMediaUrl(item, '');
+      if (!url) return null;
+      const node =
+        (item as { attributes?: Record<string, unknown> })?.attributes ||
+        (item as Record<string, unknown>);
+      const mime = String(node?.mime || '');
+      const name = String(
+        node?.caption || node?.alternativeText || node?.name || `Dokumentasi ${i + 1}`
+      );
+      return {
+        id: (node?.id as string | number) ?? i,
+        url,
+        judul: name,
+        isVideo: mime.startsWith('video/'),
+      };
+    })
+    .filter((x): x is DocCard => Boolean(x));
+}
+
+function DokumentasiGallery({ docs }: { docs: DocCard[] }) {
   if (docs.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-slate-300 px-5 py-10 text-center text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
+      <div className="rounded-2xl border border-dashed border-[#DDDDDD] px-5 py-10 text-center text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
         Belum ada dokumentasi yang tersedia.
       </div>
     );
@@ -268,7 +300,7 @@ function DokumentasiGallery({ proker }: { proker: MubesProgramKerja }) {
       {docs.map((item, i) => (
         <figure
           key={item.id ?? i}
-          className="min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900"
+          className="min-w-0 overflow-hidden rounded-2xl border border-[#DDDDDD] bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900"
         >
           <div className="relative aspect-[4/3] w-full bg-slate-900">
             {item.isVideo ? (
@@ -381,9 +413,7 @@ function LpjOrderedBody({ proker }: { proker: MubesProgramKerja }) {
       {capaian ? (
         <section className="flex flex-col gap-3">
           <SectionHeading n={3} title="Capaian Parameter Tujuan" />
-          <div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-900">
-            <CapaianBody text={capaian} />
-          </div>
+          <CapaianBody text={capaian} />
         </section>
       ) : null}
 
@@ -464,38 +494,41 @@ function ProkerBanner({ proker }: { proker: MubesProgramKerja }) {
     },
     ditinjau: {
       label: 'Sedang Ditinjau',
-      dot: 'bg-amber-500',
+      dot: 'bg-emerald-500',
       badge:
-        'border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200',
+        'border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200',
     },
     draft: {
       label: 'Draft',
       dot: 'bg-slate-500',
       badge:
-        'border-slate-200 bg-white/70 text-slate-700 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-200',
+        'border-slate-200 bg-white/80 text-slate-700 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-200',
     },
   }[status] || {
     label: status,
     dot: 'bg-slate-500',
     badge:
-      'border-slate-200 bg-white/70 text-slate-700 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-200',
+      'border-slate-200 bg-white/80 text-slate-700 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-200',
   };
 
   return (
-    <header className="border-b border-sky-200 bg-sky-50 px-5 py-5 dark:border-sky-900/70 dark:bg-sky-950/35 sm:px-7">
+    <header
+      className="border-b border-sky-100 px-5 py-5 dark:border-sky-900/50 sm:px-7"
+      style={{ backgroundColor: '#E3F2FD' }}
+    >
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex min-w-0 items-start gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-800 dark:bg-amber-950/50 dark:text-amber-300">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-amber-200 bg-amber-50 text-amber-700">
             <BadgeCheck className="h-5 w-5" aria-hidden="true" />
           </div>
           <div className="min-w-0">
-            <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-amber-700 dark:text-amber-300">
+            <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-amber-700">
               Sidang Komisi Pertanggungjawaban
             </p>
-            <h1 className="mt-1 font-serif text-lg font-bold leading-tight text-slate-950 dark:text-white sm:text-xl">
+            <h1 className="mt-1 font-serif text-lg font-bold leading-tight text-slate-950 sm:text-xl">
               Dokumen Evaluasi &amp; Realisasi Anggaran
             </h1>
-            <p className="mt-1 break-words text-sm text-slate-600 dark:text-slate-300">
+            <p className="mt-1 break-words text-sm text-slate-600">
               {proker.judul}
               {proker.sekbid_judul ? ` · ${proker.sekbid_judul}` : ''}
             </p>
@@ -521,6 +554,7 @@ export default function MubesProkerPresentation({
   const fullHref = proker.slug
     ? `/portal-mubes/proker/${encodeURIComponent(proker.slug)}`
     : null;
+  const docs = resolveDokumentasi(proker);
 
   const body = (
     <div className="flex flex-col gap-8">
@@ -532,36 +566,42 @@ export default function MubesProkerPresentation({
         <LpjOrderedBody proker={proker} />
       </div>
 
-      <section aria-labelledby="dokumentasi-heading" className="flex flex-col gap-4 border-t border-slate-200 pt-7 dark:border-slate-800">
+      <section
+        aria-labelledby="dokumentasi-heading"
+        className="flex flex-col gap-4 border-t border-[#DDDDDD] pt-7 dark:border-slate-800"
+      >
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 id="dokumentasi-heading" className="flex items-center gap-2 font-serif text-xl font-bold text-slate-950 dark:text-white">
+            <h2
+              id="dokumentasi-heading"
+              className="flex items-center gap-2 font-serif text-xl font-bold text-slate-950 dark:text-white"
+            >
               <Images className="h-5 w-5 text-sky-700 dark:text-sky-400" aria-hidden="true" />
               Dokumentasi Pelaksanaan Kegiatan
             </h2>
             <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              Arsip dokumentasi program kerja.
+              Rekaman jejak visual hasil kerja proker.
             </p>
           </div>
-          {proker.dokumentasi_items?.length ? (
+          {docs.length > 0 ? (
             <span className="w-fit rounded-full bg-amber-100 px-3 py-1 text-[10px] font-bold text-amber-900 dark:bg-amber-950/50 dark:text-amber-200">
-              {proker.dokumentasi_items.length} dokumentasi
+              {docs.length} Dokumentasi Tertampil
             </span>
           ) : null}
         </div>
-        <DokumentasiGallery proker={proker} />
+        <DokumentasiGallery docs={docs} />
       </section>
     </div>
   );
 
   if (isFull) {
     return (
-      <article className="flex w-full flex-col overflow-hidden rounded-none border border-slate-200 bg-slate-50 shadow-sm dark:border-slate-800 dark:bg-slate-950 sm:rounded-2xl">
+      <article className="flex w-full flex-col overflow-hidden rounded-none border border-[#DDDDDD] bg-white shadow-sm dark:border-slate-800 dark:bg-slate-950 sm:rounded-2xl">
         <ProkerBanner proker={proker} />
-        <div className="p-5 text-slate-800 dark:text-slate-200 sm:p-7 lg:p-9">
+        <div className="bg-white p-5 text-slate-800 dark:bg-slate-950 dark:text-slate-200 sm:p-7 lg:p-9">
           {body}
         </div>
-        <div className="flex justify-end border-t border-slate-200 bg-white p-4 px-6 dark:border-slate-800 dark:bg-slate-900">
+        <div className="flex justify-end border-t border-[#DDDDDD] bg-white p-4 px-6 dark:border-slate-800 dark:bg-slate-900">
           <Link
             href="/portal-mubes"
             className="flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-xs font-semibold text-white transition hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 dark:bg-slate-700 dark:hover:bg-slate-600"
@@ -579,7 +619,7 @@ export default function MubesProkerPresentation({
       role="dialog"
       aria-modal="true"
       aria-label={`Dokumen evaluasi ${proker.judul}`}
-      className="flex max-h-[92vh] w-full max-w-6xl flex-col overflow-hidden rounded-3xl border border-slate-200 bg-slate-50 shadow-2xl dark:border-slate-800 dark:bg-slate-950"
+      className="flex max-h-[92vh] w-full max-w-6xl flex-col overflow-hidden rounded-3xl border border-[#DDDDDD] bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-950"
     >
       <div className="relative shrink-0">
         <ProkerBanner proker={proker} />
