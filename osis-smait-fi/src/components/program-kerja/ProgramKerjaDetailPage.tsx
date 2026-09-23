@@ -25,6 +25,11 @@ export interface DocumentationMediaItem {
   orientation: 'landscape' | 'portrait' | 'square';
 }
 
+export interface PublicLpjHighlights {
+  capaian: string | null;
+  evaluasi: string | null;
+}
+
 export interface ProgramDetailProps {
   title: string;
   category: 'Program Rutinan' | 'Program Insidental';
@@ -35,6 +40,8 @@ export interface ProgramDetailProps {
   evaluasiDesc: string;
   evaluasiUrl?: string;
   tampilkanEvaluasi?: boolean;
+  /** From mubes-lpj.sections (Capaian) — not on visitor schema */
+  capaianDesc?: string | null;
   documentationImages: DocumentationMediaItem[];
   bannerImage: string;
   enablePreviewDokumentasi?: boolean;
@@ -217,6 +224,7 @@ export function formatProgramDetail(strapiData: any): ProgramDetailProps | null 
     evaluasiDesc: attrs.evaluasi_deskripsi || '',
     evaluasiUrl: attrs.evaluasi_form_url || '',
     tampilkanEvaluasi: isEvaluasiEnabled,
+    capaianDesc: null,
     bannerImage: bannerUrl,
     documentationImages: docImages,
     enablePreviewDokumentasi: isPreviewEnabled,
@@ -225,9 +233,37 @@ export function formatProgramDetail(strapiData: any): ProgramDetailProps | null 
   };
 }
 
-export default function ProgramKerjaDetailPage({ slug, initialData }: { slug: string; initialData?: any }) {
+function mergeLpjHighlights(
+  base: ProgramDetailProps | null,
+  highlights?: PublicLpjHighlights | null
+): ProgramDetailProps | null {
+  if (!base) return null;
+  if (!highlights) return base;
+  const capaian = highlights.capaian?.trim() || base.capaianDesc || null;
+  const evaluasiFromLpj = highlights.evaluasi?.trim() || '';
+  return {
+    ...base,
+    capaianDesc: capaian,
+    // LPJ section wins over short evaluasi_deskripsi on program-kerja
+    evaluasiDesc: evaluasiFromLpj || base.evaluasiDesc || '',
+  };
+}
+
+export default function ProgramKerjaDetailPage({
+  slug,
+  initialData,
+  initialLpjHighlights,
+}: {
+  slug: string;
+  initialData?: any;
+  /** SSR highlights from mubes-lpj.sections (Capaian + Evaluasi) */
+  initialLpjHighlights?: PublicLpjHighlights | null;
+}) {
   const [detail, setDetail] = useState<ProgramDetailProps | null>(() => {
-    return initialData ? formatProgramDetail(initialData) : null;
+    return mergeLpjHighlights(
+      initialData ? formatProgramDetail(initialData) : null,
+      initialLpjHighlights
+    );
   });
   const [loading, setLoading] = useState<boolean>(!initialData);
   const [selectedMedia, setSelectedMedia] = useState<{ url: string; isVideo: boolean; caption?: string } | null>(null);
@@ -279,25 +315,53 @@ export default function ProgramKerjaDetailPage({ slug, initialData }: { slug: st
   }, [isSignedIn, slug]);
 
   useEffect(() => {
-    if (initialData) {
-      setDetail(formatProgramDetail(initialData));
-      setLoading(false);
-      return;
+    let cancelled = false;
+
+    async function loadHighlightsIfNeeded(base: ProgramDetailProps | null) {
+      if (!slug || !base) return base;
+      if (initialLpjHighlights?.capaian || initialLpjHighlights?.evaluasi) {
+        return mergeLpjHighlights(base, initialLpjHighlights);
+      }
+      // Already have both from SSR merge or prior fetch
+      if (base.capaianDesc && base.evaluasiDesc) return base;
+      try {
+        const res = await fetch(`/api/program-kerja/${encodeURIComponent(slug)}/lpj-public`, {
+          cache: 'no-store',
+        });
+        if (!res.ok) return base;
+        const data = (await res.json()) as PublicLpjHighlights;
+        return mergeLpjHighlights(base, data);
+      } catch {
+        return base;
+      }
     }
 
-    async function loadFromStrapi() {
+    async function run() {
+      if (initialData) {
+        const base = formatProgramDetail(initialData);
+        const merged = await loadHighlightsIfNeeded(base);
+        if (!cancelled) {
+          setDetail(merged);
+          setLoading(false);
+        }
+        return;
+      }
+
       setLoading(true);
       const strapiData = await fetchProgramKerjaFromStrapi(slug);
-      if (strapiData) {
-        setDetail(formatProgramDetail(strapiData));
+      const base = strapiData ? formatProgramDetail(strapiData) : null;
+      const merged = await loadHighlightsIfNeeded(base);
+      if (!cancelled) {
+        setDetail(merged);
+        setLoading(false);
       }
-      setLoading(false);
     }
 
-    if (slug) {
-      loadFromStrapi();
-    }
-  }, [slug, initialData]);
+    if (slug) run();
+    return () => {
+      cancelled = true;
+    };
+  }, [slug, initialData, initialLpjHighlights]);
 
   if (loading) {
     return (
@@ -511,18 +575,11 @@ export default function ProgramKerjaDetailPage({ slug, initialData }: { slug: st
                   Teknis Pelaksanaan
                 </h3>
 
-                <div className="text-[#475569] text-base leading-relaxed">
+                <div className="text-[#475569] text-base leading-relaxed whitespace-pre-line">
                   {detail.teknisDesc}
                 </div>
 
-                {detail.tampilkanEvaluasi !== false && Boolean(detail.evaluasiDesc && detail.evaluasiDesc.trim()) && (
-                  <p className="text-[#475569] text-base leading-relaxed border-t border-gray-100 pt-4 mt-2">
-                    <span className="font-semibold text-slate-900">Evaluasi & Catatan: </span>
-                    {detail.evaluasiDesc}
-                  </p>
-                )}
-
-                {/* MUBES In-place Overlay Section */}
+                {/* MUBES In-place Overlay Section (anggaran/nota — gated) */}
                 {mubesPayload?.lpj && (
                   <MubesLpjSection
                     lpj={mubesPayload.lpj}
@@ -535,6 +592,61 @@ export default function ProgramKerjaDetailPage({ slug, initialData }: { slug: st
           </div>
         </section>
       )}
+
+      {/* Section 3b: Capaian — from mubes-lpj.sections (public text) */}
+      {Boolean(detail.capaianDesc && detail.capaianDesc.trim()) && (
+        <section className="w-full bg-white pb-16 px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="w-full bg-white rounded-[24px] p-8 md:p-12 border border-slate-100 shadow-[0_10px_30px_-5px_rgba(0,0,0,0.08)] flex flex-col md:flex-row items-start gap-8">
+              <div className="w-16 h-16 rounded-2xl bg-amber-50 flex items-center justify-center shrink-0">
+                <svg className="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-4.5A3.75 3.75 0 0012 10.5h0A3.75 3.75 0 007.5 14.25v4.5m9-11.25V6a3 3 0 00-3-3h-3a3 3 0 00-3 3v1.5" />
+                </svg>
+              </div>
+              <div className="flex flex-col gap-4 flex-grow min-w-0">
+                <h3 className="text-[#111827] text-2xl md:text-3xl font-bold font-serif">Capaian</h3>
+                <div className="text-[#475569] text-base leading-relaxed whitespace-pre-line">
+                  {detail.capaianDesc}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Section 3c: Evaluasi & Solusi — LPJ sections or evaluasi_deskripsi */}
+      {detail.tampilkanEvaluasi !== false &&
+        Boolean(detail.evaluasiDesc && detail.evaluasiDesc.trim()) && (
+          <section className="w-full bg-white pb-16 px-4">
+            <div className="max-w-6xl mx-auto">
+              <div className="w-full bg-white rounded-[24px] p-8 md:p-12 border border-slate-100 shadow-[0_10px_30px_-5px_rgba(0,0,0,0.08)] flex flex-col md:flex-row items-start gap-8">
+                <div className="w-16 h-16 rounded-2xl bg-rose-50 flex items-center justify-center shrink-0">
+                  <svg className="w-8 h-8 text-rose-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                  </svg>
+                </div>
+                <div className="flex flex-col gap-4 flex-grow min-w-0">
+                  <h3 className="text-[#111827] text-2xl md:text-3xl font-bold font-serif">
+                    Evaluasi &amp; Solusi
+                  </h3>
+                  <div className="text-[#475569] text-base leading-relaxed whitespace-pre-line">
+                    {detail.evaluasiDesc}
+                  </div>
+                  {detail.evaluasiUrl && detail.evaluasiUrl.trim() && detail.evaluasiUrl !== '#' && (
+                    <a
+                      href={detail.evaluasiUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center justify-center gap-2 self-start px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold transition"
+                    >
+                      Buka Kuisioner / Form Evaluasi
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
 
       {/* Section 4: Dokumentasi & Hasil */}
       {detail.documentationImages && detail.documentationImages.length > 0 && (

@@ -15,6 +15,13 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
   - `ramadhan-ceria` Rp434.000 · `phbn` Rp318.000 · `classmeet` Rp548.000 · `Direct-Marketing` Rp125.000
 - Script: `scripts/seed-mubes-anggaran.mjs`. Manage lanjutan lewat Strapi Admin pada entry LPJ masing-masing proker.
 
+## [2.1.52] - 2026-09-23
+
+### 🐛 Fix (Visitor Program Kerja — Capaian & Evaluasi & Solusi)
+- **Akar masalah**: field Capaian / Evaluasi & Solusi hanya ada di `mubes-lpj.sections` (koleksi MUBES), bukan di schema 🌐 Program Kerja. Halaman visitor tidak fetch LPJ dan tidak punya section UI.
+- **Perbaikan**: SSR + BFF publik (`fetchPublicProkerLpjHighlights`, `/api/program-kerja/[slug]/lpj-public`) mengambil teks Capaian & Evaluasi dari LPJ (elevated token server-side; tanpa anggaran/nota).
+- **UI** `/program-kerja/[slug]`: section **Capaian** dan **Evaluasi & Solusi** tampil bila data ada (selaras urutan MUBES, tanpa gate login).
+
 ## [2.1.51] - 2026-09-23
 
 ### 🎨 UX (MUBES PJ profile + text selection)

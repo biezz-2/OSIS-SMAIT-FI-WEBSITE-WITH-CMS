@@ -244,6 +244,68 @@ export async function fetchProgramKerjaFromStrapi(slug: string) {
   return null;
 }
 
+/** Public-safe LPJ body snippets (Capaian + Evaluasi). No anggaran/nota. Server-only. */
+export type PublicProkerLpjHighlights = {
+  capaian: string | null;
+  evaluasi: string | null;
+};
+
+function pickLpjSectionIsi(sections: unknown, ...nameParts: string[]): string | null {
+  if (!sections) return null;
+  const list = Array.isArray(sections)
+    ? sections
+    : Array.isArray((sections as { data?: unknown }).data)
+      ? ((sections as { data: unknown[] }).data as unknown[])
+      : [];
+  const needles = nameParts.map((s) => s.toLowerCase());
+  for (const item of list) {
+    const row = (item as { attributes?: Record<string, unknown> })?.attributes || (item as Record<string, unknown>) || {};
+    const judul = String(row.judul ?? row.title ?? '').toLowerCase();
+    if (!needles.some((n) => judul.includes(n))) continue;
+    const isi = String(row.isi ?? row.deskripsi ?? row.content ?? '').trim();
+    if (isi) return isi;
+  }
+  return null;
+}
+
+/**
+ * Capaian & Evaluasi live on `mubes-lpj.sections` (not visitor program-kerja schema).
+ * Public API is 403; use elevated token server-side and return only text highlights.
+ */
+export async function fetchPublicProkerLpjHighlights(
+  slug: string
+): Promise<PublicProkerLpjHighlights> {
+  const empty: PublicProkerLpjHighlights = { capaian: null, evaluasi: null };
+  if (!slug || typeof window !== 'undefined') return empty;
+
+  const elevatedToken = process.env.STRAPI_ELEVATED_TOKEN;
+  if (!elevatedToken) return empty;
+
+  const normalized = slug.trim();
+  const lower = normalized.toLowerCase();
+  const filter =
+    `filters[$or][0][program_kerja][slug][$eq]=${encodeURIComponent(normalized)}` +
+    `&filters[$or][1][program_kerja][slug][$eq]=${encodeURIComponent(lower)}`;
+  const populate = 'populate[sections]=true&populate[program_kerja][fields][0]=slug';
+
+  const json: any = await fetchStrapiAPI(`/api/mubes-lpjs?${filter}&${populate}&pagination[limit]=1`, {
+    headers: { Authorization: `Bearer ${elevatedToken}` },
+  });
+
+  const raw = json?.data?.[0];
+  if (!raw) return empty;
+
+  const attrs = raw.attributes || raw;
+  const capaian = pickLpjSectionIsi(attrs.sections, 'capaian');
+  const evaluasi =
+    pickLpjSectionIsi(attrs.sections, 'evaluasi') ||
+    (typeof attrs.evaluasi_internal === 'string' && attrs.evaluasi_internal.trim()
+      ? attrs.evaluasi_internal.trim()
+      : null);
+
+  return { capaian, evaluasi };
+}
+
 
 /**
  * Fetch Page (Halaman Utama) by slug from Strapi API
