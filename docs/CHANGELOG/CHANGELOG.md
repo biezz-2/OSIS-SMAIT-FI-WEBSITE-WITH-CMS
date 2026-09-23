@@ -6,6 +6,14 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.43] - 2026-09-23
+
+### ✨ Fitur (Portal MUBES — tautan proker penuh)
+- **Kartu proker** di `/portal-mubes`: tombol **Buka Halaman Proker Lengkap** → `/program-kerja/[slug]` (halaman penuh, bukan overlay).
+- **Footer modal presentasi sidang**: CTA yang sama agar bisa keluar dari mode overlay ke detail proker + LPJ in-page.
+
+---
+
 ## [2.1.42] - 2026-09-23
 
 ### ✨ Fitur (Strapi built-in MCP)
