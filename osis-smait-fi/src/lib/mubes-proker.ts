@@ -1018,31 +1018,36 @@ export async function fetchMubesProkerList(opts?: {
     const legacyLpjQs =
       '/api/mubes-lpjs?pagination[limit]=100&populate=*';
 
-    const [prokerRes, lpjRes, sekbidRes]: [any, any, any] = await Promise.all([
-      (async () => {
-        const preferred = await fetchStrapiAPI<{ data?: unknown[] }>(prokerQs, {
+    type StrapiList = { data?: unknown[] } | null | undefined;
+    const [prokerRes, lpjRes, sekbidRes] = (await Promise.all([
+      (async (): Promise<StrapiList> => {
+        const preferred = (await fetchStrapiAPI(prokerQs, {
           headers: authHeaders,
-        });
-        if (preferred?.data) return preferred;
-        return fetchStrapiAPI(legacyProkerQs, { headers: authHeaders });
+        }).catch(() => null)) as StrapiList;
+        if (preferred && Array.isArray(preferred.data) && preferred.data.length) return preferred;
+        return (await fetchStrapiAPI(legacyProkerQs, { headers: authHeaders }).catch(
+          () => null
+        )) as StrapiList;
       })(),
       includeLpj
-        ? (async () => {
-            const preferred = await fetchStrapiAPI<{ data?: unknown[] }>(lpjQs, {
+        ? (async (): Promise<StrapiList> => {
+            const preferred = (await fetchStrapiAPI(lpjQs, {
               headers: authHeaders,
-            }).catch(() => null);
-            if (preferred?.data) return preferred;
-            return fetchStrapiAPI(legacyLpjQs, { headers: authHeaders }).catch(() => null);
+            }).catch(() => null)) as StrapiList;
+            if (preferred && Array.isArray(preferred.data)) return preferred;
+            return (await fetchStrapiAPI(legacyLpjQs, { headers: authHeaders }).catch(
+              () => null
+            )) as StrapiList;
           })()
-        : Promise.resolve(null),
+        : Promise.resolve(null as StrapiList),
       fetchStrapiAPI('/api/sekbids?populate=*&sort=nomor:asc', {
         headers: authHeaders,
-      }).catch(() => null),
-    ]);
+      }).catch(() => null) as Promise<StrapiList>,
+    ])) as [StrapiList, StrapiList, StrapiList];
 
-    const prokerData = prokerRes?.data || [];
-    const lpjList = includeLpj ? lpjRes?.data || [] : [];
-    const sekbidList = sekbidRes?.data || [];
+    const prokerData = Array.isArray(prokerRes?.data) ? prokerRes!.data! : [];
+    const lpjList = includeLpj && Array.isArray(lpjRes?.data) ? lpjRes!.data! : [];
+    const sekbidList = Array.isArray(sekbidRes?.data) ? sekbidRes!.data! : [];
 
     // If Strapi returns no proker data (down or unseeded), use static fallback
     if (prokerData.length === 0) {

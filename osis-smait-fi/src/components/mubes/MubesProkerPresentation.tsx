@@ -11,7 +11,7 @@ import {
   CircleDollarSign,
   Paperclip,
   AlertTriangle,
-  CheckCircle2,
+  ClipboardList,
   Images,
   X,
   ExternalLink,
@@ -37,33 +37,73 @@ function firstText(...candidates: Array<string | null | undefined>): string | nu
   return null;
 }
 
-/** Short multi-line capaian → chip grid (mockup); longer prose stays as block. */
-function CapaianBody({ text }: { text: string }) {
+type CapaianChip = { title: string; subtitle?: string };
+
+/** Parse capaian into title+subtitle pairs (mockup chips) or fall back to prose. */
+function parseCapaianChips(text: string): CapaianChip[] | null {
   const lines = text
     .split(/\n+/)
-    .map((l) => l.replace(/^[-•*\d.)\s]+/, '').trim())
+    .map((l) => l.replace(/^[-•*\d.)]+\s*/, '').trim())
     .filter(Boolean);
-  const shortChips =
-    lines.length >= 2 && lines.length <= 8 && lines.every((l) => l.length <= 48);
-  if (shortChips) {
+  if (lines.length < 2) return null;
+
+  // Explicit pairs: "Title — subtitle" / "Title: subtitle" on one line
+  const pairOnLine: CapaianChip[] = [];
+  for (const l of lines) {
+    const m = l.match(/^(.{1,48}?)\s*[—–\-:|]\s+(.+)$/);
+    if (!m) continue;
+    pairOnLine.push({ title: m[1].trim(), subtitle: m[2].trim() });
+  }
+  if (pairOnLine.length >= 2 && pairOnLine.length === lines.length) return pairOnLine;
+
+  // Alternating title / subtitle rows (even count, short titles)
+  if (lines.length >= 2 && lines.length % 2 === 0 && lines.length <= 12) {
+    const pairs: CapaianChip[] = [];
+    let ok = true;
+    for (let i = 0; i < lines.length; i += 2) {
+      const title = lines[i];
+      const subtitle = lines[i + 1];
+      if (title.length > 48 || subtitle.length > 120) {
+        ok = false;
+        break;
+      }
+      pairs.push({ title, subtitle });
+    }
+    if (ok && pairs.length >= 1) return pairs;
+  }
+
+  // Short single-line chips (≤48 chars each)
+  if (lines.length <= 8 && lines.every((l) => l.length <= 48)) {
+    return lines.map((title) => ({ title }));
+  }
+  return null;
+}
+
+/** Chip grid without outer box (H3); prose stays plain block. */
+function CapaianBody({ text }: { text: string }) {
+  const chips = parseCapaianChips(text);
+  if (chips?.length) {
     return (
-      <div className="flex flex-wrap gap-2">
-        {lines.map((line, i) => (
-          <span
-            key={`${line}-${i}`}
-            className="rounded-lg border border-[#DDDDDD] bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+      <div className="flex flex-wrap gap-2.5">
+        {chips.map((chip, i) => (
+          <div
+            key={`${chip.title}-${i}`}
+            className="min-w-[140px] max-w-[220px] rounded-xl border border-[#DDDDDD] bg-white px-3.5 py-2.5 shadow-sm dark:border-slate-700 dark:bg-slate-800"
           >
-            {line}
-          </span>
+            <p className="text-xs font-bold leading-snug text-slate-900 dark:text-slate-50">
+              {chip.title}
+            </p>
+            {chip.subtitle ? (
+              <p className="mt-0.5 text-[11px] leading-snug text-slate-500 dark:text-slate-400">
+                {chip.subtitle}
+              </p>
+            ) : null}
+          </div>
         ))}
       </div>
     );
   }
-  return (
-    <div className="rounded-xl border border-[#DDDDDD] bg-white p-4 dark:border-slate-700 dark:bg-slate-900">
-      <ProseBlock>{text}</ProseBlock>
-    </div>
-  );
+  return <ProseBlock>{text}</ProseBlock>;
 }
 
 function formatKendalaSolusi(raw: unknown): string | null {
@@ -108,6 +148,10 @@ function ProseBlock({ children }: { children: React.ReactNode }) {
       {children}
     </div>
   );
+}
+
+function EmptyHint({ children }: { children: React.ReactNode }) {
+  return <p className="text-sm italic text-slate-400 dark:text-slate-500">{children}</p>;
 }
 
 /** Kartu PJ mirror public `/program-kerja/[slug]` (ProgramKerjaDetailPage chairs). */
@@ -211,12 +255,9 @@ function AnggaranNotaBlock({ proker }: { proker: MubesProgramKerja }) {
         Rp {budget.toLocaleString('id-ID')}
       </p>
       {hasSumber ? (
-        <div className="mt-4 border-t border-slate-100 pt-3 dark:border-slate-800">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Sumber Dana</p>
-          <p className="mt-1 break-words text-sm font-semibold text-slate-700 dark:text-slate-200">
-            {lpj?.sumber_dana}
-          </p>
-        </div>
+        <p className="mt-1 break-words text-xs text-slate-500 dark:text-slate-400">
+          Sumber Dana: <span className="font-medium text-slate-700 dark:text-slate-200">{lpj?.sumber_dana}</span>
+        </p>
       ) : null}
       {hasNota ? (
         <div className="mt-4 border-t border-slate-100 pt-3 dark:border-slate-800">
@@ -382,60 +423,42 @@ function LpjOrderedBody({ proker }: { proker: MubesProgramKerja }) {
     formatKendalaSolusi(proker.lpj?.kendala_solusi ?? null) || kendalaFromSection;
   const formUrl = proker.evaluasi_form_url?.trim() || '';
 
-  const points = [
-    pendahuluan || golonganTarget || capaian || teknis || evaluasi || kendalaText || formUrl,
-  ].some(Boolean);
-
-  if (!points) {
-    return (
-      <p className="rounded-xl border border-dashed border-slate-300 px-4 py-8 text-center text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
-        Isi LPJ belum tersedia di Strapi.
-      </p>
-    );
-  }
-
   return (
     <div className="flex flex-col gap-7">
-      {pendahuluan ? (
-        <section className="flex flex-col gap-2">
-          <SectionHeading n={1} title="Pendahuluan & Gambaran Umum" />
-          <ProseBlock>{pendahuluan}</ProseBlock>
-        </section>
-      ) : null}
+      <section className="flex flex-col gap-2">
+        <SectionHeading n={1} title="Pendahuluan & Gambaran Umum" />
+        {pendahuluan ? <ProseBlock>{pendahuluan}</ProseBlock> : <EmptyHint>Belum diisi.</EmptyHint>}
+      </section>
 
-      {golonganTarget ? (
-        <section className="flex flex-col gap-2">
-          <SectionHeading n={2} title="Golongan Sasaran & Peserta" />
+      <section className="flex flex-col gap-2">
+        <SectionHeading n={2} title="Golongan Sasaran & Peserta" />
+        {golonganTarget ? (
           <ProseBlock>{golonganTarget}</ProseBlock>
-        </section>
-      ) : null}
+        ) : (
+          <EmptyHint>Belum diisi.</EmptyHint>
+        )}
+      </section>
 
-      {capaian ? (
-        <section className="flex flex-col gap-3">
-          <SectionHeading n={3} title="Capaian Parameter Tujuan" />
-          <CapaianBody text={capaian} />
-        </section>
-      ) : null}
+      <section className="flex flex-col gap-3">
+        <SectionHeading n={3} title="Capaian Parameter Tujuan" />
+        {capaian ? <CapaianBody text={capaian} /> : <EmptyHint>Belum diisi.</EmptyHint>}
+      </section>
 
-      {teknis ? (
-        <section className="flex flex-col gap-2">
-          <SectionHeading n={4} title="Teknis Pelaksanaan & Alur" />
-          <ProseBlock>{teknis}</ProseBlock>
-        </section>
-      ) : null}
+      <section className="flex flex-col gap-2">
+        <SectionHeading n={4} title="Teknis Pelaksanaan & Alur" />
+        {teknis ? <ProseBlock>{teknis}</ProseBlock> : <EmptyHint>Belum diisi.</EmptyHint>}
+      </section>
 
-      {evaluasi ? (
-        <section className="flex flex-col gap-3 rounded-xl border border-amber-200 bg-amber-50/60 p-4 dark:border-amber-800/60 dark:bg-amber-950/20">
-          <div className="flex items-start gap-2">
-            <CheckCircle2
-              className="mt-0.5 h-4 w-4 shrink-0 text-amber-700 dark:text-amber-400"
-              aria-hidden="true"
-            />
-            <SectionHeading n={5} title="Evaluasi Internal Sidang MUBES" />
-          </div>
-          <ProseBlock>{evaluasi}</ProseBlock>
-        </section>
-      ) : null}
+      <section className="flex flex-col gap-3 rounded-xl border border-amber-200 bg-amber-50/60 p-4 dark:border-amber-800/60 dark:bg-amber-950/20">
+        <div className="flex items-start gap-2">
+          <ClipboardList
+            className="mt-0.5 h-4 w-4 shrink-0 text-amber-700 dark:text-amber-400"
+            aria-hidden="true"
+          />
+          <SectionHeading n={5} title="Evaluasi Internal Sidang MUBES" />
+        </div>
+        {evaluasi ? <ProseBlock>{evaluasi}</ProseBlock> : <EmptyHint>Belum diisi.</EmptyHint>}
+      </section>
 
       {kendalaText ? (
         <section
@@ -512,23 +535,20 @@ function ProkerBanner({ proker }: { proker: MubesProgramKerja }) {
   };
 
   return (
-    <header
-      className="border-b border-sky-100 px-5 py-5 dark:border-sky-900/50 sm:px-7"
-      style={{ backgroundColor: '#E3F2FD' }}
-    >
+    <header className="border-b border-sky-100 bg-[#E3F2FD] px-5 py-5 dark:border-sky-900/50 dark:bg-sky-950/40 sm:px-7">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex min-w-0 items-start gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-amber-200 bg-amber-50 text-amber-700">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-800 dark:bg-amber-950/50 dark:text-amber-300">
             <BadgeCheck className="h-5 w-5" aria-hidden="true" />
           </div>
           <div className="min-w-0">
-            <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-amber-700">
+            <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-amber-700 dark:text-amber-300">
               Sidang Komisi Pertanggungjawaban
             </p>
-            <h1 className="mt-1 font-serif text-lg font-bold leading-tight text-slate-950 sm:text-xl">
+            <h1 className="mt-1 font-serif text-lg font-bold leading-tight text-slate-950 dark:text-white sm:text-xl">
               Dokumen Evaluasi &amp; Realisasi Anggaran
             </h1>
-            <p className="mt-1 break-words text-sm text-slate-600">
+            <p className="mt-1 break-words text-sm text-slate-600 dark:text-slate-300">
               {proker.judul}
               {proker.sekbid_judul ? ` · ${proker.sekbid_judul}` : ''}
             </p>
@@ -579,8 +599,8 @@ export default function MubesProkerPresentation({
               <Images className="h-5 w-5 text-sky-700 dark:text-sky-400" aria-hidden="true" />
               Dokumentasi Pelaksanaan Kegiatan
             </h2>
-            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              Rekaman jejak visual hasil kerja proker.
+            <p className="mt-1 max-w-xl text-xs leading-5 text-slate-500 dark:text-slate-400">
+              Rekaman jejak visual hasil kerja proker yang dipresentasikan pada sidang MUBES.
             </p>
           </div>
           {docs.length > 0 ? (
@@ -601,14 +621,17 @@ export default function MubesProkerPresentation({
         <div className="bg-white p-5 text-slate-800 dark:bg-slate-950 dark:text-slate-200 sm:p-7 lg:p-9">
           {body}
         </div>
-        <div className="flex justify-end border-t border-[#DDDDDD] bg-white p-4 px-6 dark:border-slate-800 dark:bg-slate-900">
+        <div className="flex flex-col gap-2 border-t border-[#DDDDDD] bg-white px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-7 dark:border-slate-800 dark:bg-slate-900">
           <Link
             href="/portal-mubes"
-            className="flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-xs font-semibold text-white transition hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 dark:bg-slate-700 dark:hover:bg-slate-600"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 transition hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 dark:text-slate-400 dark:hover:text-slate-100"
           >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Kembali ke Portal</span>
+            <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
+            <span>Kembali ke Agenda Sidang</span>
           </Link>
+          <p className="text-[10px] leading-snug text-slate-400 dark:text-slate-500 sm:text-right">
+            Portal Musyawarah Besar · Dokumen Resmi Internal OSIS
+          </p>
         </div>
       </article>
     );

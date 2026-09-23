@@ -13,6 +13,7 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 - **Capaian UI**: baris pendek → chip grid; prosa panjang tetap blok teks. Poin kosong disembunyikan (tanpa placeholder dummy).
 - **Data Strapi (dual-source)**: status/anggaran/nota dari `mubes-lpj`; PJ/foto + kuesioner + dokumentasi dari `program-kerja`; body bernomor via `findLpjSectionIsi` (`jenis` dulu, lalu match `judul`) dengan fallback field skalar kompatibel.
 - **Strapi editor**: component Bagian LPJ — enum opsional `jenis` (pendahuluan … kendala_solusi / lainnya); displayName **Bagian LPJ Bernomor**; deskripsi CT Program Kerja / MUBES LPJ diperjelas; field/API lama tetap hidup.
+- **Mockup polish**: footer full `justify-between` (ghost «Kembali ke Agenda Sidang» + muted brand); Capaian chips title+subtitle tanpa box luar; poin 1–5 selalu tampil (italic kosong); Sumber Dana satu baris di bawah Rp; §5 `ClipboardList`.
 - **Mockup fidelity**: header `#E3F2FD` / border `#DDDDDD`, badge status mockup (hijau untuk Sedang Ditinjau), fallback dokumentasi media mentah, populate LPJ legacy-safe.
 - **Dokumentasi**: AutoWiki — konsep dual-source Program Kerja ↔ MUBES LPJ, normalizer, dan tabel sumber per blok UI.
 
