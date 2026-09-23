@@ -23,6 +23,7 @@ export interface MubesLpjData {
 export interface MubesPenanggungJawab {
   nama_lengkap?: string;
   jabatan?: string;
+  foto?: string;
 }
 
 /** Satu item galeri dokumentasi sidang (judul + deskripsi dikelola di Strapi). */
@@ -680,15 +681,17 @@ function normalizeProgramKerja(item: any, lpjByProker: Map<string, MubesLpjData>
     sekbidJudul = s.judul || DEFAULT_SEKBIDS_META[sekbidNum]?.judul || '';
   }
 
-  // Extract Penanggung Jawab
+  // Extract Penanggung Jawab (+ foto media)
   const pjList: MubesPenanggungJawab[] = [];
   const rawPj = attrs.penanggung_jawab?.data || attrs.penanggung_jawab;
   if (Array.isArray(rawPj)) {
     rawPj.forEach((p: any) => {
       const pAttr = p.attributes || p;
+      const fotoUrl = getStrapiMediaUrl(pAttr.foto?.data || pAttr.foto, '');
       pjList.push({
         nama_lengkap: pAttr.nama_lengkap || pAttr.nama,
         jabatan: pAttr.jabatan,
+        foto: fotoUrl || undefined,
       });
     });
   }
@@ -878,7 +881,8 @@ export async function fetchMubesProkerList(opts?: {
       '&populate[banner_image]=true' +
       '&populate[dokumentasi]=true' +
       '&populate[dokumentasi_items][populate][media]=true' +
-      '&populate[penanggung_jawab]=true' +
+      '&populate[penanggung_jawab][populate][foto]=true' +
+      '&populate[ketua_foto]=true' +
       '&populate[sekbid]=true' +
       '&populate[tujuan_detail]=true';
 

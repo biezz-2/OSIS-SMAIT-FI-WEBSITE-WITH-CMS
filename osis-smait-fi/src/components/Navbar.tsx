@@ -29,12 +29,11 @@ import {
 } from 'lucide-react';
 import { UserButton, useUser } from '@clerk/nextjs';
 
-// Nav items standar (di luar Mega Menu)
+// Nav items standar (di luar Mega Menu). MUBES ditampilkan terpisah hanya jika approved.
 const defaultNavItems = [
     { name: 'HOME', path: '/' },
     { name: 'ABOUT', path: '/about' },
     { name: 'EVENTS', path: '/events' },
-    { name: 'MUBES', path: '/portal-mubes' },
     { name: 'ANGGOTA', path: '/anggota' },
     { name: 'MEDIA SOSIAL', path: '/media-sosial' },
     { name: 'PARTNERS', path: '/partners' },
@@ -127,7 +126,14 @@ const Navbar = () => {
     const [expandedAccordion, setExpandedAccordion] = useState<string | null>(null);
     const drawerRef = useRef<HTMLDivElement>(null);
     const pathname = usePathname();
-    const { isSignedIn } = useUser();
+    const { isSignedIn, user } = useUser();
+    const metadata = (user?.publicMetadata || {}) as { status?: string; role?: string };
+    const isMubesApproved =
+        Boolean(isSignedIn) &&
+        (metadata.status === 'approved' ||
+            ['admin', 'administrator', 'bph', 'member', 'operator', 'admin_pembina'].includes(
+                metadata.role || ''
+            ));
 
     const [programKerjaCards, setProgramKerjaCards] = useState<MegaMenuCard[]>(initialProgramKerjaCards);
     const [galeriCards, setGaleriCards] = useState<MegaMenuCard[]>(initialGaleriCards);
@@ -352,6 +358,24 @@ const Navbar = () => {
                         </div>
                     </Link>
 
+                    {/* 3b. MUBES — hanya user login + terdaftar/approved */}
+                    {isMubesApproved && (
+                        <Link href="/portal-mubes" className="no-underline">
+                            <div
+                                className="px-2.5 xl:px-3 py-1.5 rounded transition-all duration-200 flex items-center justify-center cursor-pointer hover:opacity-90 shrink-0 ring-1 ring-amber-300/80"
+                                style={{
+                                    background: isActive('/portal-mubes')
+                                        ? 'linear-gradient(135deg,#B54708,#FA982E)'
+                                        : 'linear-gradient(135deg,#D97706,#FBBF24)',
+                                }}
+                            >
+                                <span className="text-white text-xs font-bold font-[Inter,sans-serif] leading-4 whitespace-nowrap tracking-wide">
+                                    MUBES
+                                </span>
+                            </div>
+                        </Link>
+                    )}
+
                     {/* 4. ANGGOTA */}
                     <Link href="/anggota" className="no-underline">
                         <div
@@ -570,6 +594,16 @@ const Navbar = () => {
                             {isActive('/events') && <div className="w-1.5 h-1.5 rounded-full bg-[#2E90FA]" />}
                         </div>
                     </Link>
+
+                    {/* 3b. MUBES (gated) */}
+                    {isMubesApproved && (
+                        <Link href="/portal-mubes" className="no-underline" onClick={() => setMobileOpen(false)}>
+                            <div className={`flex items-center gap-3 px-5 py-3.5 transition-colors duration-200 ${isActive('/portal-mubes') ? 'bg-amber-50 text-amber-800' : 'text-amber-700 hover:bg-amber-50/80 active:bg-amber-100'}`}>
+                                <span className="text-sm font-bold font-[Inter,sans-serif]">MUBES</span>
+                                {isActive('/portal-mubes') && <div className="w-1.5 h-1.5 rounded-full bg-amber-600" />}
+                            </div>
+                        </Link>
+                    )}
 
                     {/* 4. ANGGOTA */}
                     <Link href="/anggota" className="no-underline" onClick={() => setMobileOpen(false)}>

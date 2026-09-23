@@ -6,6 +6,16 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.49] - 2026-09-23
+
+### ✨ Data & UX (MUBES — data asli profesional + foto PJ + navbar gated)
+- **Data LPJ asli**: 48 program kerja di Strapi diisi ulang dari rekap LPJ/Proposal (`docs/data-sementara/README.md`) dengan copy profesional mengacu `Laporan_Analisis_Proker_OSIS.md` (bukan lorem). Sections: Tujuan, Teknis & Waktu, Capaian, Evaluasi & Solusi + field `program-kerja` (tujuan, teknis, evaluasi_deskripsi).
+- **Foto penanggung jawab**: populate `penanggung_jawab.foto`; MetaStrip menampilkan avatar bulat (foto atau inisial) + nama + jabatan.
+- **Navbar MUBES gated**: link MUBES (desktop emas + mobile) hanya untuk user Clerk login dengan `publicMetadata.status === 'approved'` atau role MUBES valid.
+- Script seed: `scripts/seed-mubes-real-data.mjs`.
+
+---
+
 ## [2.1.48] - 2026-09-23
 
 ### ✨ UX (MUBES LPJ — urutan sidang resmi)

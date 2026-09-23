@@ -94,7 +94,18 @@ function EmptyHint({ children }: { children: React.ReactNode }) {
   return <span className="text-slate-400 italic">{children}</span>;
 }
 
+function PjInitials(name?: string) {
+  const parts = (name || 'PJ').trim().split(/\s+/).filter(Boolean);
+  const a = parts[0]?.[0] || 'P';
+  const b = parts.length > 1 ? parts[parts.length - 1][0] : (parts[0]?.[1] || 'J');
+  return `${a}${b}`.toUpperCase();
+}
+
 function MetaStrip({ proker }: { proker: MubesProgramKerja }) {
+  const pjs = proker.penanggung_jawab?.length
+    ? proker.penanggung_jawab
+    : [{ nama_lengkap: 'Pengurus Sekbid', jabatan: undefined, foto: undefined }];
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
       <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
@@ -106,10 +117,34 @@ function MetaStrip({ proker }: { proker: MubesProgramKerja }) {
         <span className="text-base font-bold mt-1 block break-words">{proker.lokasi || 'SMAIT FI'}</span>
       </div>
       <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
-        <span className="text-xs text-slate-400 font-semibold block uppercase">Penanggung Jawab</span>
-        <span className="text-base font-bold mt-1 block break-words">
-          {proker.penanggung_jawab?.map((p) => p.nama_lengkap).join(', ') || 'Pengurus Sekbid'}
-        </span>
+        <span className="text-xs text-slate-400 font-semibold block uppercase mb-2">Penanggung Jawab</span>
+        <ul className="flex flex-col gap-2.5">
+          {pjs.map((p, i) => {
+            const name = p.nama_lengkap || 'Pengurus Sekbid';
+            return (
+              <li key={`${name}-${i}`} className="flex items-center gap-2.5 min-w-0">
+                {p.foto ? (
+                  <span className="relative w-9 h-9 shrink-0 rounded-full overflow-hidden ring-2 ring-amber-500/40 bg-slate-200 dark:bg-slate-700">
+                    <Image src={p.foto} alt={name} fill className="object-cover" sizes="36px" />
+                  </span>
+                ) : (
+                  <span
+                    className="w-9 h-9 shrink-0 rounded-full bg-amber-600 text-white text-[11px] font-bold flex items-center justify-center ring-2 ring-amber-500/30"
+                    aria-hidden
+                  >
+                    {PjInitials(name)}
+                  </span>
+                )}
+                <span className="min-w-0 flex flex-col">
+                  <span className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate">{name}</span>
+                  {p.jabatan ? (
+                    <span className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{p.jabatan}</span>
+                  ) : null}
+                </span>
+              </li>
+            );
+          })}
+        </ul>
       </div>
     </div>
   );
