@@ -681,17 +681,38 @@ function normalizeProgramKerja(item: any, lpjByProker: Map<string, MubesLpjData>
     sekbidJudul = s.judul || DEFAULT_SEKBIDS_META[sekbidNum]?.judul || '';
   }
 
-  // Extract Penanggung Jawab (+ foto media)
+  // Extract ketua_foto list
+  const rawKetuaFoto = attrs.ketua_foto?.data || attrs.ketua_foto;
+  const ketuaFotoList: string[] = [];
+  if (Array.isArray(rawKetuaFoto)) {
+    rawKetuaFoto.forEach((kf: any) => {
+      const url = getStrapiMediaUrl(kf, '');
+      if (url) ketuaFotoList.push(url);
+    });
+  } else if (rawKetuaFoto) {
+    const url = getStrapiMediaUrl(rawKetuaFoto, '');
+    if (url) ketuaFotoList.push(url);
+  }
+
+  // Extract Penanggung Jawab (+ foto media & fallback ketua_foto)
   const pjList: MubesPenanggungJawab[] = [];
   const rawPj = attrs.penanggung_jawab?.data || attrs.penanggung_jawab;
-  if (Array.isArray(rawPj)) {
-    rawPj.forEach((p: any) => {
+  if (Array.isArray(rawPj) && rawPj.length > 0) {
+    rawPj.forEach((p: any, idx: number) => {
       const pAttr = p.attributes || p;
-      const fotoUrl = getStrapiMediaUrl(pAttr.foto?.data || pAttr.foto, '');
+      const fotoUrl = getStrapiMediaUrl(pAttr.foto?.data || pAttr.foto, '') || ketuaFotoList[idx];
       pjList.push({
         nama_lengkap: pAttr.nama_lengkap || pAttr.nama,
         jabatan: pAttr.jabatan,
         foto: fotoUrl || undefined,
+      });
+    });
+  } else if (ketuaFotoList.length > 0) {
+    ketuaFotoList.forEach((fotoUrl, idx) => {
+      pjList.push({
+        nama_lengkap: `Penanggung Jawab ${idx + 1}`,
+        jabatan: attrs.ketua_jabatan || 'Penanggung Jawab Program',
+        foto: fotoUrl,
       });
     });
   }
