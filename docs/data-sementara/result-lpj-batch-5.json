@@ -1,0 +1,36 @@
+{
+  "ok": 6,
+  "fail": 0,
+  "results": [
+    {
+      "slug": "kultum",
+      "ok": true,
+      "lpjDocumentId": "ukk9n4uzzx6c3l49jwa5oxpw"
+    },
+    {
+      "slug": "bakti-sosial",
+      "ok": true,
+      "lpjDocumentId": "y13b7vy4nqx677f9zykziqe3"
+    },
+    {
+      "slug": "enlightment-trip",
+      "ok": true,
+      "lpjDocumentId": "vii5f9bp6vefo6sjuk9askwg"
+    },
+    {
+      "slug": "ngobrol-bisnis",
+      "ok": true,
+      "lpjDocumentId": "iuiyittmg187ayh68m2nppn5"
+    },
+    {
+      "slug": "Healthy-Day",
+      "ok": true,
+      "lpjDocumentId": "cois5anx5d3c316iqu5d0qdw"
+    },
+    {
+      "slug": "hari-buku",
+      "ok": true,
+      "lpjDocumentId": "eph5wjakxjat3pqlpq6jeqkv"
+    }
+  ]
+}

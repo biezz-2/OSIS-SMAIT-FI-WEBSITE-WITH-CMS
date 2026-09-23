@@ -1,0 +1,84 @@
+[
+  {
+    "documentId": "zmnv0bb1u31zgkh5d36tbse8",
+    "id": 120016,
+    "judul": "Sidak Tata Tertib (STT)",
+    "slug": "sidak-tata-tertib",
+    "kategori": "rutin",
+    "mediaIds": [],
+    "bannerId": null,
+    "lpjTxt": null
+  },
+  {
+    "documentId": "o71pswojzuwrwdwuoqw8et09",
+    "id": 120024,
+    "judul": "Two Minutes Class",
+    "slug": "two-minutes-class",
+    "kategori": "rutin",
+    "mediaIds": [
+      49,
+      48,
+      47
+    ],
+    "bannerId": null,
+    "lpjTxt": "twominutes_lpj.txt"
+  },
+  {
+    "documentId": "yptksrkhya8jzhh51b974suz",
+    "id": 120032,
+    "judul": "Talent Showcase",
+    "slug": "talent-showcase",
+    "kategori": "rutin",
+    "mediaIds": [
+      76,
+      75,
+      74
+    ],
+    "bannerId": 75,
+    "lpjTxt": null
+  },
+  {
+    "documentId": "d3vw4s01nuae69g9p845xzyl",
+    "id": 120040,
+    "judul": "Pengelolaan Sosial Media",
+    "slug": "social-media",
+    "kategori": "rutin",
+    "mediaIds": [
+      141,
+      140,
+      139,
+      138,
+      137,
+      136
+    ],
+    "bannerId": 136,
+    "lpjTxt": null
+  },
+  {
+    "documentId": "qn2yhlq92pr8cpb3pzp60oy5",
+    "id": 120048,
+    "judul": "Health Report",
+    "slug": "Health-Report",
+    "kategori": "rutin",
+    "mediaIds": [
+      101,
+      100,
+      99,
+      98,
+      97,
+      96
+    ],
+    "bannerId": 97,
+    "lpjTxt": null
+  },
+  {
+    "documentId": "uyphv1s2utk37xevge79my7z",
+    "id": 120056,
+    "judul": "Environment Day",
+    "slug": "environment-day",
+    "kategori": "insidental",
+    "mediaIds": [],
+    "bannerId": null,
+    "lpjTxt": null
+  }
+]

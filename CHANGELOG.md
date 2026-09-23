@@ -6,6 +6,19 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.48] - 2026-09-23
+
+### ✨ UX (MUBES LPJ — urutan sidang resmi)
+- Presentasi full-page & modal proker MUBES: **single scroll** berurutan LPJ resmi:
+  1. Tujuan → 2. Teknis & Waktu → 3. Capaian → 4. Evaluasi & Solusi → 5. Kuisioner → 6. Dokumentasi.
+- Sumber teks: `lpj.sections` (match judul) dengan fallback field proker (`tujuan`, `teknis_pelaksanaan`, `evaluasi_*`).
+- Meta strip (kategori, lokasi, PJ) di bawah banner tanpa nomor seksi.
+- Opsional **Anggaran & Nota** (realisasi/sumber/nota) sebagai subsection di bawah Capaian.
+- Kuisioner: tombol **Buka Kuisioner** jika `evaluasi_form_url` ada.
+- Galeri dokumentasi 2×4 horizontal scroll tetap; layout full-width `max-w-[1600px]` dipertahankan.
+
+---
+
 ## [2.1.47] - 2026-09-23
 
 ### ✨ UX (Galeri dokumentasi MUBES — 2×4 scroll + full-width)

@@ -1,0 +1,36 @@
+{
+  "ok": 6,
+  "fail": 0,
+  "results": [
+    {
+      "slug": "hadist-of-the-week",
+      "ok": true,
+      "lpjDocumentId": "stlna857ir4qgg3u1hfytwx1"
+    },
+    {
+      "slug": "kompas-osis",
+      "ok": true,
+      "lpjDocumentId": "cjlce81wos2b00mxwlc7p5ny"
+    },
+    {
+      "slug": "university-day",
+      "ok": true,
+      "lpjDocumentId": "cb8yopzktxcdczvl0pq9gdmv"
+    },
+    {
+      "slug": "cleaning-day",
+      "ok": true,
+      "lpjDocumentId": "e00d2easj1qkbtro7z4lf75s"
+    },
+    {
+      "slug": "studio-osis",
+      "ok": true,
+      "lpjDocumentId": "cbxano4t3072td3vjzfs1yqc"
+    },
+    {
+      "slug": "Direct-Marketing",
+      "ok": true,
+      "lpjDocumentId": "i7du5e3jsosex61ln6p8zsfe"
+    }
+  ]
+}

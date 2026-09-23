@@ -1,0 +1,85 @@
+[
+  {
+    "documentId": "txufqdex3nmhbwqagic4gcmz",
+    "id": 120012,
+    "judul": "Takhosus",
+    "slug": "takhosus",
+    "kategori": "rutin",
+    "mediaIds": [
+      30,
+      29,
+      28,
+      27,
+      26,
+      25,
+      24,
+      23
+    ],
+    "bannerId": 27,
+    "lpjTxt": null
+  },
+  {
+    "documentId": "saxuamatilpmuvxc0e76pwnw",
+    "id": 120020,
+    "judul": "PHBN (Peringatan Hari Besar Nasional)",
+    "slug": "phbn",
+    "kategori": "insidental",
+    "mediaIds": [],
+    "bannerId": null,
+    "lpjTxt": null
+  },
+  {
+    "documentId": "o4j2lbtdz9ta51pp0y2tacxt",
+    "id": 120028,
+    "judul": "Suara Sastra",
+    "slug": "suara-sastra",
+    "kategori": "rutin",
+    "mediaIds": [],
+    "bannerId": null,
+    "lpjTxt": null
+  },
+  {
+    "documentId": "n99mmjf3mr5b5q2s345cfhy4",
+    "id": 120036,
+    "judul": "Weekly Market",
+    "slug": "weekly-market",
+    "kategori": "rutin",
+    "mediaIds": [
+      325,
+      324,
+      326
+    ],
+    "bannerId": null,
+    "lpjTxt": null
+  },
+  {
+    "documentId": "dereyy03vetffbt5g7r6cftr",
+    "id": 120044,
+    "judul": "The Rising Talent",
+    "slug": "The-Rising-Talent",
+    "kategori": "rutin",
+    "mediaIds": [
+      178,
+      179,
+      180,
+      181,
+      182,
+      183
+    ],
+    "bannerId": 182,
+    "lpjTxt": null
+  },
+  {
+    "documentId": "mjmjxe4xgoy7m91pgafptii9",
+    "id": 120052,
+    "judul": "Market Day x Classmeet",
+    "slug": "Market-Day",
+    "kategori": "insidental",
+    "mediaIds": [
+      111,
+      112
+    ],
+    "bannerId": 112,
+    "lpjTxt": null
+  }
+]

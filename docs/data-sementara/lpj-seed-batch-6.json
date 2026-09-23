@@ -1,0 +1,81 @@
+[
+  {
+    "documentId": "itx95n2ul0ghkyuqsgonufjy",
+    "id": 120014,
+    "judul": "PHBI (Peringatan Hari Besar Islam)",
+    "slug": "phbi",
+    "kategori": "insidental",
+    "mediaIds": [],
+    "bannerId": null,
+    "lpjTxt": null
+  },
+  {
+    "documentId": "f11hrkw1x5w4fk7hdj7y32ky",
+    "id": 120022,
+    "judul": "Notifikasi Edukasi",
+    "slug": "notifikasi-edukasi",
+    "kategori": "rutin",
+    "mediaIds": [
+      43,
+      42,
+      41
+    ],
+    "bannerId": null,
+    "lpjTxt": "notifikasi_lpj.txt"
+  },
+  {
+    "documentId": "cd8cihxpycl1aww8wxtrvda3",
+    "id": 120030,
+    "judul": "Quotes of the Month (QOTM)",
+    "slug": "quotes-of-the-month",
+    "kategori": "rutin",
+    "mediaIds": [
+      66,
+      65,
+      64
+    ],
+    "bannerId": null,
+    "lpjTxt": null
+  },
+  {
+    "documentId": "tkt6uf4cpa4v2qgm70ilhst6",
+    "id": 120038,
+    "judul": "School Announcement",
+    "slug": "school-announcement",
+    "kategori": "rutin",
+    "mediaIds": [
+      130,
+      129,
+      128,
+      127,
+      126,
+      125
+    ],
+    "bannerId": 125,
+    "lpjTxt": null
+  },
+  {
+    "documentId": "i1rqrqkl4qsy5z6f5cyqcviz",
+    "id": 120046,
+    "judul": "Nutrition Day",
+    "slug": "Nutrition-day",
+    "kategori": "insidental",
+    "mediaIds": [
+      86,
+      85,
+      84
+    ],
+    "bannerId": 84,
+    "lpjTxt": null
+  },
+  {
+    "documentId": "adgvx0mb3zky4ts8ep99qtxc",
+    "id": 120054,
+    "judul": "Multi Language Competition (ULTI)",
+    "slug": "ulti-multi-language",
+    "kategori": "insidental",
+    "mediaIds": [],
+    "bannerId": null,
+    "lpjTxt": null
+  }
+]

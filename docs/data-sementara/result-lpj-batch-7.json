@@ -1,0 +1,36 @@
+{
+  "ok": 6,
+  "fail": 0,
+  "results": [
+    {
+      "slug": "ramadhan-ceria",
+      "ok": true,
+      "lpjDocumentId": "vo3esagf1hwx1mpda9l5w0fm"
+    },
+    {
+      "slug": "study-club",
+      "ok": true,
+      "lpjDocumentId": "wwlardgs6kgeu1zt2twdnwfn"
+    },
+    {
+      "slug": "ourself-journey",
+      "ok": true,
+      "lpjDocumentId": "w86x2yt1lk3qbo63gvkiebtq"
+    },
+    {
+      "slug": "sites-stream",
+      "ok": true,
+      "lpjDocumentId": "j3841058homhgqt3qsqhxv0a"
+    },
+    {
+      "slug": "Breakfast-Time",
+      "ok": true,
+      "lpjDocumentId": "s7h1j2c9n1zt06q9oh31zv3w"
+    },
+    {
+      "slug": "healthy-station",
+      "ok": true,
+      "lpjDocumentId": "sjqf7ak319v706wadvdk798m"
+    }
+  ]
+}
