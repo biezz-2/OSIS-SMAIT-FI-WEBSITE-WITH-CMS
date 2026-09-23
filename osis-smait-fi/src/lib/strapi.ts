@@ -8,12 +8,40 @@ export type StrapiImageFormat = 'original' | 'large' | 'medium' | 'small' | 'thu
  *   Gunakan 'large'/'medium'/'small' hanya untuk thumbnail/card kecil.
  *   File HD kemudian dikompres oleh /api/compress-image sesuai setting kualitas dari Strapi.
  */
+/** Allow only http(s) absolute URLs or same-origin relative paths (CDN-safe). */
+function isSafeMediaUrl(url: string): boolean {
+  if (!url || typeof url !== 'string') return false;
+  const trimmed = url.trim();
+  if (!trimmed) return false;
+  // Protocol-relative //host/... — treat as https for scheme check
+  if (trimmed.startsWith('//')) {
+    try {
+      const u = new URL(`https:${trimmed}`);
+      return u.protocol === 'https:';
+    } catch {
+      return false;
+    }
+  }
+  if (trimmed.startsWith('/')) return true;
+  try {
+    const u = new URL(trimmed);
+    return u.protocol === 'http:' || u.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
+function safeMediaOrFallback(url: string, fallbackUrl: string): string {
+  if (isSafeMediaUrl(url)) return url;
+  return isSafeMediaUrl(fallbackUrl) ? fallbackUrl : '';
+}
+
 export function getStrapiMediaUrl(
   media: any,
   fallbackUrl: string = '',
   preferredFormat: StrapiImageFormat = 'original'
 ): string {
-  if (!media) return fallbackUrl;
+  if (!media) return safeMediaOrFallback(fallbackUrl, '');
 
   const sanitizeUrl = (urlStr: string) => {
     if (!urlStr) return urlStr;
@@ -25,15 +53,24 @@ export function getStrapiMediaUrl(
   // Case 1: Direct string path or URL
   if (typeof media === 'string') {
     let url = sanitizeUrl(media);
-    if (url.startsWith('http://') || url.startsWith('https://')) return url;
-    if (url.startsWith('/uploads/')) return `${STRAPI_URL}${url}`;
-    if (url.startsWith('/')) return url; // local static asset (e.g. /images/...)
-    return `${STRAPI_URL}${url.startsWith('/') ? '' : '/'}${url}`;
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return safeMediaOrFallback(url, fallbackUrl);
+    }
+    if (url.startsWith('/uploads/')) {
+      return safeMediaOrFallback(`${STRAPI_URL}${url}`, fallbackUrl);
+    }
+    if (url.startsWith('/')) {
+      return safeMediaOrFallback(url, fallbackUrl); // local static asset (e.g. /images/...)
+    }
+    return safeMediaOrFallback(
+      `${STRAPI_URL}${url.startsWith('/') ? '' : '/'}${url}`,
+      fallbackUrl
+    );
   }
 
   // Case 2: External URL priority (e.g. YouTube/Drive link)
   if (media.url_external && typeof media.url_external === 'string' && media.url_external.trim() !== '') {
-    return media.url_external;
+    return safeMediaOrFallback(media.url_external.trim(), fallbackUrl);
   }
 
   // Case 3: Strapi uploaded media object (v4, v5, formats)
@@ -60,12 +97,16 @@ export function getStrapiMediaUrl(
 
   if (rawUrl) {
     let url = sanitizeUrl(rawUrl);
-    if (url.startsWith('http://') || url.startsWith('https://')) return url;
-    if (url.startsWith('/uploads/') || url.startsWith('/')) return `${STRAPI_URL}${url}`;
-    return `${STRAPI_URL}/${url}`;
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return safeMediaOrFallback(url, fallbackUrl);
+    }
+    if (url.startsWith('/uploads/') || url.startsWith('/')) {
+      return safeMediaOrFallback(`${STRAPI_URL}${url}`, fallbackUrl);
+    }
+    return safeMediaOrFallback(`${STRAPI_URL}/${url}`, fallbackUrl);
   }
 
-  return fallbackUrl;
+  return safeMediaOrFallback(fallbackUrl, '');
 }
 
 export interface FetchStrapiOptions extends RequestInit {

@@ -810,8 +810,18 @@ function normalizeProgramKerja(item: any, lpjByProker: Map<string, MubesLpjData>
       attrs.golongan_target || attrs.sasaran_peserta || attrs.sasaran || undefined,
     teknis_pelaksanaan:
       attrs.teknis_pelaksanaan || attrs.alur_pelaksanaan || attrs.deskripsi || undefined,
-    evaluasi_form_url:
-      attrs.evaluasi_form_url || attrs.kuesioner_url || attrs.kuisioner_url || undefined,
+    evaluasi_form_url: (() => {
+      const raw = String(
+        attrs.evaluasi_form_url || attrs.kuesioner_url || attrs.kuisioner_url || ''
+      ).trim();
+      if (!raw) return undefined;
+      try {
+        const u = new URL(raw);
+        return u.protocol === 'http:' || u.protocol === 'https:' ? raw : undefined;
+      } catch {
+        return undefined;
+      }
+    })(),
     evaluasi_deskripsi:
       attrs.evaluasi_deskripsi || attrs.evaluasi_internal || attrs.evaluasi || undefined,
     capaian:
@@ -1052,7 +1062,10 @@ export async function fetchMubesProkerList(opts?: {
     // If Strapi returns no proker data (down or unseeded), use static fallback
     if (prokerData.length === 0) {
       console.warn('[MUBES Proker] Strapi returned 0 program kerja. Using static fallback dataset.');
-      return buildSekbidGroups(FALLBACK_MUBES_PROKER, sekbidList);
+      const fallback = includeLpj
+        ? FALLBACK_MUBES_PROKER
+        : FALLBACK_MUBES_PROKER.map((p) => ({ ...p, lpj: null }));
+      return buildSekbidGroups(fallback, sekbidList);
     }
 
     // Index LPJ data by proker id, documentId, and slug
@@ -1071,7 +1084,10 @@ export async function fetchMubesProkerList(opts?: {
     return buildSekbidGroups(normalizedProkers, sekbidList);
   } catch (err) {
     console.error('[MUBES Proker] Unexpected error fetching proker list:', err);
-    return buildSekbidGroups(FALLBACK_MUBES_PROKER);
+    const fallback = includeLpj
+      ? FALLBACK_MUBES_PROKER
+      : FALLBACK_MUBES_PROKER.map((p) => ({ ...p, lpj: null }));
+    return buildSekbidGroups(fallback);
   }
 }
 

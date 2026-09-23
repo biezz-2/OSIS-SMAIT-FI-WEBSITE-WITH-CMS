@@ -118,7 +118,8 @@ export default {
  * Setup RBAC roles and permissions for OSIS CMS
  */
 async function setupRBAC(strapi: Core.Strapi) {
-  const allContentTypes = [
+  // Public-facing / operational CTs — Contributors may find/findOne (read) these.
+  const contributorReadableContentTypes = [
     'api::sekbid.sekbid',
     'api::program-kerja.program-kerja',
     'api::event.event',
@@ -133,10 +134,20 @@ async function setupRBAC(strapi: Core.Strapi) {
     'api::edufest-timeline.edufest-timeline',
     'api::edufest-config.edufest-config',
     'api::partner.partner',
-    'api::mubes-lpj.mubes-lpj',
   ];
 
-  const contributorContentTypes = [
+  // Hearing / finance — Chief Editor (and elevated) only; never Contributor public-read.
+  const elevatedContentTypes = [
+    'api::mubes-lpj.mubes-lpj',
+    'api::mubes-sidang.mubes-sidang',
+  ];
+
+  const chiefEditorContentTypes = [
+    ...contributorReadableContentTypes,
+    ...elevatedContentTypes,
+  ];
+
+  const contributorWritableContentTypes = [
     'api::program-kerja.program-kerja',
     'api::event.event',
     'api::artikel-mading.artikel-mading',
@@ -179,13 +190,13 @@ async function setupRBAC(strapi: Core.Strapi) {
 
   for (const role of roles) {
     if (role.name === 'Chief Editor') {
-      await setChiefEditorPermissions(strapi, role.id, allContentTypes);
+      await setChiefEditorPermissions(strapi, role.id, chiefEditorContentTypes);
     } else if (role.name === 'Content Contributor') {
       await setContributorPermissions(
         strapi,
         role.id,
-        contributorContentTypes,
-        allContentTypes
+        contributorWritableContentTypes,
+        contributorReadableContentTypes
       );
     }
   }

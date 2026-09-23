@@ -267,7 +267,17 @@ function AnggaranNotaBlock({ proker }: { proker: MubesProgramKerja }) {
           </h3>
           <div className="flex flex-col gap-2">
             {notas.map((item: unknown, idx: number) => {
-              const notaUrl = getStrapiMediaUrl(item, '');
+              const rawNota = getStrapiMediaUrl(item, '');
+              const notaUrl = (() => {
+                if (!rawNota) return '';
+                if (rawNota.startsWith('/')) return rawNota;
+                try {
+                  const u = new URL(rawNota);
+                  return u.protocol === 'http:' || u.protocol === 'https:' ? rawNota : '';
+                } catch {
+                  return '';
+                }
+              })();
               if (!notaUrl) return null;
               const nota = (item as { attributes?: Record<string, unknown> })?.attributes ||
                 (item as Record<string, unknown>);
@@ -302,14 +312,27 @@ type DocCard = {
   isVideo?: boolean;
 };
 
+function isSafeHref(url: string): boolean {
+  if (!url) return false;
+  if (url.startsWith('/') && !url.startsWith('//')) return true;
+  try {
+    const u = new URL(url.startsWith('//') ? `https:${url}` : url);
+    return u.protocol === 'http:' || u.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
 function resolveDokumentasi(proker: MubesProgramKerja): DocCard[] {
-  if (proker.dokumentasi_items?.length) return proker.dokumentasi_items;
+  if (proker.dokumentasi_items?.length) {
+    return proker.dokumentasi_items.filter((d) => d?.url && isSafeHref(String(d.url)));
+  }
   const raw = proker.dokumentasi;
   if (!Array.isArray(raw) || raw.length === 0) return [];
   return raw
     .map((item: unknown, i: number): DocCard | null => {
       const url = getStrapiMediaUrl(item, '');
-      if (!url) return null;
+      if (!url || !isSafeHref(url)) return null;
       const node =
         (item as { attributes?: Record<string, unknown> })?.attributes ||
         (item as Record<string, unknown>);
@@ -421,7 +444,16 @@ function LpjOrderedBody({ proker }: { proker: MubesProgramKerja }) {
   );
   const kendalaText =
     formatKendalaSolusi(proker.lpj?.kendala_solusi ?? null) || kendalaFromSection;
-  const formUrl = proker.evaluasi_form_url?.trim() || '';
+  const formUrl = (() => {
+    const raw = proker.evaluasi_form_url?.trim() || '';
+    if (!raw) return '';
+    try {
+      const u = new URL(raw);
+      return u.protocol === 'http:' || u.protocol === 'https:' ? raw : '';
+    } catch {
+      return '';
+    }
+  })();
 
   return (
     <div className="flex flex-col gap-7">

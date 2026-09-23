@@ -6,6 +6,14 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.57] - 2026-09-23
+
+### 🔒 Security (MUBES LPJ / media URL hardening)
+- **Strapi RBAC** (`strapi-cms/src/index.ts`): Content Contributor no longer receives `find`/`findOne` on `mubes-lpj` or `mubes-sidang` via the all-content-types loop. Those CTs stay Chief Editor / elevated only; Contributors keep read on public operational CTs + write on program-kerja / event / artikel-mading.
+- **LPJ leakage on fallback**: `fetchMubesProkerList` strips `lpj` from `FALLBACK_MUBES_PROKER` when `includeLpj` is false.
+- **Open-redirect / XSS via href**: `evaluasi_form_url` and nota/dokumentasi media links accept **http(s)** only (plus same-origin relative paths for media).
+- **`getStrapiMediaUrl`**: final gate rejects `javascript:`, `data:`, and other non-http(s) schemes; CDN absolute https and `/uploads` / `/images` paths unchanged.
+
 ## [2.1.56] - 2026-09-23
 
 ### ✨ UI & CMS (Dokumen Evaluasi Proker MUBES — mockup layout + Capaian/Evaluasi manage)
