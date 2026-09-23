@@ -1,0 +1,1310 @@
+{
+  "at": "2026-09-23T05:17:00.716Z",
+  "api": "http://127.0.0.1:1337",
+  "updated": 48,
+  "skip": 0,
+  "skipReasons": [],
+  "results": [
+    {
+      "slug": "Breakfast-Time",
+      "dataKey": "Breakfast-Time",
+      "tujuan_preview": "Mengedukasi siswa/i bahwa sarapan adalah bagian dari pola hidup sehat; berharap ",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 244
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 154
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 238
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 230
+        }
+      ]
+    },
+    {
+      "slug": "Direct-Marketing",
+      "dataKey": "Direct-Marketing",
+      "tujuan_preview": "Menumbuhkan jiwa kewirausahaan, melatih kemampuan berinteraksi dan berkomunikasi",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 210
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 274
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 163
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 284
+        }
+      ]
+    },
+    {
+      "slug": "FI-Flick",
+      "dataKey": "FI-Flick",
+      "tujuan_preview": "University Day X FI Flick — Enchanted Path: Memberikan informasi kepada siswa/i ",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 221
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 277
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 219
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 140
+        }
+      ]
+    },
+    {
+      "slug": "Health-Report",
+      "dataKey": "Health-Report",
+      "tujuan_preview": "Memberikan informasi terkini dan edukatif seputar kesehatan dan lingkungan kepad",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 103
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 153
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 436
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 164
+        }
+      ]
+    },
+    {
+      "slug": "Healthy-Day",
+      "dataKey": "Healthy-Day",
+      "tujuan_preview": "Meningkatkan kesadaran siswa tentang pentingnya kesehatan fisik. Tema: Pengeceka",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 124
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 178
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 285
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 85
+        }
+      ]
+    },
+    {
+      "slug": "Healty-Station",
+      "dataKey": "Healty-Station",
+      "tujuan_preview": "Meningkatkan pelayanan kesehatan sekolah melalui pengelolaan UKS yang tertata da",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 315
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 238
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 67
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 139
+        }
+      ]
+    },
+    {
+      "slug": "Market-Day",
+      "dataKey": "Market-Day",
+      "tujuan_preview": "Market Day — Dynamite (Classmeet x Market Day): dokumen sama dengan proker Class",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 186
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 207
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 69
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 89
+        }
+      ]
+    },
+    {
+      "slug": "Nutrition-day",
+      "dataKey": "Nutrition-day",
+      "tujuan_preview": "Meningkatkan kesadaran siswa/i terhadap pentingnya asupan gizi yang cukup serta ",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 214
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 100
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 254
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 80
+        }
+      ]
+    },
+    {
+      "slug": "The-Rising-Talent",
+      "dataKey": "The-Rising-Talent",
+      "tujuan_preview": "Memberikan informasi lomba-lomba non akademik untuk siswa/i",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 59
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 239
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 216
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 217
+        }
+      ]
+    },
+    {
+      "slug": "bakti-sosial",
+      "dataKey": "bakti-sosial",
+      "tujuan_preview": "Melatih siswa/i untuk berempati dan berbagi dengan sesama",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 57
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 200
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 202
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 47
+        }
+      ]
+    },
+    {
+      "slug": "class-of-discipline",
+      "dataKey": "class-of-discipline",
+      "tujuan_preview": "Untuk mengapresiasi dan menghargai siswa/i yang sudah mengikuti peraturan di lin",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 170
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 219
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 193
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 44
+        }
+      ]
+    },
+    {
+      "slug": "classmeet",
+      "dataKey": "classmeet",
+      "tujuan_preview": "Memberi ruang bagi siswa berkembang melalui pengalaman langsung — berkompetisi s",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 248
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 314
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 255
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 294
+        }
+      ]
+    },
+    {
+      "slug": "cleaning-day",
+      "dataKey": "cleaning-day",
+      "tujuan_preview": "Menumbuhkan kesadaran warga sekolah akan pentingnya menjaga kebersihan lingkunga",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 289
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 157
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 102
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 84
+        }
+      ]
+    },
+    {
+      "slug": "enlightment-trip",
+      "dataKey": "enlightment-trip",
+      "tujuan_preview": "Mendorong siswa/i SMA IT Fithrah Insani memiliki keterampilan berliterasi tinggi",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 121
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 198
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 126
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 339
+        }
+      ]
+    },
+    {
+      "slug": "environment-day",
+      "dataKey": "environment-day",
+      "tujuan_preview": "Agar siswa/i mengetahui cara mendaur ulang sampah menjadi barang berguna dan ber",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 209
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 68
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 45
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 28
+        }
+      ]
+    },
+    {
+      "slug": "hadist-of-the-week",
+      "dataKey": "hadist-of-the-week",
+      "tujuan_preview": "Menjadikan siswa/i SMA IT Fithrah Insani mengetahui hadits-hadits. Target: Siswa",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 153
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 461
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 281
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 236
+        }
+      ]
+    },
+    {
+      "slug": "hari-buku",
+      "dataKey": "hari-buku",
+      "tujuan_preview": "Meningkatkan partisipasi siswa dalam kegiatan literasi sekolah melalui program B",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 221
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 103
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 332
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 147
+        }
+      ]
+    },
+    {
+      "slug": "hari-pendidikan",
+      "dataKey": "hari-pendidikan",
+      "tujuan_preview": "Siswa/i dapat memperingati Hari Pendidikan Nasional serta meningkatkan kesadaran",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 229
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 92
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 276
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 244
+        }
+      ]
+    },
+    {
+      "slug": "healthy-movement",
+      "dataKey": "healthy-movement",
+      "tujuan_preview": "Mengajak pentingnya olahraga untuk kesehatan tubuh (senam pagi bersama)",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 71
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 96
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 166
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 137
+        }
+      ]
+    },
+    {
+      "slug": "healthy-station",
+      "dataKey": "healthy-station",
+      "tujuan_preview": "Meningkatkan pelayanan kesehatan sekolah melalui pengelolaan UKS yang tertata da",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 315
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 238
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 67
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 139
+        }
+      ]
+    },
+    {
+      "slug": "kompas-osis",
+      "dataKey": "kompas-osis",
+      "tujuan_preview": "Menjadikan seluruh anggota OSIS lebih disiplin dan mengikuti peraturan yang sesu",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 136
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 332
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 214
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 149
+        }
+      ]
+    },
+    {
+      "slug": "kultum",
+      "dataKey": "kultum",
+      "tujuan_preview": "Siswa/i SMA IT Fithrah Insani dapat mengetahui dan memperluas pengetahuannya men",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 284
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 291
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 115
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 489
+        }
+      ]
+    },
+    {
+      "slug": "mading",
+      "dataKey": "mading",
+      "tujuan_preview": "Menumbuhkan minat dan kreativitas siswa/i melalui media offline; menjadi sarana ",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 231
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 248
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 347
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 299
+        }
+      ]
+    },
+    {
+      "slug": "ngobrol-bisnis",
+      "dataKey": "ngobrol-bisnis",
+      "tujuan_preview": "Mengembangkan pengetahuan kewirausahaan yang dibutuhkan dalam berwirausaha, mend",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 219
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 170
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 62
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 48
+        }
+      ]
+    },
+    {
+      "slug": "notifikasi-edukasi",
+      "dataKey": "notifikasi-edukasi",
+      "tujuan_preview": "Menjadi wadah bagi siswa/i SMAIT Fithrah Insani untuk memperoleh informasi seput",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 259
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 122
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 215
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 230
+        }
+      ]
+    },
+    {
+      "slug": "ourself-journey",
+      "dataKey": "ourself-journey",
+      "tujuan_preview": "Membantu siswa/i dalam memahami diri, meningkatkan kemampuan diri, minat, serta ",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 157
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 98
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 225
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 293
+        }
+      ]
+    },
+    {
+      "slug": "pendampingan-rohis",
+      "dataKey": "pendampingan-rohis",
+      "tujuan_preview": "Dengan adanya proker ini siswa/i menumbuhkan semangat religius dan kepedulian so",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 224
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 1037
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 253
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 153
+        }
+      ]
+    },
+    {
+      "slug": "phbi",
+      "dataKey": "phbi",
+      "tujuan_preview": "menumbuhkan pemahaman dan semangat siswa/i dalam mengetahui makna, sejarah maupu",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 194
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 494
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 442
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 523
+        }
+      ]
+    },
+    {
+      "slug": "phbn",
+      "dataKey": "phbn",
+      "tujuan_preview": "a. Hari Guru — Guidelight: menjadikan siswa/i dapat menghormati jasa dan memberi",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 547
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 649
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 628
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 565
+        }
+      ]
+    },
+    {
+      "slug": "piket-kedisiplinan",
+      "dataKey": "piket-kedisiplinan",
+      "tujuan_preview": "Mentertibkan siswa/i terkait peraturan di sekolah, baik kerapihan, kelengkapan, ",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 228
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 110
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 234
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 248
+        }
+      ]
+    },
+    {
+      "slug": "program-kerja",
+      "dataKey": "program-kerja",
+      "tujuan_preview": "Membantu meningkatkan pemahaman siswa/i mengenai materi yang berkaitan dengan bi",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 102
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 230
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 179
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 261
+        }
+      ]
+    },
+    {
+      "slug": "quotes-of-the-month",
+      "dataKey": "quotes-of-the-month",
+      "tujuan_preview": "Menumbuhkan semangat dan motivasi belajar siswa, menanamkan nilai-nilai positif,",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 207
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 153
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 238
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 243
+        }
+      ]
+    },
+    {
+      "slug": "ramadhan-ceria",
+      "dataKey": "ramadhan-ceria",
+      "tujuan_preview": "Meningkatnya pemahaman keislaman serta tumbuhnya sikap kebersamaan dan kepedulia",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 277
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 776
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 130
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 406
+        }
+      ]
+    },
+    {
+      "slug": "school-announcement",
+      "dataKey": "school-announcement",
+      "tujuan_preview": "Mengenalkan siswa/i tentang berbagai aktivitas sehari-hari di lingkungan sekolah",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 261
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 121
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 153
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 340
+        }
+      ]
+    },
+    {
+      "slug": "sidak-tata-tertib",
+      "dataKey": "sidak-tata-tertib",
+      "tujuan_preview": "Menguatkan fondasi karakter anggota OSIS agar senantiasa disiplin, bertanggung j",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 245
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 227
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 103
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 411
+        }
+      ]
+    },
+    {
+      "slug": "sites-stream",
+      "dataKey": "sites-stream",
+      "tujuan_preview": "Menjadi wadah informasi OSIS SMAIT Fithrah Insani melalui Website OSIS, yang dap",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 307
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 102
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 175
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 312
+        }
+      ]
+    },
+    {
+      "slug": "social-media",
+      "dataKey": "social-media",
+      "tujuan_preview": "Meningkatkan jangkauan dan efektivitas penyebaran informasi melalui media sosial",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 226
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 233
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 199
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 218
+        }
+      ]
+    },
+    {
+      "slug": "studio-osis",
+      "dataKey": "studio-osis",
+      "tujuan_preview": "Mendukung setiap seksi bidang dalam pembuatan konten visual (video & poster); me",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 376
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 96
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 112
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 239
+        }
+      ]
+    },
+    {
+      "slug": "study-club",
+      "dataKey": "study-club",
+      "tujuan_preview": "Meningkatkan pemahaman akademik siswa/i serta membantu siswa/i mempersiapkan uji",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 150
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 94
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 234
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 199
+        }
+      ]
+    },
+    {
+      "slug": "suara-sastra",
+      "dataKey": "suara-sastra",
+      "tujuan_preview": "Catatan: Folder hanya berisi sub-folder tanggal dokumentasi (25 Feb, 24 Apr, 17 ",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 161
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 62
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 62
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 62
+        }
+      ]
+    },
+    {
+      "slug": "takhosus",
+      "dataKey": "takhosus",
+      "tujuan_preview": "Menambah dan menguatkan hafalan Al-Qur'an secara intensif hingga mencapai target",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 96
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 165
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 272
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 359
+        }
+      ]
+    },
+    {
+      "slug": "talent-showcase",
+      "dataKey": "talent-showcase",
+      "tujuan_preview": "Menyediakan panggung dan fasilitas bagi peserta untuk mengasah dan menampilkan b",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 120
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 206
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 188
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 214
+        }
+      ]
+    },
+    {
+      "slug": "tilawah-osis",
+      "dataKey": "tilawah-osis",
+      "tujuan_preview": "Bertujuan memperbanyak dan memperlancar tilawah Al-Qur'an OSIS SMA IT Fithrah In",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 188
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 286
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 246
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 180
+        }
+      ]
+    },
+    {
+      "slug": "two-minutes-class",
+      "dataKey": "two-minutes-class",
+      "tujuan_preview": "Meningkatkan pemahaman materi pelajaran siswa/i melalui konten fun fact atau tip",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 263
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 307
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 202
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 241
+        }
+      ]
+    },
+    {
+      "slug": "ulti-multi-language",
+      "dataKey": "ulti-multi-language",
+      "tujuan_preview": "Catatan: Folder ADMINISTRASI ULTI berisi dokumen berjudul \"PROPOSAL/LPJ GEMA MER",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 294
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 81
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 106
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 62
+        }
+      ]
+    },
+    {
+      "slug": "university-day",
+      "dataKey": "university-day",
+      "tujuan_preview": "Memberikan informasi kepada siswa/i mengenai berbagai pilihan perguruan tinggi (",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 299
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 104
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 238
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 202
+        }
+      ]
+    },
+    {
+      "slug": "weekly-market",
+      "dataKey": "weekly-market",
+      "tujuan_preview": "Menambah finansial OSIS untuk berwirausaha, melatih keberanian dalam menjalankan",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 173
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 178
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 108
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 48
+        }
+      ]
+    },
+    {
+      "slug": "write-your-ideas",
+      "dataKey": "write-your-ideas",
+      "tujuan_preview": "Program karya sastra — banyak anak usia muda punya kemampuan menulis karya tetap",
+      "sections": [
+        {
+          "order": 1,
+          "judul": "Tujuan",
+          "len": 101
+        },
+        {
+          "order": 2,
+          "judul": "Teknis & Waktu",
+          "len": 94
+        },
+        {
+          "order": 3,
+          "judul": "Capaian",
+          "len": 163
+        },
+        {
+          "order": 4,
+          "judul": "Evaluasi & Solusi",
+          "len": 176
+        }
+      ]
+    }
+  ],
+  "verify": {
+    "lorem": 0,
+    "polished": 0,
+    "bad": []
+  }
+}
