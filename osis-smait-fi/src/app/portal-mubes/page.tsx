@@ -38,19 +38,19 @@ export default async function PortalMubesPage({
   const params = (await searchParams) || {};
   const initialMode = params.mode === 'signup' ? 'signup' : 'login';
 
-  // Belum login / belum disetujui → form auth MUBES (tanpa data LPJ)
-  if (!access.allowed) {
+  // Belum login Clerk → form auth. Sudah login → portal (LPJ hanya jika approved).
+  if (!access.userId) {
     return <MubesPortalView initialMode={initialMode} />;
   }
 
   const [mubesConfig, prokerGroups] = await Promise.all([
     fetchHalamanFromStrapi('portal-mubes'),
-    fetchMubesProkerData(),
+    fetchMubesProkerData({ includeLpj: access.allowed }),
   ]);
 
   return (
     <main className="min-h-screen bg-white dark:bg-slate-950 flex flex-col justify-between selection:bg-amber-500/30 selection:text-amber-200">
-      {/* Navbar global hanya untuk peserta yang sudah terdaftar & approved */}
+      {/* Navbar: sesi Clerk aktif. LPJ tetap gated via includeLpj=access.allowed */}
       <Navbar />
 
       <MubesPresentationHero initialData={mubesConfig} />

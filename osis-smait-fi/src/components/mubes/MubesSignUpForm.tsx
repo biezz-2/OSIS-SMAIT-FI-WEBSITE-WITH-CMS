@@ -110,8 +110,12 @@ export default function MubesSignUpForm({ onSwitchToLogin, onOpenHelp }: MubesSi
       });
 
       if (completeSignUp.status === 'complete') {
-        await setActive({ session: completeSignUp.createdSessionId });
-        router.push('/portal-mubes');
+        if (!setActive || !completeSignUp.createdSessionId) {
+          setErrorMessage('Sesi gagal dibuat. Silakan coba lagi.');
+        } else {
+          await setActive({ session: completeSignUp.createdSessionId });
+          router.refresh();
+        }
       } else {
         setErrorMessage('Verifikasi belum selesai. Silakan periksa kembali kode Anda.');
       }

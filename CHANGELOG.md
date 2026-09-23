@@ -6,6 +6,15 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.41] - 2026-09-22
+
+### 🐛 Perbaikan (Login OTP + redirect portal)
+- **OTP login** kembali di form `/portal-mubes`: mode kata sandi atau OTP email (kirim kode → verifikasi 6 digit).
+- **Setelah login** (password / OTP / Google): `router.refresh()` + gate portal memakai `userId` Clerk, bukan `approved`. LPJ tetap hanya jika `status=approved`.
+- Banner sesi tampil untuk semua yang sudah login (badge Pending / Verified).
+
+---
+
 ## [2.1.40] - 2026-09-22
 
 ### 🐛 Perbaikan (Auth Portal MUBES)
@@ -374,3 +383,10 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ### 🚀 Ditambahkan
 - Rilis perdana **Portal Web OSIS SMAIT Fithrah Insani (Agora Acta 2025)**.
+
+## [2.2.0] - 2026-09-22
+
+### 📚 Dokumentasi
+- **Transformasi README**: Pembaruan menyeluruh README.md menjadi format landing page profesional menggunakan framework 'Hybrid Bridge'.
+- **Visualisasi Sistem**: Penambahan 3 diagram Mermaid.js (High-Level Architecture, Module Dependency Map, dan MUBES Data Flow) untuk memudahkan onboarding developer.
+- **Developer Experience**: Penulisan ulang Quick Start guide dan Contribution Guide agar lebih ramping dan frictionless.

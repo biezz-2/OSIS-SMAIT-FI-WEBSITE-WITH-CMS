@@ -775,7 +775,10 @@ function normalizeLpj(item: any): { prokerKeys: string[]; lpjData: MubesLpjData 
  * Main helper function to fetch complete program-kerja list with relations and LPJ data.
  * Returns grouped Sekbid 1 - 8 with graceful static fallback if Strapi is empty or offline.
  */
-export async function fetchMubesProkerList(): Promise<MubesSekbidGroup[]> {
+export async function fetchMubesProkerList(opts?: {
+  includeLpj?: boolean;
+}): Promise<MubesSekbidGroup[]> {
+  const includeLpj = opts?.includeLpj !== false;
   const elevatedToken = process.env.STRAPI_ELEVATED_TOKEN;
   const authHeaders = elevatedToken ? { Authorization: `Bearer ${elevatedToken}` } : undefined;
 
@@ -784,19 +787,21 @@ export async function fetchMubesProkerList(): Promise<MubesSekbidGroup[]> {
       fetchStrapiAPI('/api/program-kerjas?populate=*&pagination[limit]=100', {
         headers: authHeaders,
       }).catch(() => null),
-      fetchStrapiAPI(
-        '/api/mubes-lpjs?populate[sections]=true&populate[nota_kwitansi]=true&populate[program_kerja][fields][0]=slug&populate[program_kerja][fields][1]=judul&pagination[limit]=100',
-        {
-          headers: authHeaders,
-        }
-      ).catch(() => null),
+      includeLpj
+        ? fetchStrapiAPI(
+            '/api/mubes-lpjs?populate[sections]=true&populate[nota_kwitansi]=true&populate[program_kerja][fields][0]=slug&populate[program_kerja][fields][1]=judul&pagination[limit]=100',
+            {
+              headers: authHeaders,
+            }
+          ).catch(() => null)
+        : Promise.resolve(null),
       fetchStrapiAPI('/api/sekbids?populate=*&sort=nomor:asc', {
         headers: authHeaders,
       }).catch(() => null),
     ]);
 
     const prokerData = prokerRes?.data || [];
-    const lpjList = lpjRes?.data || [];
+    const lpjList = includeLpj ? lpjRes?.data || [] : [];
     const sekbidList = sekbidRes?.data || [];
 
     // If Strapi returns no proker data (down or unseeded), use static fallback
