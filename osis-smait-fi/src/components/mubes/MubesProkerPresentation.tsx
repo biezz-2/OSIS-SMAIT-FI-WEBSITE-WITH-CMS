@@ -69,7 +69,7 @@ function OverviewBody({ proker }: { proker: MubesProgramKerja }) {
         </div>
         <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
           <span className="text-xs text-slate-400 font-semibold block uppercase">Penanggung Jawab</span>
-          <span className="text-base font-bold mt-1 block truncate">
+          <span className="text-base font-bold mt-1 block break-words">
             {proker.penanggung_jawab?.map((p) => p.nama_lengkap).join(', ') || 'Pengurus Sekbid'}
           </span>
         </div>
@@ -79,7 +79,7 @@ function OverviewBody({ proker }: { proker: MubesProgramKerja }) {
         <h4 className="text-sm font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-2">
           Tujuan Program Kerja
         </h4>
-        <p className="text-sm sm:text-base leading-relaxed bg-slate-50 dark:bg-slate-800/60 p-5 rounded-2xl border border-slate-200 dark:border-slate-700">
+        <p className="text-sm sm:text-base leading-relaxed whitespace-pre-line break-words bg-slate-50 dark:bg-slate-800/60 p-5 rounded-2xl border border-slate-200 dark:border-slate-700">
           {proker.tujuan || 'Mendukung visi misi kepengurusan OSIS SMAIT Fithrah Insani.'}
         </p>
       </div>
@@ -89,42 +89,52 @@ function OverviewBody({ proker }: { proker: MubesProgramKerja }) {
           <h4 className="text-sm font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-3">
             Dokumentasi Pelaksanaan ({docs.length})
           </h4>
-          {/* 2 kolom menyamping — gambar besar + judul & deskripsi dari Strapi */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
-            {docs.map((item, i) => (
-              <figure
-                key={item.id ?? i}
-                className="flex flex-col rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 shadow-sm"
-              >
-                <div className="relative aspect-[4/3] w-full bg-slate-900">
-                  {item.isVideo ? (
-                    <video
-                      src={item.url}
-                      controls
-                      className="absolute inset-0 w-full h-full object-cover"
-                    />
-                  ) : (
-                    <Image
-                      src={item.url}
-                      alt={item.judul}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 640px) 100vw, 50vw"
-                    />
-                  )}
-                </div>
-                <figcaption className="p-4 sm:p-5 flex flex-col gap-1.5">
-                  <h5 className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100 leading-snug">
-                    {item.judul}
-                  </h5>
-                  {item.deskripsi ? (
-                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">
-                      {item.deskripsi}
-                    </p>
-                  ) : null}
-                </figcaption>
-              </figure>
-            ))}
+          {/* 2 baris × 4 kolom visible; item ekstra di-scroll horizontal — semua dokumentasi_items Strapi */}
+          <div className="overflow-x-auto pb-2 snap-x snap-mandatory [scrollbar-width:thin]">
+            <div
+              className="grid gap-4 sm:gap-5"
+              style={{
+                gridTemplateRows: 'repeat(2, auto)',
+                gridAutoFlow: 'column',
+                gridAutoColumns:
+                  'minmax(min(70vw, 240px), calc((100% - 3 * 1.25rem) / 4))',
+              }}
+            >
+              {docs.map((item, i) => (
+                <figure
+                  key={item.id ?? i}
+                  className="flex flex-col rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 shadow-sm snap-start min-w-0"
+                >
+                  <div className="relative aspect-[4/3] w-full bg-slate-900">
+                    {item.isVideo ? (
+                      <video
+                        src={item.url}
+                        controls
+                        className="absolute inset-0 w-full h-full object-cover"
+                      />
+                    ) : (
+                      <Image
+                        src={item.url}
+                        alt={item.judul}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 640px) 70vw, 25vw"
+                      />
+                    )}
+                  </div>
+                  <figcaption className="p-3 sm:p-4 flex flex-col gap-1">
+                    <h5 className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100 leading-snug break-words">
+                      {item.judul}
+                    </h5>
+                    {item.deskripsi ? (
+                      <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line break-words">
+                        {item.deskripsi}
+                      </p>
+                    ) : null}
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
           </div>
         </div>
       )}
@@ -267,14 +277,14 @@ function ProkerBanner({ proker }: { proker: MubesProgramKerja }) {
   const bannerUrl = getStrapiMediaUrl(bannerMedia, '/images/mubes/bg-medieval.png');
 
   return (
-    <div className="relative w-full aspect-[21/9] min-h-[180px] max-h-[320px] bg-slate-900 overflow-hidden">
+    <div className="relative w-full aspect-[21/9] min-h-[200px] max-h-[420px] bg-slate-900 overflow-hidden">
       <Image
         src={bannerUrl}
         alt={proker.judul}
         fill
         priority
         className="object-cover object-center"
-        sizes="(max-width: 1024px) 100vw, 1024px"
+        sizes="(max-width: 1600px) 100vw, 1600px"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/55 to-slate-950/20" />
       <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6 flex items-end gap-3">
@@ -317,10 +327,10 @@ export default function MubesProkerPresentation({
   /* ── Full page: single scroll, banner, no tabs, no meta labels ── */
   if (isFull) {
     return (
-      <article className="bg-white dark:bg-slate-900 w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col">
+      <article className="bg-white dark:bg-slate-900 w-full rounded-none sm:rounded-2xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col">
         <ProkerBanner proker={proker} />
 
-        <div className="p-6 sm:p-8 md:p-10 flex flex-col gap-12 text-slate-800 dark:text-slate-200">
+        <div className="p-5 sm:p-8 lg:p-10 xl:px-12 flex flex-col gap-12 text-slate-800 dark:text-slate-200">
           <section className="flex flex-col gap-5">
             <SectionHeading n={1} title="Ikhtisar & Visual" icon={<FileText className="w-5 h-5 text-amber-600" />} />
             <OverviewBody proker={proker} />

@@ -6,6 +6,16 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.47] - 2026-09-23
+
+### ✨ UX (Galeri dokumentasi MUBES — 2×4 scroll + full-width)
+- Portal/sidang: tampilkan **semua** `dokumentasi_items` dari Strapi (tanpa batas 2 item).
+- Layout **2 baris × 4 kolom** kartu visible; item >8 digeser horizontal (`overflow-x-auto`).
+- Tiap kartu: gambar besar (aspect 4/3) + judul & deskripsi **penuh** (wrap, tanpa ellipsis/`line-clamp`).
+- Halaman `/portal-mubes/proker/[slug]`: wrapper **`max-w-[1600px]`** (bukan `max-w-5xl`) agar konten & banner full-width.
+
+---
+
 ## [2.1.46] - 2026-09-23
 
 ### ✨ Fitur (Dokumentasi proker MUBES — judul & deskripsi Strapi)

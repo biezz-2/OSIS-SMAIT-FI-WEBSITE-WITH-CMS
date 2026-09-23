@@ -57,7 +57,7 @@ export default async function PortalMubesProkerFullPage({
     <main className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col selection:bg-amber-500/30 selection:text-amber-200">
       <Navbar />
 
-      <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 flex flex-col gap-4">
+      <div className="w-full max-w-[1600px] mx-auto px-3 sm:px-5 lg:px-8 py-4 sm:py-6 flex flex-col gap-4">
         <Link
           href="/portal-mubes"
           className="inline-flex items-center gap-2 text-sm text-amber-700 dark:text-amber-400 hover:underline font-medium self-start"
