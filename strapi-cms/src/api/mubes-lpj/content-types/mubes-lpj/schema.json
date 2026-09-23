@@ -19,7 +19,8 @@
     "sections": {
       "type": "component",
       "repeatable": true,
-      "component": "program-kerja.lpj-section"
+      "component": "program-kerja.lpj-section",
+      "required": false
     },
     "realisasi_anggaran": {
       "type": "decimal",

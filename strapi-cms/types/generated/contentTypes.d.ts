@@ -1139,9 +1139,10 @@ export interface ApiProgramKerjaProgramKerja
     >;
     enable_compression: Schema.Attribute.Boolean &
       Schema.Attribute.DefaultTo<true>;
+    capaian: Schema.Attribute.Text;
     enable_preview_dokumentasi: Schema.Attribute.Boolean &
       Schema.Attribute.DefaultTo<true>;
-    evaluasi_deskripsi: Schema.Attribute.String;
+    evaluasi_deskripsi: Schema.Attribute.Text;
     evaluasi_form_url: Schema.Attribute.String;
     golongan_target: Schema.Attribute.String;
     icon_color: Schema.Attribute.String;

@@ -322,43 +322,131 @@ async function setupPublicPermissions(strapi: Core.Strapi) {
 // ============================================
 // Ensure Default Media Assets & Layout Config
 // ============================================
-async function ensureDefaultMediaAssets(strapi: Core.Strapi) {
-  // Sync Content Manager Layout Config for Halaman Utama to force display of new fields in Strapi Admin Form
-  try {
-    const layoutKey = 'plugin_content_manager_configuration_content_types::api::halaman.halaman';
-    const store = (strapi.db.query('strapi_core_store_settings') as any);
-    if (store) {
-      const configRecord = await store.findOne({ where: { key: layoutKey } });
-      if (configRecord && configRecord.value) {
-        let val = typeof configRecord.value === 'string' ? JSON.parse(configRecord.value) : configRecord.value;
-        let layoutModified = false;
+async function ensureContentManagerField(
+  strapi: Core.Strapi,
+  layoutKey: string,
+  opts: {
+    field: string;
+    size?: number;
+    label?: string;
+    description?: string;
+    /** Insert before this field name if present; otherwise append */
+    before?: string;
+  }
+) {
+  // Strapi 5: core store is not a Document Service model — use knex
+  const knex = strapi.db.connection;
+  const configRecord = await knex('strapi_core_store_settings').where({ key: layoutKey }).first();
+  if (!configRecord?.value) return;
 
-        // Ensure overlay_image and background_image are present in edit layout
-        if (val?.layouts?.edit) {
-          const editLayout: any[][] = val.layouts.edit;
-          const flatFields = editLayout.flat().map((item: any) => item.name);
+  let val = typeof configRecord.value === 'string' ? JSON.parse(configRecord.value) : configRecord.value;
+  let modified = false;
 
-          if (!flatFields.includes('overlay_image')) {
-            editLayout.push([{ name: 'overlay_image', size: 6 }]);
-            layoutModified = true;
-          }
-          if (!flatFields.includes('background_image')) {
-            editLayout.push([{ name: 'background_image', size: 6 }]);
-            layoutModified = true;
-          }
-
-          if (layoutModified) {
-            await store.update({
-              where: { id: configRecord.id },
-              data: { value: JSON.stringify(val) },
-            });
-            strapi.log.info('✅ Forced Content Manager layout refresh for Halaman Utama (overlay_image & background_image)');
-          }
-        }
-      }
+  if (!val.metadatas) val.metadatas = {};
+  if (!val.metadatas[opts.field]) {
+    val.metadatas[opts.field] = {
+      edit: {
+        label: opts.label || opts.field,
+        description: opts.description || '',
+        placeholder: '',
+        visible: true,
+        editable: true,
+      },
+      list: { label: opts.label || opts.field, searchable: false, sortable: false },
+    };
+    modified = true;
+  } else if (opts.label || opts.description) {
+    const edit = val.metadatas[opts.field].edit || {};
+    if (opts.label && edit.label !== opts.label) {
+      edit.label = opts.label;
+      modified = true;
     }
+    if (opts.description != null && edit.description !== opts.description) {
+      edit.description = opts.description;
+      modified = true;
+    }
+    edit.visible = true;
+    edit.editable = true;
+    val.metadatas[opts.field].edit = edit;
+  }
+
+  if (!val.layouts) val.layouts = {};
+  if (!Array.isArray(val.layouts.edit)) val.layouts.edit = [];
+  const editLayout: any[][] = val.layouts.edit;
+  const flatFields = editLayout.flat().map((item: any) => item?.name);
+  if (!flatFields.includes(opts.field)) {
+    const row = [{ name: opts.field, size: opts.size ?? 12 }];
+    if (opts.before) {
+      const idx = editLayout.findIndex((r) => r.some((c: any) => c?.name === opts.before));
+      if (idx >= 0) editLayout.splice(idx, 0, row);
+      else editLayout.push(row);
+    } else {
+      editLayout.push(row);
+    }
+    modified = true;
+  }
+
+  if (modified) {
+    await knex('strapi_core_store_settings')
+      .where({ id: configRecord.id })
+      .update({ value: JSON.stringify(val) });
+    strapi.log.info(`✅ Content Manager layout: ${layoutKey} → field "${opts.field}"`);
+  }
+}
+
+async function ensureDefaultMediaAssets(strapi: Core.Strapi) {
+  // Sync Content Manager layouts so Capaian / Evaluasi appear in Admin forms
+  try {
+    await ensureContentManagerField(
+      strapi,
+      'plugin_content_manager_configuration_content_types::api::halaman.halaman',
+      { field: 'overlay_image', size: 6 }
+    );
+    await ensureContentManagerField(
+      strapi,
+      'plugin_content_manager_configuration_content_types::api::halaman.halaman',
+      { field: 'background_image', size: 6 }
+    );
+
+    // 🌐 Program Kerja — dedicated Capaian + Evaluasi & Solusi fields
+    const prokerKey =
+      'plugin_content_manager_configuration_content_types::api::program-kerja.program-kerja';
+    await ensureContentManagerField(strapi, prokerKey, {
+      field: 'capaian',
+      size: 12,
+      label: 'Capaian',
+      description: 'Ringkasan hasil/capaian program (tampil di visitor & portal MUBES).',
+      before: 'evaluasi_deskripsi',
+    });
+    await ensureContentManagerField(strapi, prokerKey, {
+      field: 'evaluasi_deskripsi',
+      size: 12,
+      label: 'Evaluasi & Solusi',
+      description:
+        'Evaluasi pelaksanaan dan solusi perbaikan. Isi ini tetap tampil di Portal MUBES dan untuk user login terverifikasi.',
+    });
+    await ensureContentManagerField(strapi, prokerKey, {
+      field: 'tampilkan_evaluasi',
+      size: 6,
+      label: 'Tampilkan Evaluasi (Guest/Visitor)',
+      description:
+        'Hanya untuk guest (belum login). OFF = sembunyikan di halaman visitor publik. User login+terverifikasi & Portal MUBES tetap melihat evaluasi.',
+      before: 'mode_ukuran_frame',
+    });
+
+    // 🏛️ MUBES LPJ — sections (dynamic body: Tujuan / Teknis / Capaian / Evaluasi)
+    const lpjKey =
+      'plugin_content_manager_configuration_content_types::api::mubes-lpj.mubes-lpj';
+    await ensureContentManagerField(strapi, lpjKey, {
+      field: 'sections',
+      size: 12,
+      label: 'Bagian LPJ (Tujuan, Teknis, Capaian, Evaluasi & Solusi)',
+      description:
+        'Tambah baris komponen: Judul = "Capaian" atau "Evaluasi & Solusi", Isi = teks LPJ. Urutan via field order.',
+      before: 'realisasi_anggaran',
+    });
   } catch (err: any) {
-    strapi.log.warn('⚠️ Could not update content-manager layout for Halaman Utama: ' + err.message);
+    strapi.log.warn('⚠️ Could not update content-manager layouts: ' + err.message);
   }
 
   const defaultMediaAssets = [

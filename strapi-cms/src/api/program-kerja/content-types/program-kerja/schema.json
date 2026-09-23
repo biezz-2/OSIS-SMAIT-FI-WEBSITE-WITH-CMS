@@ -107,8 +107,11 @@
       "repeatable": true,
       "component": "shared.tujuan-detail"
     },
+    "capaian": {
+      "type": "text"
+    },
     "evaluasi_deskripsi": {
-      "type": "string"
+      "type": "text"
     },
     "banner_image": {
       "type": "media",

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Metadata } from 'next';
 import ProgramKerjaDetailPage from '@/components/program-kerja/ProgramKerjaDetailPage';
-import { fetchProgramKerjaFromStrapi, fetchPublicProkerLpjHighlights } from '@/lib/strapi';
+import { fetchProgramKerjaFromStrapi, resolveProkerCapaianEvaluasi } from '@/lib/strapi';
 
 export const revalidate = 60;
 
@@ -35,10 +35,9 @@ export default async function ProgramDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const [initialData, initialLpjHighlights] = await Promise.all([
-    fetchProgramKerjaFromStrapi(slug),
-    fetchPublicProkerLpjHighlights(slug),
-  ]);
+  const initialData = await fetchProgramKerjaFromStrapi(slug);
+  const attrs = initialData ? initialData.attributes || initialData : null;
+  const initialLpjHighlights = await resolveProkerCapaianEvaluasi(slug, attrs);
   return (
     <ProgramKerjaDetailPage
       slug={slug}

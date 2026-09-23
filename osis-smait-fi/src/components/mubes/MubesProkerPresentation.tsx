@@ -342,12 +342,15 @@ function LpjOrderedBody({ proker }: { proker: MubesProgramKerja }) {
     proker.teknis_pelaksanaan ||
     null;
 
-  const capaian = findSection(sections, 'capaian')?.isi || null;
+  const capaian =
+    findSection(sections, 'capaian')?.isi ||
+    (proker.capaian && proker.capaian.trim()) ||
+    null;
 
   const evaluasi =
     findSection(sections, 'evaluasi')?.isi ||
     proker.lpj?.evaluasi_internal ||
-    proker.evaluasi_deskripsi ||
+    (proker.evaluasi_deskripsi && proker.evaluasi_deskripsi.trim()) ||
     null;
 
   const kendalaText = formatKendalaSolusi(proker.lpj?.kendala_solusi ?? null);
@@ -381,14 +384,21 @@ function LpjOrderedBody({ proker }: { proker: MubesProgramKerja }) {
         </ProseBlock>
       </section>
 
-      {/* 3. Capaian (+ optional Anggaran) */}
+      {/* 3. Capaian (+ optional Anggaran) — from lpj.sections or program-kerja.capaian */}
       <section className="flex flex-col gap-4">
         <SectionHeading n={3} title="Capaian" icon={<Trophy className="w-5 h-5 text-amber-600" />} />
-        <ProseBlock>{capaian || <EmptyHint>—</EmptyHint>}</ProseBlock>
+        <ProseBlock>
+          {capaian || (
+            <EmptyHint>
+              Belum ada teks Capaian. Isi di Strapi: 🌐 Program Kerja → field Capaian, atau 🏛️ MUBES
+              LPJ → Bagian LPJ (judul &quot;Capaian&quot;).
+            </EmptyHint>
+          )}
+        </ProseBlock>
         <AnggaranNotaBlock proker={proker} />
       </section>
 
-      {/* 4. Evaluasi & Solusi */}
+      {/* 4. Evaluasi & Solusi — sections / evaluasi_internal / evaluasi_deskripsi */}
       <section className="flex flex-col gap-4">
         <SectionHeading
           n={4}
@@ -398,7 +408,8 @@ function LpjOrderedBody({ proker }: { proker: MubesProgramKerja }) {
         <ProseBlock>
           {evaluasi || (
             <EmptyHint>
-              Program berjalan sesuai dengan target indikator keberhasilan yang telah ditetapkan.
+              Belum ada teks Evaluasi &amp; Solusi. Isi di Strapi: 🌐 Program Kerja → Evaluasi &amp;
+              Solusi, atau 🏛️ MUBES LPJ → Bagian LPJ (judul &quot;Evaluasi &amp; Solusi&quot;).
             </EmptyHint>
           )}
         </ProseBlock>

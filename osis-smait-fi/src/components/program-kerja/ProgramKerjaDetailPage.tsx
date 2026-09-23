@@ -39,6 +39,7 @@ export interface ProgramDetailProps {
   teknisDesc: React.ReactNode;
   evaluasiDesc: string;
   evaluasiUrl?: string;
+  /** Guest-only visibility; verified users always see evaluasi when content exists */
   tampilkanEvaluasi?: boolean;
   /** From mubes-lpj.sections (Capaian) — not on visitor schema */
   capaianDesc?: string | null;
@@ -224,7 +225,8 @@ export function formatProgramDetail(strapiData: any): ProgramDetailProps | null 
     evaluasiDesc: attrs.evaluasi_deskripsi || '',
     evaluasiUrl: attrs.evaluasi_form_url || '',
     tampilkanEvaluasi: isEvaluasiEnabled,
-    capaianDesc: null,
+    capaianDesc:
+      (typeof attrs.capaian === 'string' && attrs.capaian.trim()) || null,
     bannerImage: bannerUrl,
     documentationImages: docImages,
     enablePreviewDokumentasi: isPreviewEnabled,
@@ -270,8 +272,18 @@ export default function ProgramKerjaDetailPage({
   const { getOptimizedImageUrl } = useImageQuality();
 
   const router = useRouter();
-  const { isSignedIn } = useUser();
+  const { isSignedIn, user } = useUser();
   const [mubesPayload, setMubesPayload] = useState<{ allowed: boolean; role: string | null; lpj: any } | null>(null);
+
+  /** Toggle tampilkan_evaluasi hanya untuk guest. User login + terverifikasi selalu lihat. */
+  const userMeta = (user?.publicMetadata || {}) as { status?: string; role?: string };
+  const isVerifiedUser =
+    Boolean(isSignedIn) &&
+    (userMeta.status === 'approved' ||
+      mubesPayload?.allowed === true ||
+      ['admin', 'administrator', 'bph', 'member', 'operator', 'admin_pembina'].includes(
+        userMeta.role || ''
+      ));
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -614,8 +626,8 @@ export default function ProgramKerjaDetailPage({
         </section>
       )}
 
-      {/* Section 3c: Evaluasi & Solusi — LPJ sections or evaluasi_deskripsi */}
-      {detail.tampilkanEvaluasi !== false &&
+      {/* Section 3c: Evaluasi & Solusi — hide only for guest when tampilkan_evaluasi=false */}
+      {(isVerifiedUser || detail.tampilkanEvaluasi !== false) &&
         Boolean(detail.evaluasiDesc && detail.evaluasiDesc.trim()) && (
           <section className="w-full bg-white pb-16 px-4">
             <div className="max-w-6xl mx-auto">

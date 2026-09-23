@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { fetchPublicProkerLpjHighlights } from '@/lib/strapi';
+import { fetchProgramKerjaFromStrapi, resolveProkerCapaianEvaluasi } from '@/lib/strapi';
 
 /**
- * Public BFF: Capaian + Evaluasi from mubes-lpj.sections (text only).
+ * Public BFF: Capaian + Evaluasi from program-kerja fields and/or mubes-lpj.sections.
  * No MUBES auth — anggaran/nota intentionally omitted.
  */
 export async function GET(
@@ -15,7 +15,9 @@ export async function GET(
   }
 
   try {
-    const highlights = await fetchPublicProkerLpjHighlights(slug);
+    const proker = await fetchProgramKerjaFromStrapi(slug);
+    const attrs = proker ? proker.attributes || proker : null;
+    const highlights = await resolveProkerCapaianEvaluasi(slug, attrs);
     return NextResponse.json(highlights, {
       headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' },
     });

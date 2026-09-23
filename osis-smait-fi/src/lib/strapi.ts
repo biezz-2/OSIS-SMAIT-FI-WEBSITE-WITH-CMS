@@ -306,6 +306,33 @@ export async function fetchPublicProkerLpjHighlights(
   return { capaian, evaluasi };
 }
 
+/**
+ * Prefer program-kerja.capaian / evaluasi_deskripsi when set; else LPJ sections.
+ * Used by visitor detail SSR so editors can fill Capaian on 🌐 Program Kerja.
+ */
+export async function resolveProkerCapaianEvaluasi(
+  slug: string,
+  prokerAttrs?: { capaian?: string | null; evaluasi_deskripsi?: string | null } | null
+): Promise<PublicProkerLpjHighlights> {
+  const fromProker: PublicProkerLpjHighlights = {
+    capaian:
+      typeof prokerAttrs?.capaian === 'string' && prokerAttrs.capaian.trim()
+        ? prokerAttrs.capaian.trim()
+        : null,
+    evaluasi:
+      typeof prokerAttrs?.evaluasi_deskripsi === 'string' && prokerAttrs.evaluasi_deskripsi.trim()
+        ? prokerAttrs.evaluasi_deskripsi.trim()
+        : null,
+  };
+  if (fromProker.capaian && fromProker.evaluasi) return fromProker;
+
+  const fromLpj = await fetchPublicProkerLpjHighlights(slug);
+  return {
+    capaian: fromProker.capaian || fromLpj.capaian,
+    evaluasi: fromProker.evaluasi || fromLpj.evaluasi,
+  };
+}
+
 
 /**
  * Fetch Page (Halaman Utama) by slug from Strapi API

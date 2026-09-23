@@ -47,6 +47,8 @@ export interface MubesProgramKerja {
   teknis_pelaksanaan?: string;
   evaluasi_form_url?: string;
   evaluasi_deskripsi?: string;
+  /** Capaian ringkas dari program-kerja (fallback bila lpj.sections kosong) */
+  capaian?: string;
   lokasi?: string;
   status?: string;
   banner_image?: any;
@@ -764,6 +766,8 @@ function normalizeProgramKerja(item: any, lpjByProker: Map<string, MubesLpjData>
     teknis_pelaksanaan: attrs.teknis_pelaksanaan || attrs.deskripsi || 'Sesuai dengan SOP dan petunjuk teknis sekbid.',
     evaluasi_form_url: attrs.evaluasi_form_url || undefined,
     evaluasi_deskripsi: attrs.evaluasi_deskripsi || undefined,
+    capaian:
+      (typeof attrs.capaian === 'string' && attrs.capaian.trim()) || undefined,
     lokasi: attrs.lokasi || 'SMAIT Fithrah Insani',
     status: attrs.status || 'published',
     banner_image: attrs.banner_image,

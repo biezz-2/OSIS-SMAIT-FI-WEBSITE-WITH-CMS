@@ -6,6 +6,15 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.55] - 2026-09-23
+
+### ✅ Ship (Capaian & Evaluasi — schema + UI + Strapi rebuild)
+- **Strapi**: field `program-kerja.capaian` (text); `evaluasi_deskripsi` → text; label CM **Capaian** / **Evaluasi & Solusi**; MUBES LPJ `sections` label **Bagian LPJ (Capaian / Evaluasi)**.
+- **Bootstrap** (`strapi-cms/src/index.ts`): `ensureContentManagerField` memaksa field tampil di Admin form Program Kerja + MUBES LPJ.
+- **Frontend**: fallback Capaian/Evaluasi proker ↔ LPJ sections (visitor BFF + `MubesProkerPresentation`).
+- **Ops**: `strapi build` OK (admin panel ~255s); `pm2 restart osis-strapi-backend` → `/_health` 204; API `fields=capaian,evaluasi_deskripsi` live.
+- Script: `scripts/backfill-proker-capaian.mjs`.
+
 ## [2.1.54] - 2026-09-23
 
 ### 🐛 Fix (Search bar di Portal MUBES)
