@@ -25,6 +25,16 @@ export interface MubesPenanggungJawab {
   jabatan?: string;
 }
 
+/** Satu item galeri dokumentasi sidang (judul + deskripsi dikelola di Strapi). */
+export interface MubesDokumentasiItem {
+  id?: number | string;
+  judul: string;
+  deskripsi?: string;
+  url: string;
+  isVideo?: boolean;
+  order?: number;
+}
+
 export interface MubesProgramKerja {
   id: number | string;
   documentId?: string;
@@ -39,7 +49,10 @@ export interface MubesProgramKerja {
   lokasi?: string;
   status?: string;
   banner_image?: any;
+  /** Media lama (multiple) — fallback bila dokumentasi_items kosong */
   dokumentasi?: any[];
+  /** Preferensi: component repeatable dengan judul + deskripsi */
+  dokumentasi_items?: MubesDokumentasiItem[];
   sekbid_nomor?: number;
   sekbid_judul?: string;
   sekbid_nama?: string;
@@ -690,6 +703,8 @@ function normalizeProgramKerja(item: any, lpjByProker: Map<string, MubesLpjData>
     (pSlug ? lpjByProker.get(pSlug) : null) ||
     null;
 
+  const rawDocs = attrs.dokumentasi?.data || attrs.dokumentasi || [];
+
   return {
     id: item.id,
     documentId: item.documentId,
@@ -704,12 +719,86 @@ function normalizeProgramKerja(item: any, lpjByProker: Map<string, MubesLpjData>
     lokasi: attrs.lokasi || 'SMAIT Fithrah Insani',
     status: attrs.status || 'published',
     banner_image: attrs.banner_image,
-    dokumentasi: attrs.dokumentasi?.data || attrs.dokumentasi || [],
+    dokumentasi: rawDocs,
+    dokumentasi_items: normalizeDokumentasiItems(attrs.dokumentasi_items, rawDocs),
     sekbid_nomor: sekbidNum,
     sekbid_judul: sekbidJudul,
     penanggung_jawab: pjList,
     lpj: matchedLpj,
   };
+}
+
+/**
+ * Prefer component `dokumentasi_items` (judul + deskripsi + media).
+ * Fallback: media field `dokumentasi` → judul dari caption/alternativeText.
+ */
+export function normalizeDokumentasiItems(
+  rawItems: unknown,
+  legacyMedia: unknown[] = []
+): MubesDokumentasiItem[] {
+  const list = Array.isArray(rawItems)
+    ? rawItems
+    : Array.isArray((rawItems as { data?: unknown })?.data)
+      ? ((rawItems as { data: unknown[] }).data as unknown[])
+      : [];
+
+  const fromComponent: MubesDokumentasiItem[] = [];
+  list.forEach((item: any, index: number) => {
+    const row = item?.attributes || item || {};
+    const media = row.media?.data || row.media || null;
+    const url = getStrapiMediaUrl(media, '');
+    if (!url) return;
+    const mediaAttrs = media?.attributes || media || {};
+    const mime = String(mediaAttrs.mime || media?.mime || '');
+    const name = String(mediaAttrs.name || media?.name || url);
+    const isVideo =
+      mime.startsWith('video/') ||
+      /\.(mp4|webm|ogg|mov|m4v)$/i.test(name) ||
+      /\.(mp4|webm|ogg|mov|m4v)$/i.test(url.split('?')[0]);
+    const judul = String(row.judul || mediaAttrs.caption || mediaAttrs.alternativeText || `Dokumentasi ${index + 1}`).trim();
+    const deskripsi = String(row.deskripsi || '').trim() || undefined;
+    const order =
+      typeof row.order === 'number' ? row.order : row.order != null ? Number(row.order) : index;
+    fromComponent.push({
+      id: item?.id ?? index,
+      judul,
+      deskripsi,
+      url,
+      isVideo,
+      order: Number.isFinite(order) ? order : index,
+    });
+  });
+
+  if (fromComponent.length > 0) {
+    return fromComponent.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  }
+
+  // Legacy media multiple
+  const legacy = Array.isArray(legacyMedia) ? legacyMedia : [];
+  const fromLegacy: MubesDokumentasiItem[] = [];
+  legacy.forEach((doc: any, index: number) => {
+    const url = getStrapiMediaUrl(doc, '');
+    if (!url) return;
+    const attrs = doc?.attributes || doc || {};
+    const mime = String(attrs.mime || doc?.mime || '');
+    const name = String(attrs.name || doc?.name || url);
+    const isVideo =
+      mime.startsWith('video/') ||
+      /\.(mp4|webm|ogg|mov|m4v)$/i.test(name) ||
+      /\.(mp4|webm|ogg|mov|m4v)$/i.test(url.split('?')[0]);
+    const judul = String(
+      attrs.caption || attrs.alternativeText || attrs.name || `Dokumentasi ${index + 1}`
+    ).trim();
+    fromLegacy.push({
+      id: doc?.id ?? index,
+      judul,
+      deskripsi: undefined,
+      url,
+      isVideo,
+      order: index,
+    });
+  });
+  return fromLegacy;
 }
 
 /**
@@ -783,8 +872,18 @@ export async function fetchMubesProkerList(opts?: {
   const authHeaders = elevatedToken ? { Authorization: `Bearer ${elevatedToken}` } : undefined;
 
   try {
+    // Deep populate: dokumentasi_items.media + media fields (Strapi v5 nested)
+    const prokerQs =
+      '/api/program-kerjas?pagination[limit]=100' +
+      '&populate[banner_image]=true' +
+      '&populate[dokumentasi]=true' +
+      '&populate[dokumentasi_items][populate][media]=true' +
+      '&populate[penanggung_jawab]=true' +
+      '&populate[sekbid]=true' +
+      '&populate[tujuan_detail]=true';
+
     const [prokerRes, lpjRes, sekbidRes]: [any, any, any] = await Promise.all([
-      fetchStrapiAPI('/api/program-kerjas?populate=*&pagination[limit]=100', {
+      fetchStrapiAPI(prokerQs, {
         headers: authHeaders,
       }).catch(() => null),
       includeLpj

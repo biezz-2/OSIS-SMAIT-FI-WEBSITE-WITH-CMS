@@ -6,6 +6,15 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.46] - 2026-09-23
+
+### ✨ Fitur (Dokumentasi proker MUBES — judul & deskripsi Strapi)
+- Strapi component **`program-kerja.dokumentasi-item`**: `judul`, `deskripsi`, `media`, `order`.
+- Field repeatable **`dokumentasi_items`** pada Program Kerja (field media lama `dokumentasi` tetap sebagai fallback).
+- Portal/sidang: galeri **2 kolom** (gambar besar) + judul & deskripsi per foto.
+
+---
+
 ## [2.1.45] - 2026-09-23
 
 ### ✨ Fitur / UX (Portal MUBES — full page single scroll)

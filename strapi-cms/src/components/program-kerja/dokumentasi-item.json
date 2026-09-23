@@ -1,0 +1,28 @@
+{
+  "collectionName": "components_program_kerja_dokumentasi_items",
+  "info": {
+    "displayName": "Dokumentasi Item",
+    "description": "Foto/video dokumentasi proker dengan judul dan deskripsi (dikelola di Strapi).",
+    "icon": "picture"
+  },
+  "options": {},
+  "attributes": {
+    "judul": {
+      "type": "string",
+      "required": true
+    },
+    "deskripsi": {
+      "type": "text"
+    },
+    "media": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": ["images", "videos"]
+    },
+    "order": {
+      "type": "integer",
+      "default": 0
+    }
+  }
+}

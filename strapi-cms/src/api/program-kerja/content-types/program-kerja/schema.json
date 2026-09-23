@@ -46,6 +46,11 @@
       "multiple": true,
       "allowedTypes": ["images", "files", "videos", "audios"]
     },
+    "dokumentasi_items": {
+      "type": "component",
+      "repeatable": true,
+      "component": "program-kerja.dokumentasi-item"
+    },
     "enable_preview_dokumentasi": {
       "type": "boolean",
       "default": true

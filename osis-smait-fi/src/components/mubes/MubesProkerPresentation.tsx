@@ -51,6 +51,11 @@ function SectionHeading({
 }
 
 function OverviewBody({ proker }: { proker: MubesProgramKerja }) {
+  const docs =
+    proker.dokumentasi_items && proker.dokumentasi_items.length > 0
+      ? proker.dokumentasi_items
+      : [];
+
   return (
     <div className="flex flex-col gap-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -79,24 +84,47 @@ function OverviewBody({ proker }: { proker: MubesProgramKerja }) {
         </p>
       </div>
 
-      {proker.dokumentasi && proker.dokumentasi.length > 0 && (
+      {docs.length > 0 && (
         <div>
           <h4 className="text-sm font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-3">
-            Dokumentasi Pelaksanaan ({proker.dokumentasi.length} Foto)
+            Dokumentasi Pelaksanaan ({docs.length})
           </h4>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-            {proker.dokumentasi.map((doc: unknown, i: number) => {
-              const docUrl = getStrapiMediaUrl(doc, '');
-              if (!docUrl) return null;
-              return (
-                <div
-                  key={i}
-                  className="relative aspect-video rounded-xl overflow-hidden bg-slate-900 border border-slate-200 dark:border-slate-700"
-                >
-                  <Image src={docUrl} alt={`Dokumentasi ${i + 1}`} fill className="object-cover" />
+          {/* 2 kolom menyamping — gambar besar + judul & deskripsi dari Strapi */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
+            {docs.map((item, i) => (
+              <figure
+                key={item.id ?? i}
+                className="flex flex-col rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 shadow-sm"
+              >
+                <div className="relative aspect-[4/3] w-full bg-slate-900">
+                  {item.isVideo ? (
+                    <video
+                      src={item.url}
+                      controls
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                  ) : (
+                    <Image
+                      src={item.url}
+                      alt={item.judul}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 640px) 100vw, 50vw"
+                    />
+                  )}
                 </div>
-              );
-            })}
+                <figcaption className="p-4 sm:p-5 flex flex-col gap-1.5">
+                  <h5 className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100 leading-snug">
+                    {item.judul}
+                  </h5>
+                  {item.deskripsi ? (
+                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">
+                      {item.deskripsi}
+                    </p>
+                  ) : null}
+                </figcaption>
+              </figure>
+            ))}
           </div>
         </div>
       )}
