@@ -6,6 +6,32 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.54] - 2026-09-23
+
+### 🐛 Fix (Search bar di Portal MUBES)
+- **Akar masalah**: `searchGlobalContent` tidak mengindeks Portal MUBES; hasil proker selalu mengarah ke rute publik (`/sekbid/...` / `/program-kerja/...`), bukan sidang `/portal-mubes/proker/[slug]`. Viewer sidang juga tidak punya filter teks lokal.
+- **`lib/search.ts`**: entry navigasi MUBES; opsi `preferMubes` → href proker ke portal sidang + kategori `MUBES`; match slug / sekbid.
+- **`GooeyInput`**: deteksi path `/portal-mubes` → `preferMubes: true`.
+- **`MubesPresentationViewer`**: search lokal (judul, slug, PJ, sekbid) lintas sekbid + badge hit count per tombol sekbid.
+
+## [2.1.53] - 2026-09-23
+
+### ✨ Access (Evaluasi — toggle guest-only)
+- **`tampilkan_evaluasi`**: hanya menyembunyikan section Evaluasi & Solusi untuk **guest** di `/program-kerja/[slug]`.
+- **User login + terverifikasi** (`status=approved` / role MUBES / `mubesPayload.allowed`): evaluasi tetap tampil di halaman visitor meski toggle OFF.
+- **Portal MUBES**: evaluasi selalu terbuka (tidak digate oleh toggle visitor).
+- Strapi Admin label: **Tampilkan Evaluasi (Guest/Visitor)** + deskripsi scope guest-only.
+
+## [2.1.53] - 2026-09-23
+
+### ✨ CMS + MUBES (Capaian & Evaluasi & Solusi di Admin + portal)
+- **Akar masalah**: editor mencari Capaian / Evaluasi & Solusi di 🌐 Program Kerja — field `capaian` tidak ada; hanya `evaluasi_deskripsi` (label generik) + body dinamis di 🏛️ MUBES LPJ → `sections`. Portal MUBES sudah render section 3–4, tapi kosong jika `includeLpj=false` atau sections tidak diisi, tanpa fallback field proker.
+- **Strapi 🌐 Program Kerja**: atribut baru `capaian` (text); `evaluasi_deskripsi` diperluas ke text + label Content Manager **Evaluasi & Solusi**.
+- **Strapi bootstrap**: paksa layout Admin menampilkan Capaian / Evaluasi & Solusi pada Program Kerja, dan label jelas untuk `sections` pada MUBES LPJ (di atas anggaran).
+- **MUBES UI** (`MubesProkerPresentation`): Capaian/Evaluasi dari `lpj.sections` → fallback `program-kerja.capaian` / `evaluasi_deskripsi`.
+- **Visitor**: `resolveProkerCapaianEvaluasi` menggabungkan field proker + LPJ sections (BFF `/api/program-kerja/[slug]/lpj-public`).
+- **Backfill**: `scripts/backfill-proker-capaian.mjs` menyalin isi Capaian/Evaluasi dari LPJ sections ke field proker.
+
 ## [2.1.52] - 2026-09-23
 
 ### ✨ UX & Data (MUBES — kolom Anggaran per proker)
@@ -15,12 +41,9 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
   - `ramadhan-ceria` Rp434.000 · `phbn` Rp318.000 · `classmeet` Rp548.000 · `Direct-Marketing` Rp125.000
 - Script: `scripts/seed-mubes-anggaran.mjs`. Manage lanjutan lewat Strapi Admin pada entry LPJ masing-masing proker.
 
-## [2.1.52] - 2026-09-23
-
 ### 🐛 Fix (Visitor Program Kerja — Capaian & Evaluasi & Solusi)
-- **Akar masalah**: field Capaian / Evaluasi & Solusi hanya ada di `mubes-lpj.sections` (koleksi MUBES), bukan di schema 🌐 Program Kerja. Halaman visitor tidak fetch LPJ dan tidak punya section UI.
-- **Perbaikan**: SSR + BFF publik (`fetchPublicProkerLpjHighlights`, `/api/program-kerja/[slug]/lpj-public`) mengambil teks Capaian & Evaluasi dari LPJ (elevated token server-side; tanpa anggaran/nota).
-- **UI** `/program-kerja/[slug]`: section **Capaian** dan **Evaluasi & Solusi** tampil bila data ada (selaras urutan MUBES, tanpa gate login).
+- SSR + BFF publik mengambil teks Capaian & Evaluasi dari LPJ sections (elevated token; tanpa anggaran/nota).
+- UI visitor menampilkan section Capaian / Evaluasi & Solusi bila data ada.
 
 ## [2.1.51] - 2026-09-23
 

@@ -12,7 +12,7 @@ import {
   type MouseEvent,
 } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { searchGlobalContent, type SearchResultItem } from "@/lib/search";
 
@@ -105,6 +105,8 @@ export function GooeyInput({
   disabled = false,
 }: GooeyInputProps) {
   const router = useRouter();
+  const pathname = usePathname() || "";
+  const preferMubes = pathname.startsWith("/portal-mubes");
   const reactId = useId();
   const safeId = reactId.replace(/:/g, "");
   const filterId = `gooey-filter-${safeId}`;
@@ -144,7 +146,7 @@ export function GooeyInput({
     [onOpenChange]
   );
 
-  // Debounced search query
+  // Debounced search query (prefer MUBES links on /portal-mubes)
   useEffect(() => {
     if (!searchText.trim() || !isExpanded) {
       setResults([]);
@@ -156,7 +158,7 @@ export function GooeyInput({
     setIsLoading(true);
     const timer = setTimeout(async () => {
       try {
-        const res = await searchGlobalContent(searchText);
+        const res = await searchGlobalContent(searchText, { preferMubes });
         setResults(res);
       } catch (err) {
         console.error("Search error:", err);
@@ -168,7 +170,7 @@ export function GooeyInput({
     }, 200);
 
     return () => clearTimeout(timer);
-  }, [searchText, isExpanded]);
+  }, [searchText, isExpanded, preferMubes]);
 
   useEffect(() => {
     if (isExpanded) {

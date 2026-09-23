@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { MubesSekbidGroup, MubesProgramKerja } from '@/lib/mubes-proker';
@@ -12,12 +12,33 @@ import {
   Maximize2,
   ExternalLink,
   Layers,
+  Search,
   Users,
+  X,
 } from 'lucide-react';
 
 interface MubesPresentationViewerProps {
   initialGroups: MubesSekbidGroup[];
   role?: string | null;
+}
+
+function matchesProker(proker: MubesProgramKerja, q: string): boolean {
+  if (!q) return true;
+  const hay = [
+    proker.judul,
+    proker.slug,
+    proker.tujuan,
+    proker.kategori,
+    proker.lokasi,
+    proker.sekbid_judul,
+    proker.sekbid_nama,
+    proker.sekbid_nomor != null ? `sekbid ${proker.sekbid_nomor}` : '',
+    ...(proker.penanggung_jawab || []).flatMap((p) => [p.nama_lengkap, p.jabatan]),
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
+  return hay.includes(q);
 }
 
 export default function MubesPresentationViewer({
@@ -26,9 +47,44 @@ export default function MubesPresentationViewer({
 }: MubesPresentationViewerProps) {
   const [selectedSekbid, setSelectedSekbid] = useState<number>(1);
   const [activeModalProker, setActiveModalProker] = useState<MubesProgramKerja | null>(null);
+  const [localQuery, setLocalQuery] = useState('');
+
+  const q = localQuery.trim().toLowerCase();
+  const isSearching = q.length > 0;
 
   const currentGroup = initialGroups.find((g) => g.nomor === selectedSekbid) || initialGroups[0];
-  const prokers = currentGroup?.prokerList || [];
+
+  const filteredBySekbid = useMemo(() => {
+    const list = currentGroup?.prokerList || [];
+    if (!isSearching) return list;
+    return list.filter((p) => matchesProker(p, q));
+  }, [currentGroup, isSearching, q]);
+
+  /** Saat search aktif: cari di semua sekbid, prioritaskan sekbid terpilih. */
+  const crossSekbidHits = useMemo(() => {
+    if (!isSearching) return [] as MubesProgramKerja[];
+    const hits: MubesProgramKerja[] = [];
+    for (const g of initialGroups) {
+      if (g.nomor === selectedSekbid) continue;
+      for (const p of g.prokerList) {
+        if (matchesProker(p, q)) hits.push(p);
+      }
+    }
+    return hits;
+  }, [initialGroups, isSearching, q, selectedSekbid]);
+
+  const prokers = isSearching
+    ? [...filteredBySekbid, ...crossSekbidHits]
+    : filteredBySekbid;
+
+  const matchCountBySekbid = useMemo(() => {
+    if (!isSearching) return null as Map<number, number> | null;
+    const map = new Map<number, number>();
+    for (const g of initialGroups) {
+      map.set(g.nomor, g.prokerList.filter((p) => matchesProker(p, q)).length);
+    }
+    return map;
+  }, [initialGroups, isSearching, q]);
 
   return (
     <section className="w-full bg-slate-50 dark:bg-slate-900/50 py-12 px-6 sm:px-8 lg:px-12 transition-colors">
@@ -42,7 +98,7 @@ export default function MubesPresentationViewer({
                 <span>Pilih Seksi Bidang (Sekbid 1 - 8)</span>
               </h2>
               <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                Pilih seksi bidang untuk menampilkan presentasi program kerja dan dokumen LPJ terkait.
+                Pilih seksi bidang atau cari judul / PJ proker untuk membuka presentasi sidang LPJ.
               </p>
             </div>
             <div className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700/50 self-start sm:self-auto">
@@ -50,9 +106,35 @@ export default function MubesPresentationViewer({
             </div>
           </div>
 
+          {/* Search lokal daftar proker sidang */}
+          <div className="relative w-full max-w-xl">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+            <input
+              type="search"
+              value={localQuery}
+              onChange={(e) => setLocalQuery(e.target.value)}
+              placeholder="Cari proker, slug, atau nama PJ..."
+              className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500 [&::-webkit-search-cancel-button]:hidden"
+              aria-label="Cari program kerja sidang MUBES"
+            />
+            {localQuery ? (
+              <button
+                type="button"
+                onClick={() => setLocalQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                aria-label="Hapus pencarian"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            ) : null}
+          </div>
+
           <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin">
             {initialGroups.map((group) => {
               const isSelected = group.nomor === selectedSekbid;
+              const hitCount = matchCountBySekbid?.get(group.nomor);
+              const displayCount =
+                isSearching && hitCount != null ? hitCount : group.prokerList.length;
               return (
                 <button
                   key={group.nomor}
@@ -68,7 +150,7 @@ export default function MubesPresentationViewer({
                     {group.nomor}
                   </span>
                   <span>{group.judul}</span>
-                  <span className="text-[11px] opacity-75">({group.prokerList.length})</span>
+                  <span className="text-[11px] opacity-75">({displayCount})</span>
                 </button>
               );
             })}
@@ -78,17 +160,23 @@ export default function MubesPresentationViewer({
         <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="text-xs uppercase font-bold tracking-wider text-amber-600 dark:text-amber-400">
-              Seksi Bidang {currentGroup.nomor}
+              {isSearching
+                ? `Hasil pencarian “${localQuery.trim()}”`
+                : `Seksi Bidang ${currentGroup.nomor}`}
             </div>
             <h3 className="text-2xl font-bold font-serif text-slate-900 dark:text-slate-100 mt-1">
-              {currentGroup.judul}
+              {isSearching ? `${prokers.length} program kerja cocok` : currentGroup.judul}
             </h3>
             <p className="text-sm text-slate-600 dark:text-slate-300 mt-1 max-w-2xl">
-              {currentGroup.deskripsi}
+              {isSearching
+                ? 'Hasil dari semua sekbid. Klik kartu untuk buka presentasi sidang.'
+                : currentGroup.deskripsi}
             </p>
           </div>
           <div className="text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700/50 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700">
-            Total {prokers.length} program kerja terlapor untuk sidang.
+            {isSearching
+              ? `${filteredBySekbid.length} di sekbid ini · ${crossSekbidHits.length} dari sekbid lain`
+              : `Total ${prokers.length} program kerja terlapor untuk sidang.`}
           </div>
         </div>
 
@@ -96,10 +184,14 @@ export default function MubesPresentationViewer({
           <div className="bg-white dark:bg-slate-800 rounded-2xl p-12 text-center border border-dashed border-slate-300 dark:border-slate-700">
             <AlertCircle className="w-12 h-12 text-slate-400 mx-auto mb-3" />
             <h4 className="text-base font-semibold text-slate-700 dark:text-slate-300">
-              Belum ada program kerja untuk Sekbid {currentGroup.nomor}
+              {isSearching
+                ? `Tidak ada proker yang cocok dengan “${localQuery.trim()}”`
+                : `Belum ada program kerja untuk Sekbid ${currentGroup.nomor}`}
             </h4>
             <p className="text-xs text-slate-500 mt-1">
-              Data dapat dilengkapi melalui panel Strapi CMS bagian 🌐 [VISITOR] Program Kerja.
+              {isSearching
+                ? 'Coba kata kunci lain (judul, slug, atau nama PJ).'
+                : 'Data dapat dilengkapi melalui panel Strapi CMS bagian 🌐 [VISITOR] Program Kerja.'}
             </p>
           </div>
         ) : (
@@ -118,7 +210,7 @@ export default function MubesPresentationViewer({
 
               return (
                 <div
-                  key={proker.id}
+                  key={`${proker.sekbid_nomor ?? 'x'}-${proker.id}`}
                   className="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700/80 shadow-sm hover:shadow-md transition-all flex flex-col justify-between group"
                 >
                   <div>
@@ -131,9 +223,11 @@ export default function MubesPresentationViewer({
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
-                      <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
+                      <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-2">
                         <span className="text-[11px] font-semibold uppercase px-2.5 py-1 rounded-md bg-white/90 dark:bg-slate-900/90 text-slate-900 dark:text-white backdrop-blur-sm">
-                          {proker.kategori}
+                          {isSearching && proker.sekbid_nomor != null
+                            ? `Sekbid ${proker.sekbid_nomor} · ${proker.kategori}`
+                            : proker.kategori}
                         </span>
                         {hasLpj ? (
                           <span className="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-emerald-500/90 text-white flex items-center gap-1 shadow">

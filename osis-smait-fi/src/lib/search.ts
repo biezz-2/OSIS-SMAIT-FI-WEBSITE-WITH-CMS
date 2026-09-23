@@ -4,9 +4,14 @@ export interface SearchResultItem {
   id: string;
   title: string;
   description?: string;
-  category: "Navigasi" | "Sekbid" | "Program Kerja" | "Anggota" | "Event";
+  category: "Navigasi" | "Sekbid" | "Program Kerja" | "Anggota" | "Event" | "MUBES";
   href: string;
   icon?: string;
+}
+
+export interface SearchOptions {
+  /** Prefer /portal-mubes/proker/* links (when user is on portal MUBES). */
+  preferMubes?: boolean;
 }
 
 const STATIC_PAGES: SearchResultItem[] = [
@@ -17,11 +22,45 @@ const STATIC_PAGES: SearchResultItem[] = [
   { id: "nav-anggota", title: "Daftar Anggota OSIS", description: "Daftar pengurus inti dan anggota sekbid", category: "Navigasi", href: "/anggota" },
   { id: "nav-proker", title: "Program Kerja", description: "Daftar seluruh program kerja OSIS", category: "Navigasi", href: "/program-kerja" },
   { id: "nav-galeri", title: "Galeri & Dokumentasi", description: "Dokumentasi foto dan video kegiatan OSIS", category: "Navigasi", href: "/galeri/galeri-preview-infinity" },
+  {
+    id: "nav-mubes",
+    title: "Portal MUBES / Musyawarah Besar",
+    description: "Sidang LPJ program kerja, evaluasi sekbid, dan pengesahan ketetapan MUBES XXI",
+    category: "MUBES",
+    href: "/portal-mubes",
+  },
+  {
+    id: "nav-mubes-sidang",
+    title: "Sidang LPJ Program Kerja",
+    description: "Presentasi dan dokumen LPJ proker per sekbid di portal MUBES",
+    category: "MUBES",
+    href: "/portal-mubes",
+  },
 ];
 
-export async function searchGlobalContent(rawQuery: string): Promise<SearchResultItem[]> {
+function publicProkerHref(
+  sekbidNum: number | string | undefined,
+  kategori: string | undefined,
+  slug: string | undefined,
+  id: string | number
+): string {
+  const kat = kategori === "insidental" ? "insidental" : "rutinan";
+  if (sekbidNum && slug) return `/sekbid/sekbid-${sekbidNum}/${kat}/${slug}`;
+  return `/program-kerja/${slug || id}`;
+}
+
+function mubesProkerHref(slug: string | undefined, id: string | number): string {
+  return `/portal-mubes/proker/${encodeURIComponent(slug || String(id))}`;
+}
+
+export async function searchGlobalContent(
+  rawQuery: string,
+  options: SearchOptions = {}
+): Promise<SearchResultItem[]> {
   const query = rawQuery.trim().toLowerCase();
   if (!query) return [];
+
+  const preferMubes = Boolean(options.preferMubes);
 
   // 1. Static navigation search
   const staticMatches = STATIC_PAGES.filter(
@@ -60,10 +99,10 @@ export async function searchGlobalContent(rawQuery: string): Promise<SearchResul
       ? (sekbidData[0]?.attributes || sekbidData[0])
       : (sekbidData?.attributes || sekbidData);
     const sekbidNum = sekbidAttrs?.nomor;
-    const kat = attrs.kategori === "insidental" ? "insidental" : "rutinan";
-    const href = sekbidNum && attrs.slug
-      ? `/sekbid/sekbid-${sekbidNum}/${kat}/${attrs.slug}`
-      : `/program-kerja/${attrs.slug || item.id}`;
+    const slug = attrs.slug as string | undefined;
+    const pubHref = publicProkerHref(sekbidNum, attrs.kategori, slug, item.id);
+    const mubesHref = mubesProkerHref(slug, item.id);
+    const href = preferMubes ? mubesHref : pubHref;
 
     const pjList = attrs.penanggung_jawab?.data || attrs.penanggung_jawab || [];
     const pjArray = Array.isArray(pjList) ? pjList : [pjList];
@@ -83,18 +122,22 @@ export async function searchGlobalContent(rawQuery: string): Promise<SearchResul
     const isMatch =
       judul.toLowerCase().includes(query) ||
       deskripsi.toLowerCase().includes(query) ||
-      pjNames.some((n) => n.toLowerCase().includes(query));
+      pjNames.some((n) => n.toLowerCase().includes(query)) ||
+      (slug && slug.toLowerCase().includes(query)) ||
+      (sekbidNum != null && `sekbid ${sekbidNum}`.includes(query));
 
     if (isMatch) {
-      const desc = pjNames.length > 0
-        ? `PJ: ${pjNames.join(", ")} | ${deskripsi || "Program Kerja OSIS"}`
-        : deskripsi || "Program Kerja OSIS";
+      const descParts: string[] = [];
+      if (preferMubes) descParts.push("Sidang MUBES");
+      if (sekbidNum != null) descParts.push(`Sekbid ${sekbidNum}`);
+      if (pjNames.length > 0) descParts.push(`PJ: ${pjNames.join(", ")}`);
+      if (deskripsi) descParts.push(deskripsi);
 
       allProkers.push({
-        id: `proker-${item.id}`,
+        id: preferMubes ? `mubes-proker-${item.id}` : `proker-${item.id}`,
         title: judul || "Program Kerja",
-        description: desc,
-        category: "Program Kerja",
+        description: descParts.join(" · ") || "Program Kerja OSIS",
+        category: preferMubes ? "MUBES" : "Program Kerja",
         href,
       });
     }
@@ -107,8 +150,9 @@ export async function searchGlobalContent(rawQuery: string): Promise<SearchResul
       id: `sekbid-${item.id}`,
       title: attrs.judul || `Seksi Bidang ${num}`,
       description: attrs.visi || attrs.deskripsi || `Sekbid ${num}`,
-      category: "Sekbid",
-      href: `/sekbid/sekbid-${num}`,
+      category: "Sekbid" as const,
+      // Di portal MUBES, sekbid mengarah ke daftar sidang (filter lokal di viewer)
+      href: preferMubes ? "/portal-mubes" : `/sekbid/sekbid-${num}`,
     };
   });
 
@@ -138,7 +182,7 @@ export async function searchGlobalContent(rawQuery: string): Promise<SearchResul
       id: `anggota-${item.id}`,
       title: attrs.nama_lengkap || "Anggota OSIS",
       description,
-      category: "Anggota",
+      category: "Anggota" as const,
       href,
     };
   });
@@ -149,10 +193,15 @@ export async function searchGlobalContent(rawQuery: string): Promise<SearchResul
       id: `event-${item.id}`,
       title: attrs.judul || "Event OSIS",
       description: attrs.deskripsi || attrs.lokasi || "Kegiatan OSIS",
-      category: "Event",
+      category: "Event" as const,
       href: `/events`,
     };
   });
+
+  // Di portal MUBES: prioritaskan hasil MUBES/proker sidang di atas
+  if (preferMubes) {
+    return [...staticMatches.filter((s) => s.category === "MUBES"), ...allProkers, ...sekbidItems, ...staticMatches.filter((s) => s.category !== "MUBES"), ...eventItems, ...anggotaItems];
+  }
 
   return [...staticMatches, ...sekbidItems, ...allProkers, ...eventItems, ...anggotaItems];
 }
