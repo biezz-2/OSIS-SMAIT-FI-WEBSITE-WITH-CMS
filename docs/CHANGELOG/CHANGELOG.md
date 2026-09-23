@@ -6,6 +6,16 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.42] - 2026-09-23
+
+### ✨ Fitur (Strapi built-in MCP)
+- **Enable MCP** di `strapi-cms/config/server.ts` (`MCP_ENABLED`, timeout env). Endpoint `POST /mcp`.
+- **Admin token helper** `scripts/ensure-mcp-admin-token.mjs` (`npm run mcp:token[:rotate]`) — scope konten visitor + media; token di `~/.config/agoraacta/strapi-mcp.token`.
+- **Klien**: Cursor (`~/.cursor/mcp.json`) + Claude Code (`strapi-mcp` HTTP, verified connected).
+- **Docs**: `docs/guides/strapi-mcp-setup.md` + contoh Cursor JSON.
+
+---
+
 ## [2.1.41] - 2026-09-22
 
 ### 🐛 Perbaikan (Login OTP + redirect portal)

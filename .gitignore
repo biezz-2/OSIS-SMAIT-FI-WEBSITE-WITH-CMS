@@ -26,6 +26,10 @@ strapi-cms/.env
 .windsurf/
 .devin/
 .mcp.json
+# MCP secrets / local client configs with Bearer tokens
+**/.cursor/mcp.json
+**/mcp.local.json
+strapi-mcp.token
 
 # Temporary design assets & large dumps
 Desain_Sementara/

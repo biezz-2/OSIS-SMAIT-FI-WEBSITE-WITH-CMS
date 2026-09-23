@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "strapi-mcp": {
+      "type": "streamable-http",
+      "url": "http://127.0.0.1:1337/mcp",
+      "headers": {
+        "Authorization": "Bearer REPLACE_WITH_TOKEN_FROM_~/.config/agoraacta/strapi-mcp.token"
+      }
+    }
+  }
+}

@@ -15,7 +15,9 @@
     "upgrade:dry": "npx @strapi/upgrade latest --dry",
     "lint": "tsc --noEmit",
     "seed": "npx tsx scripts/seed.ts",
-    "db:sync": "node scripts/sync-db.js"
+    "db:sync": "node scripts/sync-db.js",
+    "mcp:token": "node scripts/ensure-mcp-admin-token.mjs",
+    "mcp:token:rotate": "node scripts/ensure-mcp-admin-token.mjs --rotate"
   },
   "dependencies": {
     "@strapi/admin": "5.51.0",
