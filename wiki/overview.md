@@ -28,7 +28,7 @@ Agora Acta is a repository-level workspace containing a Next.js 16 public site a
 
 ## Core boundaries
 
-`program-kerja` is the public program shell. `mubes-lpj` is the confidential source for hearing sections, approval status, finance, and receipts. The application joins both sources server-side and applies context-specific fallback rules rather than one universal merge.
+`program-kerja` is the public program shell. `mubes-lpj` is the confidential source for hearing sections, approval status, finance, and receipts. MUBES document UI content is the server-side join of both (plus context-specific fallbacks); editors fill Strapi fields documented in [dual-source](concepts/mubes-dual-source.md).
 
 Strapi bootstrap configures RBAC, public read permissions, seed data, publication, audit middleware, and Content Manager layouts. MUBES content types are deliberately absent from Public permissions.
 
