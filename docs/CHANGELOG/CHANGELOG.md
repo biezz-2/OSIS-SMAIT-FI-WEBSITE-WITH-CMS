@@ -6,6 +6,15 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.45] - 2026-09-23
+
+### ✨ Fitur / UX (Portal MUBES — full page single scroll)
+- **`/portal-mubes/proker/[slug]`**: satu halaman scroll (tanpa tab) — 1 Ikhtisar, 2 Teknis, 3 LPJ, 4 Evaluasi berurutan.
+- Banner header dari `banner_image` / dokumentasi proker.
+- Hapus label meta: “Mode Sidang — Tampilan Penuh”, “Tampilan Penuh Sidang”, footer penjelasan visitor.
+
+---
+
 ## [2.1.44] - 2026-09-23
 
 ### ✨ Fitur (Portal MUBES — tampilan penuh sidang)
