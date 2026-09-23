@@ -1,0 +1,79 @@
+import React from 'react';
+import { Metadata } from 'next';
+import { notFound, redirect } from 'next/navigation';
+import Link from 'next/link';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
+import MubesProkerPresentation from '@/components/mubes/MubesProkerPresentation';
+import { getMubesAccess } from '@/lib/mubes-access';
+import { fetchMubesProkerData, MubesProgramKerja } from '@/lib/mubes-proker';
+
+export const dynamic = 'force-dynamic';
+
+function findProkerBySlug(
+  groups: Awaited<ReturnType<typeof fetchMubesProkerData>>,
+  slug: string
+): MubesProgramKerja | null {
+  const needle = slug.trim().toLowerCase();
+  for (const g of groups) {
+    const hit = g.prokerList.find((p) => p.slug?.toLowerCase() === needle);
+    if (hit) return hit;
+  }
+  return null;
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  return {
+    title: `Presentasi Sidang — ${slug} | Portal MUBES`,
+    robots: { index: false, follow: false },
+  };
+}
+
+export default async function PortalMubesProkerFullPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const access = await getMubesAccess();
+  const { slug } = await params;
+
+  if (!access.userId) {
+    redirect('/portal-mubes');
+  }
+
+  const groups = await fetchMubesProkerData({ includeLpj: access.allowed });
+  const proker = findProkerBySlug(groups, slug);
+
+  if (!proker) {
+    notFound();
+  }
+
+  return (
+    <main className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col selection:bg-amber-500/30 selection:text-amber-200">
+      <Navbar />
+
+      <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 flex flex-col gap-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
+          <Link
+            href="/portal-mubes"
+            className="inline-flex items-center gap-2 text-amber-700 dark:text-amber-400 hover:underline font-medium"
+          >
+            ← Portal MUBES
+          </Link>
+          <span className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700/50">
+            Mode Sidang — Tampilan Penuh
+          </span>
+        </div>
+
+        <MubesProkerPresentation proker={proker} variant="full" role={access.role} />
+      </div>
+
+      <Footer />
+    </main>
+  );
+}

@@ -6,6 +6,15 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.44] - 2026-09-23
+
+### ✨ Fitur (Portal MUBES — tampilan penuh sidang)
+- Rute baru **`/portal-mubes/proker/[slug]`**: halaman penuh data presentasi sidang (ikhtisar, teknis, LPJ/sections, evaluasi) — **bukan** halaman visitor `/program-kerja`.
+- Kartu & modal PPT: tombol **Buka Tampilan Penuh Sidang** mengarah ke rute di atas (login Clerk wajib).
+- Komponen bersama `MubesProkerPresentation` (mode `modal` | `full`).
+
+---
+
 ## [2.1.43] - 2026-09-23
 
 ### ✨ Fitur (Portal MUBES — tautan proker penuh)

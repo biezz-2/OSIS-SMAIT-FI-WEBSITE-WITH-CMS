@@ -54,7 +54,7 @@ export default async function PortalMubesPage({
       <Navbar />
 
       <MubesPresentationHero initialData={mubesConfig} />
-      <MubesPresentationViewer initialGroups={prokerGroups} />
+      <MubesPresentationViewer initialGroups={prokerGroups} role={access.role} />
       <Footer />
     </main>
   );
