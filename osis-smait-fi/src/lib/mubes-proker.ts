@@ -1,10 +1,43 @@
 import { fetchStrapiAPI, getStrapiMediaUrl } from './strapi';
 
+export type MubesLpjSectionJenis =
+  | 'pendahuluan'
+  | 'golongan_sasaran'
+  | 'tujuan'
+  | 'teknis_waktu'
+  | 'capaian'
+  | 'evaluasi_internal'
+  | 'kendala_solusi'
+  | 'lainnya';
+
 export interface MubesLpjSectionBlock {
   id?: number | string;
   judul: string;
   isi: string;
   order?: number;
+  /** Optional semantic tag from Strapi component `jenis` */
+  jenis?: MubesLpjSectionJenis | string | null;
+}
+
+/** Resolve LPJ section body by `jenis` first, then judul substring match. */
+export function findLpjSectionIsi(
+  sections: MubesLpjSectionBlock[] | undefined | null,
+  jenisList: string[],
+  judulNeedles: string[]
+): string | null {
+  if (!sections?.length) return null;
+  const jenisSet = jenisList.map((s) => s.toLowerCase());
+  const byJenis = sections.find((s) => {
+    const j = (s.jenis || '').toLowerCase();
+    return j && jenisSet.includes(j);
+  });
+  if (byJenis?.isi?.trim()) return byJenis.isi.trim();
+
+  const needles = judulNeedles.map((s) => s.toLowerCase());
+  const byJudul = sections.find((s) =>
+    needles.some((n) => (s.judul || '').toLowerCase().includes(n))
+  );
+  return byJudul?.isi?.trim() || null;
 }
 
 export interface MubesLpjData {
@@ -12,6 +45,9 @@ export interface MubesLpjData {
   documentId?: string;
   realisasi_anggaran?: number | string | null;
   sumber_dana?: string | null;
+  pendahuluan?: string | null;
+  golongan_target?: string | null;
+  teknis_pelaksanaan?: string | null;
   evaluasi_internal?: string | null;
   kendala_solusi?: Array<{ kendala?: string; solusi?: string }> | string | null;
   nota_kwitansi?: any[];
@@ -726,10 +762,11 @@ function normalizeProgramKerja(item: any, lpjByProker: Map<string, MubesLpjData>
   if (Array.isArray(rawPj) && rawPj.length > 0) {
     rawPj.forEach((p: any, idx: number) => {
       const pAttr = p.attributes || p;
-      const fotoUrl = getStrapiMediaUrl(pAttr.foto?.data || pAttr.foto, '') || ketuaFotoList[idx];
+      const rawFoto = pAttr.foto || pAttr.photo || pAttr.image;
+      const fotoUrl = getStrapiMediaUrl(rawFoto?.data || rawFoto, '') || ketuaFotoList[idx];
       pjList.push({
-        nama_lengkap: pAttr.nama_lengkap || pAttr.nama,
-        jabatan: pAttr.jabatan,
+        nama_lengkap: pAttr.nama_lengkap || pAttr.nama || pAttr.name,
+        jabatan: pAttr.jabatan || pAttr.role,
         foto: fotoUrl || undefined,
       });
     });
@@ -753,7 +790,14 @@ function normalizeProgramKerja(item: any, lpjByProker: Map<string, MubesLpjData>
     (pSlug ? lpjByProker.get(pSlug) : null) ||
     null;
 
-  const rawDocs = attrs.dokumentasi?.data || attrs.dokumentasi || [];
+  const rawDocs =
+    attrs.dokumentasi?.data ||
+    attrs.dokumentasi ||
+    attrs.media_dokumentasi?.data ||
+    attrs.media_dokumentasi ||
+    [];
+  const rawDokumentasiItems =
+    attrs.dokumentasi_items ?? attrs.item_dokumentasi ?? attrs.galeri_dokumentasi;
 
   return {
     id: item.id,
@@ -761,18 +805,24 @@ function normalizeProgramKerja(item: any, lpjByProker: Map<string, MubesLpjData>
     judul: attrs.judul || 'Program Kerja',
     slug: attrs.slug || `proker-${item.id}`,
     kategori: attrs.kategori === 'insidental' ? 'insidental' : 'rutin',
-    tujuan: attrs.tujuan || undefined,
-    golongan_target: attrs.golongan_target || undefined,
-    teknis_pelaksanaan: attrs.teknis_pelaksanaan || attrs.deskripsi || 'Sesuai dengan SOP dan petunjuk teknis sekbid.',
-    evaluasi_form_url: attrs.evaluasi_form_url || undefined,
-    evaluasi_deskripsi: attrs.evaluasi_deskripsi || undefined,
+    tujuan: attrs.tujuan || attrs.pendahuluan || attrs.gambaran_umum || undefined,
+    golongan_target:
+      attrs.golongan_target || attrs.sasaran_peserta || attrs.sasaran || undefined,
+    teknis_pelaksanaan:
+      attrs.teknis_pelaksanaan || attrs.alur_pelaksanaan || attrs.deskripsi || undefined,
+    evaluasi_form_url:
+      attrs.evaluasi_form_url || attrs.kuesioner_url || attrs.kuisioner_url || undefined,
+    evaluasi_deskripsi:
+      attrs.evaluasi_deskripsi || attrs.evaluasi_internal || attrs.evaluasi || undefined,
     capaian:
-      (typeof attrs.capaian === 'string' && attrs.capaian.trim()) || undefined,
-    lokasi: attrs.lokasi || 'SMAIT Fithrah Insani',
+      (typeof (attrs.capaian ?? attrs.capaian_tujuan) === 'string' &&
+        String(attrs.capaian ?? attrs.capaian_tujuan).trim()) ||
+      undefined,
+    lokasi: attrs.lokasi || undefined,
     status: attrs.status || 'published',
     banner_image: attrs.banner_image,
     dokumentasi: rawDocs,
-    dokumentasi_items: normalizeDokumentasiItems(attrs.dokumentasi_items, rawDocs),
+    dokumentasi_items: normalizeDokumentasiItems(rawDokumentasiItems, rawDocs),
     sekbid_nomor: sekbidNum,
     sekbid_judul: sekbidJudul,
     penanggung_jawab: pjList,
@@ -797,7 +847,8 @@ export function normalizeDokumentasiItems(
   const fromComponent: MubesDokumentasiItem[] = [];
   list.forEach((item: any, index: number) => {
     const row = item?.attributes || item || {};
-    const media = row.media?.data || row.media || null;
+    const rawMedia = row.media || row.file || row.foto || row.video || row.dokumentasi;
+    const media = rawMedia?.data || rawMedia || null;
     const url = getStrapiMediaUrl(media, '');
     if (!url) return;
     const mediaAttrs = media?.attributes || media || {};
@@ -807,8 +858,16 @@ export function normalizeDokumentasiItems(
       mime.startsWith('video/') ||
       /\.(mp4|webm|ogg|mov|m4v)$/i.test(name) ||
       /\.(mp4|webm|ogg|mov|m4v)$/i.test(url.split('?')[0]);
-    const judul = String(row.judul || mediaAttrs.caption || mediaAttrs.alternativeText || `Dokumentasi ${index + 1}`).trim();
-    const deskripsi = String(row.deskripsi || '').trim() || undefined;
+    const judul = String(
+      row.judul ||
+        row.title ||
+        row.caption ||
+        mediaAttrs.caption ||
+        mediaAttrs.alternativeText ||
+        mediaAttrs.name ||
+        `Dokumentasi ${index + 1}`
+    ).trim();
+    const deskripsi = String(row.deskripsi || row.description || '').trim() || undefined;
     const order =
       typeof row.order === 'number' ? row.order : row.order != null ? Number(row.order) : index;
     fromComponent.push({
@@ -872,11 +931,13 @@ function normalizeLpjSections(raw: unknown): MubesLpjSectionBlock[] {
     if (!judul && !isi) return;
     const orderNum =
       typeof row.order === 'number' ? row.order : row.order != null ? Number(row.order) : index;
+    const jenisRaw = String(row.jenis ?? row.type ?? '').trim();
     blocks.push({
       id: item?.id ?? index,
       judul: judul || `Bagian ${index + 1}`,
       isi,
       order: Number.isFinite(orderNum) ? orderNum : index,
+      jenis: jenisRaw || undefined,
     });
   });
   return blocks.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
@@ -900,13 +961,24 @@ function normalizeLpj(item: any): { prokerKeys: string[]; lpjData: MubesLpjData 
   const lpjData: MubesLpjData = {
     id: item.id,
     documentId: item.documentId || attrs.documentId,
-    realisasi_anggaran: attrs.realisasi_anggaran,
-    sumber_dana: attrs.sumber_dana,
-    evaluasi_internal: attrs.evaluasi_internal,
-    kendala_solusi: attrs.kendala_solusi,
-    nota_kwitansi: attrs.nota_kwitansi?.data || attrs.nota_kwitansi || [],
-    status_pengesahan: attrs.status_pengesahan || 'draft',
-    sections: normalizeLpjSections(attrs.sections),
+    realisasi_anggaran:
+      attrs.realisasi_anggaran ?? attrs.anggaran_realisasi ?? attrs.total_realisasi,
+    sumber_dana: attrs.sumber_dana ?? attrs.sumber_anggaran,
+    pendahuluan: attrs.pendahuluan ?? attrs.gambaran_umum,
+    golongan_target: attrs.golongan_target ?? attrs.sasaran_peserta ?? attrs.sasaran,
+    teknis_pelaksanaan:
+      attrs.teknis_pelaksanaan ?? attrs.alur_pelaksanaan ?? attrs.teknis,
+    evaluasi_internal:
+      attrs.evaluasi_internal ?? attrs.evaluasi_deskripsi ?? attrs.evaluasi,
+    kendala_solusi: attrs.kendala_solusi ?? attrs.kendala_dan_solusi,
+    nota_kwitansi:
+      attrs.nota_kwitansi?.data ||
+      attrs.nota_kwitansi ||
+      attrs.bukti_transaksi?.data ||
+      attrs.bukti_transaksi ||
+      [],
+    status_pengesahan: attrs.status_pengesahan || attrs.status_lpj || 'draft',
+    sections: normalizeLpjSections(attrs.sections ?? attrs.bagian_lpj),
   };
 
   return { prokerKeys, lpjData };
@@ -924,7 +996,7 @@ export async function fetchMubesProkerList(opts?: {
   const authHeaders = elevatedToken ? { Authorization: `Bearer ${elevatedToken}` } : undefined;
 
   try {
-    // Deep populate: dokumentasi_items.media + media fields (Strapi v5 nested)
+    // Deep populate: all MUBES UI fields (PJ foto, dokumentasi_items.media, LPJ sections+nota)
     const prokerQs =
       '/api/program-kerjas?pagination[limit]=100' +
       '&populate[banner_image]=true' +
@@ -933,19 +1005,35 @@ export async function fetchMubesProkerList(opts?: {
       '&populate[penanggung_jawab][populate][foto]=true' +
       '&populate[ketua_foto]=true' +
       '&populate[sekbid]=true' +
-      '&populate[tujuan_detail]=true';
+      '&populate[tujuan_detail]=true' +
+      '&fields[0]=judul&fields[1]=slug&fields[2]=kategori' +
+      '&fields[3]=tujuan&fields[4]=golongan_target&fields[5]=teknis_pelaksanaan' +
+      '&fields[6]=evaluasi_form_url&fields[7]=evaluasi_deskripsi&fields[8]=capaian' +
+      '&fields[9]=lokasi&fields[10]=status';
+    const legacyProkerQs =
+      '/api/program-kerjas?pagination[limit]=100&populate=*';
+
+    const lpjQs =
+      '/api/mubes-lpjs?pagination[limit]=100' +
+      '&populate[sections]=true' +
+      '&populate[nota_kwitansi]=true' +
+      '&populate[program_kerja][fields][0]=slug' +
+      '&populate[program_kerja][fields][1]=judul' +
+      '&fields[0]=realisasi_anggaran&fields[1]=sumber_dana' +
+      '&fields[2]=status_pengesahan&fields[3]=pendahuluan' +
+      '&fields[4]=golongan_target&fields[5]=teknis_pelaksanaan' +
+      '&fields[6]=evaluasi_internal&fields[7]=kendala_solusi';
 
     const [prokerRes, lpjRes, sekbidRes]: [any, any, any] = await Promise.all([
-      fetchStrapiAPI(prokerQs, {
-        headers: authHeaders,
-      }).catch(() => null),
+      (async () => {
+        const preferred = await fetchStrapiAPI<{ data?: unknown[] }>(prokerQs, {
+          headers: authHeaders,
+        });
+        if (preferred?.data) return preferred;
+        return fetchStrapiAPI(legacyProkerQs, { headers: authHeaders });
+      })(),
       includeLpj
-        ? fetchStrapiAPI(
-            '/api/mubes-lpjs?populate[sections]=true&populate[nota_kwitansi]=true&populate[program_kerja][fields][0]=slug&populate[program_kerja][fields][1]=judul&pagination[limit]=100',
-            {
-              headers: authHeaders,
-            }
-          ).catch(() => null)
+        ? fetchStrapiAPI(lpjQs, { headers: authHeaders }).catch(() => null)
         : Promise.resolve(null),
       fetchStrapiAPI('/api/sekbids?populate=*&sort=nomor:asc', {
         headers: authHeaders,

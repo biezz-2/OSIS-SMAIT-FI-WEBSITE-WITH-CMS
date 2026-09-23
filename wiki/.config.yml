@@ -1,0 +1,30 @@
+# Agent Wiki Configuration
+auto_update: true
+page_granularity: concept
+
+exclude:
+  - node_modules/
+  - .git/
+  - dist/
+  - build/
+  - .next/
+  - .cache/
+  - public/uploads/
+  - database/
+  - "*.min.js"
+  - "*.lock"
+
+concepts:
+  architecture:
+    - package.json
+    - osis-smait-fi/
+    - strapi-cms/
+  strapi-data-layer:
+    - osis-smait-fi/src/lib/strapi.ts
+    - strapi-cms/src/index.ts
+  mubes-dual-source:
+    - osis-smait-fi/src/lib/mubes-proker.ts
+    - osis-smait-fi/src/components/mubes/MubesProkerPresentation.tsx
+  mubes-security:
+    - osis-smait-fi/src/lib/mubes-access.ts
+    - osis-smait-fi/src/app/api/mubes/

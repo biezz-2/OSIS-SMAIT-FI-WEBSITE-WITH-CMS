@@ -1,0 +1,166 @@
+# Agora Acta Wiki — Full Content
+
+Source revision: `eb81cacbfd52716c53444871641d2b6503d89c39`
+
+---
+
+# Agora Acta
+
+Agora Acta is a repository-level workspace containing a Next.js 16 public site and BFF in `osis-smait-fi/`, plus a Strapi 5 CMS in `strapi-cms/`. The root package coordinates both applications with `concurrently`; it is not an npm-workspaces package graph.
+
+Next.js `16.2.11` and React `19.2.4` render the public OSIS site, Edufest, and Portal MUBES. Strapi `5.51.0` owns public content, media, Program Kerja, and confidential MUBES records. Production uses Nginx and PM2: Next listens on `3002`, Strapi on `1337`.
+
+Server Components and route handlers use `STRAPI_INTERNAL_URL`; browser-safe media and public REST use `NEXT_PUBLIC_STRAPI_URL`. Clerk provides identity. Sensitive LPJ data reaches approved users through the Next BFF with server-only `STRAPI_ELEVATED_TOKEN`.
+
+`program-kerja` is the public program shell. `mubes-lpj` is the confidential source for hearing sections, approval status, finance, and receipts. The application joins both sources server-side and applies context-specific fallback rules.
+
+---
+
+# System Architecture
+
+The root package is an orchestration layer. `osis-smait-fi/` and `strapi-cms/` keep separate manifests, dependencies, builds, and runtime processes.
+
+```text
+Browser -> Nginx -> Next.js :3002 -> Strapi :1337 -> database
+                \-> Clerk
+```
+
+Next owns rendering, App Router pages, session-aware server components, and `/api/*` BFF handlers. Strapi owns content schemas, media, publication state, permissions, and editorial layouts.
+
+Public pages fetch published Strapi REST data through `fetchStrapiAPI`. On the server, CMS URLs normalize to `STRAPI_INTERNAL_URL`; in the browser they resolve to `NEXT_PUBLIC_STRAPI_URL`. Published fetches default to 60-second revalidation under the `strapi` tag; draft mode uses `no-store`.
+
+Confidential MUBES reads follow this path:
+
+1. Next reads the Clerk session.
+2. `getMubesAccess()` validates approval and role.
+3. A server component or BFF handler calls Strapi with `STRAPI_ELEVATED_TOKEN`.
+4. The browser receives only the response shape intended for that route.
+
+The live deployment model is VPS + Nginx + PM2. Database selection is environment-driven and supports MySQL, PostgreSQL, and SQLite.
+
+Invariants: never expose elevated credentials; never grant Strapi Public read access to MUBES or access-control content; use Strapi 5 Document Service except for Content Manager core-store layouts; use Next 16 `src/proxy.ts`, not `middleware.ts`.
+
+---
+
+# Strapi Data Layer
+
+`osis-smait-fi/src/lib/strapi.ts` centralizes REST access and media normalization.
+
+- `fetchStrapiAPI()` selects internal CMS access on the server and public access in the browser.
+- Published responses use `revalidate: 60` and tag `strapi`; preview requests append `status=draft` and use `no-store`.
+- A five-second abort timeout bounds CMS requests.
+- `getStrapiMediaUrl()` accepts Strapi v4/v5 shapes, external URLs, responsive formats, and local fallbacks.
+- Public Program Kerja detail currently populates legacy `dokumentasi`; MUBES aggregation also populates `dokumentasi_items.media`.
+
+Strapi APIs use core controllers, routers, and services. New content operations should use `strapi.documents('api::<name>.<name>')`, preferring `documentId`.
+
+`strapi-cms/src/index.ts` registers mutation audit middleware. Bootstrap configures CMS roles, grants Public reads only to the visitor whitelist, seeds data, bootstraps Content Manager layouts and media, publishes selected visitor drafts, and starts optional MySQL synchronization. `mubes-lpj` belongs to editor RBAC but is excluded from Public permissions.
+
+The public Capaian/Evaluasi resolver is a deliberate narrow exception: it reads LPJ server-side but returns only those text highlights, never finance or receipt data.
+
+---
+
+# Program Kerja and MUBES LPJ
+
+`program-kerja` is the public shell: title, slug, category, purpose, implementation, responsible members, public Capaian/Evaluasi, questionnaire URL, and documentation.
+
+`mubes-lpj` is the confidential hearing record linked one-to-one to Program Kerja: ordered sections, approval status, budget realization, funding source, constraints, and receipts. Older scalar narrative fields remain optional fallbacks.
+
+`fetchMubesProkerList()` loads Program Kerja, LPJ, and Sekbid records in parallel. LPJ records are indexed by related numeric ID, `documentId`, and slug. Program records are normalized and grouped into Sekbid 1–8. If Strapi is unavailable or empty, the portal uses `FALLBACK_MUBES_PROKER`; fallback data is not live CMS truth.
+
+Structured `dokumentasi_items` take precedence over legacy media in the MUBES normalizer. LPJ `sections` sort by `order`. Although the schema contains semantic `jenis`, current runtime selection uses case-insensitive substrings in `judul`.
+
+Public Capaian/Evaluasi prefer Program Kerja values, then matching LPJ sections, with `evaluasi_internal` as the final Evaluasi fallback.
+
+Portal presentation uses LPJ scalar fields, matching sections, and Program Kerja fallbacks per block. Capaian prefers a matching section; Evaluasi prefers a matching section then `evaluasi_internal`; approval, finance, and receipts come from LPJ. `MubesProkerPresentation` renders metadata, budget/receipts, ordered narrative, and structured documentation.
+
+One LPJ should relate to one Program Kerja. Published Program Kerja does not imply published LPJ. Section titles must stay recognizable while runtime ignores `jenis`. `status_pengesahan` is the single hearing-status source. Public routes must never serialize complete LPJ objects.
+
+---
+
+# Portal MUBES Security and Access
+
+MUBES uses two independent controls.
+
+Strapi Public permissions omit `mubes-lpj`, `mubes-sidang`, `akses-user`, `audit-log`, and `login-event`. Unauthenticated direct REST reads must return `403`.
+
+`getMubesAccess()` reads the Clerk session and metadata, falling back to the Clerk Users API. Access requires a signed-in user, `status === 'approved'`, and role `admin`, `administrator`, `bph`, `member`, `operator`, or `admin_pembina`. Missing metadata defaults to pending. The gate trusts Clerk metadata; it does not query Strapi on every request.
+
+`GET /api/mubes/lpj/[slug]` repeats the gate, then calls Strapi with `STRAPI_ELEVATED_TOKEN` and `cache: 'no-store'`. Portal server components pass `includeLpj: access.allowed`. `src/proxy.ts` supplies Clerk middleware and cache headers but does not authorize portal routes.
+
+The Clerk webhook creates or updates `akses-user` and keeps new users pending. Approval in Strapi synchronizes into Clerk public metadata through the `akses-user` lifecycle. Claim changes may require a session refresh.
+
+The public Program Kerja route may expose only Capaian and Evaluasi text resolved from LPJ. It does not expose budget, funding, receipts, or complete LPJ data.
+
+Never publish elevated tokens, import elevated fetch helpers into client components, cache full LPJ responses publicly, or auto-approve from a name match.
+
+---
+
+# Local Development
+
+Use Node `>=20 <=26`. Keep local environment values out of version control. Important frontend names are `NEXT_PUBLIC_STRAPI_URL`, `STRAPI_INTERNAL_URL`, `STRAPI_ELEVATED_TOKEN`, Clerk keys, `CLERK_WEBHOOK_SECRET`, `REVALIDATE_SECRET`, and `PREVIEW_SECRET`. Backend configuration includes Strapi secrets, database variables, URLs, and `CLERK_SECRET_KEY`.
+
+Root commands:
+
+```bash
+npm run dev
+npm run build
+npm run start
+```
+
+Use `npm run dev:solo` in `osis-smait-fi/` or `npm run develop` in `strapi-cms/` for one application. Expected ports are `3002` and `1337`.
+
+Security smoke checks:
+
+```bash
+curl -s -o /dev/null -w "%{http_code}\n" "$NEXT_PUBLIC_STRAPI_URL/api/mubes-lpjs"
+curl -s -o /dev/null -w "%{http_code}\n" "http://127.0.0.1:3002/api/mubes/lpj/some-slug"
+node scripts/verify-mubes-schemas.js
+```
+
+The first two checks should return `403` without credentials. A public `200` from direct Strapi LPJ is a security regression.
+
+---
+
+# Content Manager Layout Bootstrap
+
+Strapi bootstrap calls `ensureDefaultMediaAssets()`, which also configures selected Content Manager fields.
+
+`ensureContentManagerField()` reads the layout from `strapi_core_store_settings` through Knex because core-store configuration is not a Document Service content model. It creates missing metadata, updates labels and descriptions, inserts missing fields in the requested position, and writes only when modified.
+
+Program Kerja receives labels for target audience, questionnaire URL, responsible members, structured documentation, Capaian, Evaluasi, and visitor visibility. MUBES LPJ places `sections` before finance and labels status, budget, funding, receipts, and legacy fallback fields. Component layouts expose all fields in `lpj-section` and `dokumentasi-item`.
+
+Change schemas for persistence and validation. Change bootstrap metadata for labels, descriptions, visibility, and layout. Keep exact UIDs, retain Knex for core-store access, and remember runtime LPJ matching currently uses section titles rather than `jenis`.
+
+---
+
+# Program Kerja and LPJ Content Models
+
+`api::program-kerja.program-kerja` is a public draft-and-publish collection. It contains identity, narrative, schedule, custom editorial state, legacy and structured documentation, presentation controls, Sekbid and responsible-member relations, and repeatable components.
+
+`api::mubes-lpj.mubes-lpj` is confidential and draft-and-publish. It relates one-to-one to Program Kerja. Its primary body is repeatable `sections`; finance and legacy narrative fields are optional; `status_pengesahan` is required and accepts `draft`, `ditinjau`, or `disahkan`.
+
+`program-kerja.lpj-section` has optional `jenis`, required `judul`, required `isi`, and ordered display. Runtime sorting uses `order`, while current fallback selection uses title text.
+
+`program-kerja.dokumentasi-item` has required title, optional description, required single image/video media, and an order value. MUBES presentation prefers these structured items.
+
+---
+
+# Key File Reference
+
+- `osis-smait-fi/src/lib/strapi.ts` — REST, cache, media, and public LPJ highlights.
+- `osis-smait-fi/src/lib/mubes-proker.ts` — dual-source normalization and join.
+- `osis-smait-fi/src/lib/mubes-access.ts` — Clerk authorization.
+- `osis-smait-fi/src/components/mubes/MubesProkerPresentation.tsx` — hearing presentation.
+- `strapi-cms/src/index.ts` — audit, permissions, seed, publication, and layout bootstrap.
+- `osis-smait-fi/src/app/api/mubes/lpj/[slug]/route.ts` — complete gated LPJ BFF.
+- `osis-smait-fi/src/app/api/program-kerja/[slug]/lpj-public/route.ts` — narrow public highlights.
+- `osis-smait-fi/src/app/api/webhooks/clerk/route.ts` — identity bridge.
+- `strapi-cms/src/api/program-kerja/content-types/program-kerja/schema.json`
+- `strapi-cms/src/api/mubes-lpj/content-types/mubes-lpj/schema.json`
+- `strapi-cms/src/components/program-kerja/lpj-section.json`
+- `strapi-cms/src/components/program-kerja/dokumentasi-item.json`
+- `docs/codemaps/architecture.md`
+- `docs/codemaps/frontend.md`
+- `docs/codemaps/backend.md`
+- `docs/codemaps/mubes-flow.md`

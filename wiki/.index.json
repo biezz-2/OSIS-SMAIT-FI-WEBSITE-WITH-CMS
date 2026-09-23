@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "head": "eb81cacbfd52716c53444871641d2b6503d89c39",
+  "pages": [
+    {
+      "path": "overview.md",
+      "title": "Agora Acta Overview",
+      "type": "overview",
+      "tags": ["nextjs", "strapi", "mubes", "monorepo"]
+    },
+    {
+      "path": "concepts/architecture.md",
+      "title": "System Architecture",
+      "type": "concept",
+      "tags": ["architecture", "nextjs", "strapi", "bff"]
+    },
+    {
+      "path": "concepts/strapi-data-layer.md",
+      "title": "Strapi Data Layer",
+      "type": "concept",
+      "tags": ["strapi", "rest", "caching", "rbac", "media"]
+    },
+    {
+      "path": "concepts/mubes-dual-source.md",
+      "title": "Program Kerja and MUBES LPJ",
+      "type": "concept",
+      "tags": ["mubes", "lpj", "program-kerja", "merge"]
+    },
+    {
+      "path": "concepts/mubes-security.md",
+      "title": "Portal MUBES Security and Access",
+      "type": "concept",
+      "tags": ["security", "clerk", "bff", "mubes"]
+    },
+    {
+      "path": "guides/local-development.md",
+      "title": "Local Development",
+      "type": "guide",
+      "tags": ["development", "nextjs", "strapi", "verification"]
+    },
+    {
+      "path": "guides/content-manager-layout-bootstrap.md",
+      "title": "Content Manager Layout Bootstrap",
+      "type": "guide",
+      "tags": ["strapi", "bootstrap", "content-manager", "editorial"]
+    },
+    {
+      "path": "reference/content-models.md",
+      "title": "Program Kerja and LPJ Content Models",
+      "type": "reference",
+      "tags": ["schema", "program-kerja", "mubes-lpj", "components"]
+    },
+    {
+      "path": "reference/key-files.md",
+      "title": "Key File Reference",
+      "type": "reference",
+      "tags": ["files", "routes", "entrypoints"]
+    }
+  ]
+}

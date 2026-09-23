@@ -5,7 +5,7 @@
     "singularName": "mubes-lpj",
     "pluralName": "mubes-lpjs",
     "displayName": "🏛️ [MUBES] LPJ & Anggaran Proker",
-    "description": "LPJ body via repeatable sections (Tujuan, Teknis, Capaian, Evaluasi, …). Legacy fields kept optional for existing entries."
+    "description": "MUBES LPJ: status_pengesahan, sections (body), realisasi_anggaran, sumber_dana, nota_kwitansi. Field lama (pendahuluan, golongan_target, teknis_pelaksanaan, evaluasi_internal, kendala_solusi) = fallback."
   },
   "options": {
     "draftAndPublish": true

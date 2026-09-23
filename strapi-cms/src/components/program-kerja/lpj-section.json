@@ -1,12 +1,26 @@
 {
   "collectionName": "components_program_kerja_lpj_sections",
   "info": {
-    "displayName": "Bagian LPJ (Capaian / Evaluasi)",
-    "description": "Blok dinamis LPJ. Wajib isi judul+isi. Contoh judul: Tujuan | Teknis & Waktu | Capaian | Evaluasi & Solusi.",
+    "displayName": "Bagian LPJ Bernomor",
+    "description": "Blok isi LPJ: set Jenis (pendahuluan/tujuan/teknis_waktu/capaian/evaluasi_internal/kendala_solusi/…) + Judul + Isi + Order. Tanpa jenis, UI cocokkan lewat judul.",
     "icon": "layer"
   },
   "options": {},
   "attributes": {
+    "jenis": {
+      "type": "enumeration",
+      "enum": [
+        "pendahuluan",
+        "golongan_sasaran",
+        "tujuan",
+        "teknis_waktu",
+        "capaian",
+        "evaluasi_internal",
+        "kendala_solusi",
+        "lainnya"
+      ],
+      "required": false
+    },
     "judul": {
       "type": "string",
       "required": true

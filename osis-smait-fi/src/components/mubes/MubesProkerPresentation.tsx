@@ -3,21 +3,20 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { MubesLpjSectionBlock, MubesProgramKerja } from '@/lib/mubes-proker';
+import { findLpjSectionIsi, MubesProgramKerja } from '@/lib/mubes-proker';
 import { getStrapiMediaUrl } from '@/lib/strapi';
 import {
   FileText,
-  DollarSign,
-  ClipboardCheck,
-  AlertCircle,
+  BadgeCheck,
+  CircleDollarSign,
   Paperclip,
-  Target,
-  Trophy,
-  ClipboardList,
+  AlertTriangle,
+  CheckCircle2,
   Images,
   X,
   ExternalLink,
   ArrowLeft,
+  UserRound,
 } from 'lucide-react';
 
 interface MubesProkerPresentationProps {
@@ -30,13 +29,37 @@ interface MubesProkerPresentationProps {
   initialTab?: string;
 }
 
-function findSection(
-  sections: MubesLpjSectionBlock[] | undefined | null,
-  ...names: string[]
-): MubesLpjSectionBlock | undefined {
-  if (!sections?.length) return undefined;
-  const n = names.map((s) => s.toLowerCase());
-  return sections.find((s) => n.some((x) => (s.judul || '').toLowerCase().includes(x)));
+function firstText(...candidates: Array<string | null | undefined>): string | null {
+  for (const c of candidates) {
+    const t = typeof c === 'string' ? c.trim() : '';
+    if (t) return t;
+  }
+  return null;
+}
+
+/** Short multi-line capaian → chip grid (mockup); longer prose stays as block. */
+function CapaianBody({ text }: { text: string }) {
+  const lines = text
+    .split(/\n+/)
+    .map((l) => l.replace(/^[-•*]\s*/, '').trim())
+    .filter(Boolean);
+  const shortChips =
+    lines.length >= 2 && lines.length <= 8 && lines.every((l) => l.length <= 48);
+  if (shortChips) {
+    return (
+      <div className="flex flex-wrap gap-2">
+        {lines.map((line, i) => (
+          <span
+            key={`${line}-${i}`}
+            className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-800 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+          >
+            {line}
+          </span>
+        ))}
+      </div>
+    );
+  }
+  return <ProseBlock>{text}</ProseBlock>;
 }
 
 function formatKendalaSolusi(raw: unknown): string | null {
@@ -63,35 +86,24 @@ function formatKendalaSolusi(raw: unknown): string | null {
 function SectionHeading({
   n,
   title,
-  icon,
 }: {
   n: number;
   title: string;
-  icon: React.ReactNode;
 }) {
   return (
-    <h2 className="text-lg sm:text-xl font-bold font-serif text-slate-900 dark:text-slate-100 flex items-center gap-3 pb-3 border-b border-slate-200 dark:border-slate-700">
-      <span className="w-8 h-8 rounded-lg bg-amber-600 text-white text-sm font-bold flex items-center justify-center shrink-0">
-        {n}
-      </span>
-      <span className="flex items-center gap-2">
-        {icon}
-        {title}
-      </span>
+    <h2 className="font-serif text-base font-bold leading-snug text-slate-950 dark:text-slate-50 sm:text-lg">
+      <span aria-hidden="true">{n}. </span>
+      {title}
     </h2>
   );
 }
 
 function ProseBlock({ children }: { children: React.ReactNode }) {
   return (
-    <div className="prose dark:prose-invert max-w-none bg-slate-50 dark:bg-slate-800/60 p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-700 leading-relaxed text-sm sm:text-base whitespace-pre-line break-words">
+    <div className="whitespace-pre-line break-words text-sm leading-6 text-slate-600 dark:text-slate-300">
       {children}
     </div>
   );
-}
-
-function EmptyHint({ children }: { children: React.ReactNode }) {
-  return <span className="text-slate-400 italic">{children}</span>;
 }
 
 /** Kartu PJ mirror public `/program-kerja/[slug]` (ProgramKerjaDetailPage chairs). */
@@ -106,163 +118,134 @@ function PjPortraitCard({
   foto?: string;
   idx: number;
 }) {
-  const even = idx % 2 === 0;
   return (
-    <div className="relative flex-shrink-0 w-[160px] sm:w-[180px] md:w-[200px] h-[220px] sm:h-[250px] md:h-[280px]">
+    <article className="relative mx-auto aspect-[3/4] w-full max-w-[230px]">
       <div
-        className="absolute inset-0 bg-[#FACC15] rounded-[24px] shadow-md"
-        style={{ transform: even ? 'rotate(-2.8deg)' : 'rotate(2.8deg)' }}
+        className="absolute inset-y-1 -left-1.5 right-1.5 rounded-[20px] bg-amber-300 dark:bg-amber-500"
+        style={{ transform: idx % 2 === 0 ? 'rotate(-1.5deg)' : 'rotate(1.5deg)' }}
         aria-hidden
       />
       <div
-        className="relative w-full h-full rounded-[24px] overflow-hidden shadow-xl bg-slate-900 border border-white/20 flex flex-col justify-end"
-        style={{ transform: even ? 'rotate(1.8deg)' : 'rotate(-1.8deg)' }}
+        className="relative flex h-full w-full flex-col justify-end overflow-hidden rounded-[20px] border border-slate-300 bg-slate-200 shadow-lg dark:border-slate-700 dark:bg-slate-900"
       >
         {foto ? (
           <Image
             src={foto}
             alt={name}
             fill
-            className="object-cover object-top absolute inset-0"
-            sizes="(max-width: 640px) 160px, 200px"
+            className="absolute inset-0 object-cover object-top"
+            sizes="(max-width: 640px) 70vw, 230px"
           />
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-800 to-slate-950 p-4 text-center">
-            <div className="w-16 h-16 rounded-full bg-slate-700/60 border border-slate-600 flex items-center justify-center text-yellow-400">
-              <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" aria-hidden>
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
-                />
-              </svg>
-            </div>
+          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-slate-100 to-slate-300 text-slate-500 dark:from-slate-800 dark:to-slate-950 dark:text-slate-400">
+            <UserRound className="h-14 w-14" aria-hidden="true" />
           </div>
         )}
-        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-3 sm:p-4 z-10">
-          <h3 className="text-white text-sm font-bold leading-tight break-words">{name}</h3>
-          {role ? <p className="text-gray-300 text-xs font-medium mt-0.5 break-words">{role}</p> : null}
+        <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/95 via-black/65 to-transparent px-4 pb-4 pt-12">
+          <h3 className="break-words text-sm font-bold leading-tight text-white">{name}</h3>
+          {role ? (
+            <p className="mt-1 break-words text-xs font-medium text-slate-200">{role}</p>
+          ) : null}
         </div>
       </div>
-    </div>
+    </article>
   );
 }
 
 function MetaStrip({ proker }: { proker: MubesProgramKerja }) {
-  const pjs = proker.penanggung_jawab?.length
-    ? proker.penanggung_jawab
-    : [{ nama_lengkap: 'Pengurus Sekbid', jabatan: undefined, foto: undefined }];
+  const pjs = proker.penanggung_jawab || [];
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-        <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
-          <span className="text-xs text-slate-400 font-semibold block uppercase tracking-widest">Kategori</span>
-          <span className="text-base font-bold capitalize mt-1 block">{proker.kategori}</span>
-        </div>
-        <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
-          <span className="text-xs text-slate-400 font-semibold block uppercase tracking-widest">Lokasi</span>
-          <span className="text-base font-bold mt-1 block break-words">{proker.lokasi || 'SMAIT FI'}</span>
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-3">
-        <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Penanggung Jawab</p>
-        <div
-          className={`flex flex-row flex-wrap gap-5 ${
-            pjs.length === 1 ? 'justify-center sm:justify-start' : 'justify-start'
-          }`}
-        >
+    <section aria-labelledby="pj-heading" className="flex flex-col gap-4">
+      <h2
+        id="pj-heading"
+        className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400"
+      >
+        Penanggung Jawab Proker
+      </h2>
+      {pjs.length > 0 ? (
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,170px),1fr))] gap-5">
           {pjs.map((p, i) => (
             <PjPortraitCard
               key={`${p.nama_lengkap || 'pj'}-${i}`}
-              name={p.nama_lengkap || 'Pengurus Sekbid'}
-              role={p.jabatan || 'Penanggung Jawab Program'}
+              name={p.nama_lengkap || 'Penanggung Jawab'}
+              role={p.jabatan}
               foto={p.foto}
               idx={i}
             />
           ))}
         </div>
-      </div>
-    </div>
+      ) : (
+        <p className="rounded-xl border border-dashed border-slate-300 px-4 py-6 text-center text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
+          Data penanggung jawab belum tersedia.
+        </p>
+      )}
+    </section>
   );
 }
 
 function AnggaranNotaBlock({ proker }: { proker: MubesProgramKerja }) {
   const lpj = proker.lpj;
-  if (!lpj) return null;
-
-  const hasAnggaran =
-    lpj.realisasi_anggaran != null &&
-    lpj.realisasi_anggaran !== '' &&
-    Number(lpj.realisasi_anggaran) !== 0;
-  const hasSumber = Boolean(lpj.sumber_dana?.trim());
-  const notas = lpj.nota_kwitansi || [];
+  const numericBudget = Number(lpj?.realisasi_anggaran ?? 0);
+  const budget = Number.isFinite(numericBudget) ? numericBudget : 0;
+  const hasSumber = Boolean(lpj?.sumber_dana?.trim());
+  const notas = lpj?.nota_kwitansi || [];
   const hasNota = Array.isArray(notas) && notas.length > 0;
 
-  if (!hasAnggaran && !hasSumber && !hasNota) return null;
-
   return (
-    <div className="mt-4 flex flex-col gap-4 rounded-2xl border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50/40 dark:bg-emerald-950/20 p-4 sm:p-5">
-      <h3 className="text-sm font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300 flex items-center gap-2">
-        <DollarSign className="w-4 h-4" />
-        Anggaran &amp; Nota
-      </h3>
-      {(hasAnggaran || hasSumber) && (
-        <div
-          className={`grid gap-3 ${
-            hasAnggaran && hasSumber ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'
-          }`}
-        >
-          {hasAnggaran ? (
-            <div className="bg-white/70 dark:bg-slate-900/40 border border-emerald-200/60 dark:border-emerald-800/40 p-4 rounded-xl">
-              <span className="text-xs text-emerald-700 dark:text-emerald-400 font-bold uppercase block">
-                Realisasi Anggaran
-              </span>
-              <span className="text-xl sm:text-2xl font-bold font-mono text-emerald-900 dark:text-emerald-200 mt-1 block">
-                {`Rp ${Number(lpj.realisasi_anggaran).toLocaleString('id-ID')}`}
-              </span>
-            </div>
-          ) : null}
-          {hasSumber ? (
-            <div className="bg-white/70 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700 p-4 rounded-xl">
-              <span className="text-xs text-slate-500 dark:text-slate-400 font-bold uppercase block">
-                Sumber Dana
-              </span>
-              <span className="text-base font-bold text-slate-800 dark:text-slate-200 mt-1 block break-words">
-                {lpj.sumber_dana}
-              </span>
-            </div>
-          ) : null}
+    <section
+      aria-labelledby="anggaran-heading"
+      className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900"
+    >
+      <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+        <CircleDollarSign className="h-4 w-4" aria-hidden="true" />
+        <h2 id="anggaran-heading" className="text-[10px] font-bold uppercase tracking-[0.14em]">
+          Total Realisasi Anggaran
+        </h2>
+      </div>
+      <p className="mt-2 font-mono text-2xl font-bold text-slate-950 dark:text-white">
+        Rp {budget.toLocaleString('id-ID')}
+      </p>
+      {hasSumber ? (
+        <div className="mt-4 border-t border-slate-100 pt-3 dark:border-slate-800">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Sumber Dana</p>
+          <p className="mt-1 break-words text-sm font-semibold text-slate-700 dark:text-slate-200">
+            {lpj?.sumber_dana}
+          </p>
         </div>
-      )}
+      ) : null}
       {hasNota ? (
-        <div>
-          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2 flex items-center gap-2">
-            <Paperclip className="w-3.5 h-3.5 text-amber-500" />
+        <div className="mt-4 border-t border-slate-100 pt-3 dark:border-slate-800">
+          <h3 className="mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <Paperclip className="h-3.5 w-3.5" aria-hidden="true" />
             Nota &amp; Kwitansi
-          </h4>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          </h3>
+          <div className="flex flex-col gap-2">
             {notas.map((item: unknown, idx: number) => {
               const notaUrl = getStrapiMediaUrl(item, '');
               if (!notaUrl) return null;
+              const nota = (item as { attributes?: Record<string, unknown> })?.attributes ||
+                (item as Record<string, unknown>);
+              const notaTitle = String(
+                nota?.caption || nota?.alternativeText || nota?.name || `Lampiran ${idx + 1}`
+              );
               return (
                 <a
                   key={idx}
                   href={notaUrl}
                   target="_blank"
-                  rel="noreferrer"
-                  className="p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-amber-500 transition flex items-center gap-2 text-xs"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 p-2.5 text-xs text-slate-700 transition hover:border-sky-400 hover:text-sky-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-sky-500 dark:hover:text-sky-300"
                 >
-                  <FileText className="w-4 h-4 text-amber-500 shrink-0" />
-                  <span className="font-medium break-words">Nota_{idx + 1}</span>
+                  <FileText className="h-4 w-4 shrink-0" aria-hidden="true" />
+                  <span className="break-all font-medium">{notaTitle}</span>
                 </a>
               );
             })}
           </div>
         </div>
       ) : null}
-    </div>
+    </section>
   );
 }
 
@@ -274,57 +257,50 @@ function DokumentasiGallery({ proker }: { proker: MubesProgramKerja }) {
 
   if (docs.length === 0) {
     return (
-      <ProseBlock>
-        <EmptyHint>Belum ada item dokumentasi yang diunggah untuk program kerja ini.</EmptyHint>
-      </ProseBlock>
+      <div className="rounded-2xl border border-dashed border-slate-300 px-5 py-10 text-center text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
+        Belum ada dokumentasi yang tersedia.
+      </div>
     );
   }
 
   return (
-    <div className="overflow-x-auto pb-2 snap-x snap-mandatory [scrollbar-width:thin]">
-      <div
-        className="grid gap-4 sm:gap-5"
-        style={{
-          gridTemplateRows: 'repeat(2, auto)',
-          gridAutoFlow: 'column',
-          gridAutoColumns: 'minmax(min(70vw, 240px), calc((100% - 3 * 1.25rem) / 4))',
-        }}
-      >
-        {docs.map((item, i) => (
-          <figure
-            key={item.id ?? i}
-            className="flex flex-col rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 shadow-sm snap-start min-w-0"
-          >
-            <div className="relative aspect-[4/3] w-full bg-slate-900">
-              {item.isVideo ? (
-                <video
-                  src={item.url}
-                  controls
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-              ) : (
-                <Image
-                  src={item.url}
-                  alt={item.judul}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 640px) 70vw, 25vw"
-                />
-              )}
-            </div>
-            <figcaption className="p-3 sm:p-4 flex flex-col gap-1">
-              <h5 className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100 leading-snug break-words">
-                {item.judul}
-              </h5>
-              {item.deskripsi ? (
-                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line break-words">
-                  {item.deskripsi}
-                </p>
-              ) : null}
-            </figcaption>
-          </figure>
-        ))}
-      </div>
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {docs.map((item, i) => (
+        <figure
+          key={item.id ?? i}
+          className="min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900"
+        >
+          <div className="relative aspect-[4/3] w-full bg-slate-900">
+            {item.isVideo ? (
+              <video
+                src={item.url}
+                controls
+                preload="metadata"
+                aria-label={item.judul}
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            ) : (
+              <Image
+                src={item.url}
+                alt={item.judul}
+                fill
+                className="object-cover"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              />
+            )}
+          </div>
+          <figcaption className="flex flex-col gap-1 p-4">
+            <h3 className="break-words text-sm font-bold leading-snug text-slate-900 dark:text-slate-100">
+              {item.judul}
+            </h3>
+            {item.deskripsi ? (
+              <p className="whitespace-pre-line break-words text-xs leading-5 text-slate-600 dark:text-slate-300">
+                {item.deskripsi}
+              </p>
+            ) : null}
+          </figcaption>
+        </figure>
+      ))}
     </div>
   );
 }
@@ -332,170 +308,207 @@ function DokumentasiGallery({ proker }: { proker: MubesProgramKerja }) {
 function LpjOrderedBody({ proker }: { proker: MubesProgramKerja }) {
   const sections = proker.lpj?.sections;
 
-  const tujuan =
-    findSection(sections, 'tujuan')?.isi ||
-    proker.tujuan ||
-    null;
+  const pendahuluan = firstText(
+    findLpjSectionIsi(sections, ['pendahuluan', 'tujuan'], ['pendahuluan', 'gambaran umum', 'tujuan']),
+    proker.lpj?.pendahuluan,
+    proker.tujuan
+  );
 
-  const teknis =
-    findSection(sections, 'teknis', 'waktu')?.isi ||
-    proker.teknis_pelaksanaan ||
-    null;
+  const golonganTarget = firstText(
+    findLpjSectionIsi(
+      sections,
+      ['golongan_sasaran'],
+      ['golongan', 'sasaran', 'peserta']
+    ),
+    proker.lpj?.golongan_target,
+    proker.golongan_target
+  );
 
-  const capaian =
-    findSection(sections, 'capaian')?.isi ||
-    (proker.capaian && proker.capaian.trim()) ||
-    null;
+  const capaian = firstText(
+    findLpjSectionIsi(sections, ['capaian'], ['capaian', 'parameter tujuan']),
+    proker.capaian
+  );
 
-  const evaluasi =
-    findSection(sections, 'evaluasi')?.isi ||
-    proker.lpj?.evaluasi_internal ||
-    (proker.evaluasi_deskripsi && proker.evaluasi_deskripsi.trim()) ||
-    null;
+  const teknis = firstText(
+    findLpjSectionIsi(sections, ['teknis_waktu'], ['teknis', 'waktu', 'alur']),
+    proker.lpj?.teknis_pelaksanaan,
+    proker.teknis_pelaksanaan
+  );
 
-  const kendalaText = formatKendalaSolusi(proker.lpj?.kendala_solusi ?? null);
+  const evaluasi = firstText(
+    findLpjSectionIsi(sections, ['evaluasi_internal'], ['evaluasi']),
+    proker.lpj?.evaluasi_internal,
+    proker.evaluasi_deskripsi
+  );
+
+  const kendalaFromSection = findLpjSectionIsi(
+    sections,
+    ['kendala_solusi'],
+    ['kendala', 'solusi']
+  );
+  const kendalaText =
+    formatKendalaSolusi(proker.lpj?.kendala_solusi ?? null) || kendalaFromSection;
   const formUrl = proker.evaluasi_form_url?.trim() || '';
 
+  const points = [
+    pendahuluan || golonganTarget || capaian || teknis || evaluasi || kendalaText || formUrl,
+  ].some(Boolean);
+
+  if (!points) {
+    return (
+      <p className="rounded-xl border border-dashed border-slate-300 px-4 py-8 text-center text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
+        Isi LPJ belum tersedia di Strapi.
+      </p>
+    );
+  }
+
   return (
-    <div className="flex flex-col gap-10 sm:gap-12">
-      {/* 1. Tujuan */}
-      <section className="flex flex-col gap-4">
-        <SectionHeading n={1} title="Tujuan" icon={<Target className="w-5 h-5 text-amber-600" />} />
-        <ProseBlock>
-          {tujuan || (
-            <EmptyHint>Mendukung visi misi kepengurusan OSIS SMAIT Fithrah Insani.</EmptyHint>
-          )}
-        </ProseBlock>
-      </section>
+    <div className="flex flex-col gap-7">
+      {pendahuluan ? (
+        <section className="flex flex-col gap-2">
+          <SectionHeading n={1} title="Pendahuluan & Gambaran Umum" />
+          <ProseBlock>{pendahuluan}</ProseBlock>
+        </section>
+      ) : null}
 
-      {/* 2. Teknis & Waktu */}
-      <section className="flex flex-col gap-4">
-        <SectionHeading
-          n={2}
-          title="Teknis & Waktu"
-          icon={<ClipboardCheck className="w-5 h-5 text-amber-600" />}
-        />
-        <ProseBlock>
-          {teknis || (
-            <EmptyHint>
-              Belum ada dokumen teknis rinci. Pelaksanaan mengacu pada TOR Seksi Bidang.
-            </EmptyHint>
-          )}
-        </ProseBlock>
-      </section>
+      {golonganTarget ? (
+        <section className="flex flex-col gap-2">
+          <SectionHeading n={2} title="Golongan Sasaran & Peserta" />
+          <ProseBlock>{golonganTarget}</ProseBlock>
+        </section>
+      ) : null}
 
-      {/* 3. Capaian (+ optional Anggaran) — from lpj.sections or program-kerja.capaian */}
-      <section className="flex flex-col gap-4">
-        <SectionHeading n={3} title="Capaian" icon={<Trophy className="w-5 h-5 text-amber-600" />} />
-        <ProseBlock>
-          {capaian || (
-            <EmptyHint>
-              Belum ada teks Capaian. Isi di Strapi: 🌐 Program Kerja → field Capaian, atau 🏛️ MUBES
-              LPJ → Bagian LPJ (judul &quot;Capaian&quot;).
-            </EmptyHint>
-          )}
-        </ProseBlock>
-        <AnggaranNotaBlock proker={proker} />
-      </section>
-
-      {/* 4. Evaluasi & Solusi — sections / evaluasi_internal / evaluasi_deskripsi */}
-      <section className="flex flex-col gap-4">
-        <SectionHeading
-          n={4}
-          title="Evaluasi & Solusi"
-          icon={<AlertCircle className="w-5 h-5 text-amber-600" />}
-        />
-        <ProseBlock>
-          {evaluasi || (
-            <EmptyHint>
-              Belum ada teks Evaluasi &amp; Solusi. Isi di Strapi: 🌐 Program Kerja → Evaluasi &amp;
-              Solusi, atau 🏛️ MUBES LPJ → Bagian LPJ (judul &quot;Evaluasi &amp; Solusi&quot;).
-            </EmptyHint>
-          )}
-        </ProseBlock>
-        {kendalaText ? (
-          <div>
-            <h4 className="text-sm font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 mb-2">
-              Kendala &amp; Solusi
-            </h4>
-            <div className="p-5 rounded-2xl bg-rose-50/50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/50 text-sm sm:text-base leading-relaxed whitespace-pre-line break-words">
-              {kendalaText}
-            </div>
+      {capaian ? (
+        <section className="flex flex-col gap-3">
+          <SectionHeading n={3} title="Capaian Parameter Tujuan" />
+          <div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-900">
+            <CapaianBody text={capaian} />
           </div>
-        ) : null}
-      </section>
+        </section>
+      ) : null}
 
-      {/* 5. Kuisioner */}
-      <section className="flex flex-col gap-4">
-        <SectionHeading
-          n={5}
-          title="Kuisioner"
-          icon={<ClipboardList className="w-5 h-5 text-amber-600" />}
-        />
-        {formUrl ? (
-          <div className="flex flex-col sm:flex-row sm:items-center gap-4 p-5 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50">
-            <p className="text-sm sm:text-base text-slate-700 dark:text-slate-200 flex-1 break-words">
-              Form evaluasi / kuisioner peserta tersedia secara daring.
+      {teknis ? (
+        <section className="flex flex-col gap-2">
+          <SectionHeading n={4} title="Teknis Pelaksanaan & Alur" />
+          <ProseBlock>{teknis}</ProseBlock>
+        </section>
+      ) : null}
+
+      {evaluasi ? (
+        <section className="flex flex-col gap-3 rounded-xl border border-amber-200 bg-amber-50/60 p-4 dark:border-amber-800/60 dark:bg-amber-950/20">
+          <div className="flex items-start gap-2">
+            <CheckCircle2
+              className="mt-0.5 h-4 w-4 shrink-0 text-amber-700 dark:text-amber-400"
+              aria-hidden="true"
+            />
+            <SectionHeading n={5} title="Evaluasi Internal Sidang MUBES" />
+          </div>
+          <ProseBlock>{evaluasi}</ProseBlock>
+        </section>
+      ) : null}
+
+      {kendalaText ? (
+        <section
+          aria-labelledby="kendala-heading"
+          className="rounded-xl border border-rose-200 bg-rose-50/60 p-4 dark:border-rose-900/60 dark:bg-rose-950/20"
+        >
+          <h2
+            id="kendala-heading"
+            className="mb-2 flex items-center gap-2 text-sm font-bold text-rose-900 dark:text-rose-200"
+          >
+            <AlertTriangle className="h-4 w-4" aria-hidden="true" />
+            Kendala &amp; Solusi
+          </h2>
+          <div className="whitespace-pre-line break-words text-sm leading-6 text-slate-700 dark:text-slate-200">
+            {kendalaText}
+          </div>
+        </section>
+      ) : null}
+
+      {formUrl ? (
+        <section
+          aria-labelledby="kuesioner-heading"
+          className="flex flex-col gap-3 rounded-xl border border-sky-200 bg-sky-50/70 p-4 dark:border-sky-900/60 dark:bg-sky-950/20 sm:flex-row sm:items-center"
+        >
+          <div className="min-w-0 flex-1">
+            <h2 id="kuesioner-heading" className="text-sm font-bold text-slate-900 dark:text-white">
+              Kuesioner Evaluasi
+            </h2>
+            <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
+              Tautan kuesioner program kerja.
             </p>
-            <a
-              href={formUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-sm font-semibold transition shrink-0"
-            >
-              <ExternalLink className="w-4 h-4" />
-              Buka Kuisioner
-            </a>
           </div>
-        ) : (
-          <ProseBlock>
-            <EmptyHint>Belum ada tautan kuisioner untuk program kerja ini.</EmptyHint>
-          </ProseBlock>
-        )}
-      </section>
-
-      {/* 6. Dokumentasi */}
-      <section className="flex flex-col gap-4">
-        <SectionHeading
-          n={6}
-          title="Dokumentasi"
-          icon={<Images className="w-5 h-5 text-amber-600" />}
-        />
-        <DokumentasiGallery proker={proker} />
-      </section>
+          <a
+            href={formUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-sky-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-sky-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:bg-sky-600 dark:hover:bg-sky-500"
+          >
+            <ExternalLink className="h-4 w-4" aria-hidden="true" />
+            Buka Kuesioner
+          </a>
+        </section>
+      ) : null}
     </div>
   );
 }
 
 function ProkerBanner({ proker }: { proker: MubesProgramKerja }) {
-  const bannerMedia = proker.banner_image || (proker.dokumentasi && proker.dokumentasi[0]);
-  const bannerUrl = getStrapiMediaUrl(bannerMedia, '/images/mubes/bg-medieval.png');
+  const status = proker.lpj?.status_pengesahan || 'draft';
+  const statusConfig = {
+    disahkan: {
+      label: 'Disahkan',
+      dot: 'bg-emerald-600',
+      badge:
+        'border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200',
+    },
+    ditinjau: {
+      label: 'Sedang Ditinjau',
+      dot: 'bg-amber-500',
+      badge:
+        'border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200',
+    },
+    draft: {
+      label: 'Draft',
+      dot: 'bg-slate-500',
+      badge:
+        'border-slate-200 bg-white/70 text-slate-700 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-200',
+    },
+  }[status] || {
+    label: status,
+    dot: 'bg-slate-500',
+    badge:
+      'border-slate-200 bg-white/70 text-slate-700 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-200',
+  };
 
   return (
-    <div className="relative w-full aspect-[21/9] min-h-[200px] max-h-[420px] bg-slate-900 overflow-hidden">
-      <Image
-        src={bannerUrl}
-        alt={proker.judul}
-        fill
-        priority
-        className="object-cover object-center"
-        sizes="(max-width: 1600px) 100vw, 1600px"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/55 to-slate-950/20" />
-      <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6 flex items-end gap-3">
-        <div className="w-10 h-10 shrink-0 rounded-xl bg-amber-500/25 text-amber-300 flex items-center justify-center font-bold text-sm border border-amber-500/40 backdrop-blur-sm">
-          {proker.sekbid_nomor}
+    <header className="border-b border-sky-200 bg-sky-50 px-5 py-5 dark:border-sky-900/70 dark:bg-sky-950/35 sm:px-7">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex min-w-0 items-start gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-800 dark:bg-amber-950/50 dark:text-amber-300">
+            <BadgeCheck className="h-5 w-5" aria-hidden="true" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-amber-700 dark:text-amber-300">
+              Sidang Komisi Pertanggungjawaban
+            </p>
+            <h1 className="mt-1 font-serif text-lg font-bold leading-tight text-slate-950 dark:text-white sm:text-xl">
+              Dokumen Evaluasi &amp; Realisasi Anggaran
+            </h1>
+            <p className="mt-1 break-words text-sm text-slate-600 dark:text-slate-300">
+              {proker.judul}
+              {proker.sekbid_judul ? ` · ${proker.sekbid_judul}` : ''}
+            </p>
+          </div>
         </div>
-        <div className="min-w-0 text-white">
-          <span className="text-xs uppercase tracking-wider text-amber-300 font-semibold block">
-            SEKBID {proker.sekbid_nomor} • {proker.sekbid_judul}
-          </span>
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold font-serif leading-tight drop-shadow break-words">
-            {proker.judul}
-          </h1>
+        <div
+          className={`inline-flex w-fit shrink-0 items-center gap-2 rounded-full border px-3 py-1.5 text-[11px] font-semibold ${statusConfig.badge}`}
+        >
+          <span className={`h-2 w-2 rounded-full ${statusConfig.dot}`} aria-hidden="true" />
+          <span>Status Sidang: {statusConfig.label}</span>
         </div>
       </div>
-    </div>
+    </header>
   );
 }
 
@@ -510,23 +523,48 @@ export default function MubesProkerPresentation({
     : null;
 
   const body = (
-    <>
-      <MetaStrip proker={proker} />
-      <LpjOrderedBody proker={proker} />
-    </>
+    <div className="flex flex-col gap-8">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(220px,280px)_minmax(0,1fr)] lg:gap-10">
+        <aside className="flex min-w-0 flex-col gap-5">
+          <MetaStrip proker={proker} />
+          <AnggaranNotaBlock proker={proker} />
+        </aside>
+        <LpjOrderedBody proker={proker} />
+      </div>
+
+      <section aria-labelledby="dokumentasi-heading" className="flex flex-col gap-4 border-t border-slate-200 pt-7 dark:border-slate-800">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 id="dokumentasi-heading" className="flex items-center gap-2 font-serif text-xl font-bold text-slate-950 dark:text-white">
+              <Images className="h-5 w-5 text-sky-700 dark:text-sky-400" aria-hidden="true" />
+              Dokumentasi Pelaksanaan Kegiatan
+            </h2>
+            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+              Arsip dokumentasi program kerja.
+            </p>
+          </div>
+          {proker.dokumentasi_items?.length ? (
+            <span className="w-fit rounded-full bg-amber-100 px-3 py-1 text-[10px] font-bold text-amber-900 dark:bg-amber-950/50 dark:text-amber-200">
+              {proker.dokumentasi_items.length} dokumentasi
+            </span>
+          ) : null}
+        </div>
+        <DokumentasiGallery proker={proker} />
+      </section>
+    </div>
   );
 
   if (isFull) {
     return (
-      <article className="bg-white dark:bg-slate-900 w-full rounded-none sm:rounded-2xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col">
+      <article className="flex w-full flex-col overflow-hidden rounded-none border border-slate-200 bg-slate-50 shadow-sm dark:border-slate-800 dark:bg-slate-950 sm:rounded-2xl">
         <ProkerBanner proker={proker} />
-        <div className="p-5 sm:p-8 lg:p-10 xl:px-12 flex flex-col gap-8 sm:gap-10 text-slate-800 dark:text-slate-200">
+        <div className="p-5 text-slate-800 dark:text-slate-200 sm:p-7 lg:p-9">
           {body}
         </div>
-        <div className="p-4 px-6 bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 flex justify-end">
+        <div className="flex justify-end border-t border-slate-200 bg-white p-4 px-6 dark:border-slate-800 dark:bg-slate-900">
           <Link
             href="/portal-mubes"
-            className="px-4 py-2 rounded-xl bg-slate-900 dark:bg-slate-800 text-white text-xs font-semibold hover:bg-slate-800 transition flex items-center gap-2"
+            className="flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-xs font-semibold text-white transition hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 dark:bg-slate-700 dark:hover:bg-slate-600"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Kembali ke Portal</span>
@@ -537,14 +575,19 @@ export default function MubesProkerPresentation({
   }
 
   return (
-    <div className="bg-white dark:bg-slate-900 w-full max-w-5xl max-h-[90vh] rounded-3xl overflow-hidden shadow-2xl flex flex-col border border-slate-200 dark:border-slate-800">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Dokumen evaluasi ${proker.judul}`}
+      className="flex max-h-[92vh] w-full max-w-6xl flex-col overflow-hidden rounded-3xl border border-slate-200 bg-slate-50 shadow-2xl dark:border-slate-800 dark:bg-slate-950"
+    >
       <div className="relative shrink-0">
         <ProkerBanner proker={proker} />
         {onClose ? (
           <button
             type="button"
             onClick={onClose}
-            className="absolute top-3 right-3 w-9 h-9 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition z-10"
+            className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 text-white shadow-md transition hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
             aria-label="Tutup"
           >
             <X className="w-5 h-5" />
@@ -552,15 +595,15 @@ export default function MubesProkerPresentation({
         ) : null}
       </div>
 
-      <div className="p-5 sm:p-8 overflow-y-auto flex-1 flex flex-col gap-8 text-slate-800 dark:text-slate-200">
+      <div className="flex-1 overflow-y-auto p-5 text-slate-800 dark:text-slate-200 sm:p-7">
         {body}
       </div>
 
-      <div className="p-4 px-6 bg-slate-100 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-2 flex-wrap text-xs shrink-0">
+      <div className="flex shrink-0 flex-wrap items-center justify-end gap-2 border-t border-slate-200 bg-white p-4 px-6 text-xs dark:border-slate-800 dark:bg-slate-900">
         {fullHref ? (
           <Link
             href={fullHref}
-            className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-semibold transition flex items-center gap-2"
+            className="flex items-center gap-2 rounded-xl bg-sky-700 px-4 py-2 font-semibold text-white transition hover:bg-sky-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
           >
             <ExternalLink className="w-3.5 h-3.5" />
             <span>Buka Tampilan Penuh Sidang</span>
@@ -570,7 +613,7 @@ export default function MubesProkerPresentation({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-xl bg-slate-900 dark:bg-slate-800 text-white font-semibold hover:bg-slate-800 transition"
+            className="rounded-xl bg-slate-900 px-4 py-2 font-semibold text-white transition hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 dark:bg-slate-700 dark:hover:bg-slate-600"
           >
             Tutup Layar
           </button>

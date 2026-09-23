@@ -1,0 +1,24 @@
+# Agora Acta Wiki
+
+> AI-oriented index for the Agora Acta Next.js 16 + Strapi 5 workspace.
+
+## Overview
+
+- [Agora Acta Overview](overview.md): runtime map, boundaries, and documentation entry points.
+
+## Concepts
+
+- [System Architecture](concepts/architecture.md): monorepo topology, public data flow, BFF, and deployment boundaries.
+- [Strapi Data Layer](concepts/strapi-data-layer.md): REST client, cache behavior, media normalization, Document Service, and RBAC bootstrap.
+- [Program Kerja and MUBES LPJ](concepts/mubes-dual-source.md): dual-source join, normalization, and context-specific precedence.
+- [Portal MUBES Security and Access](concepts/mubes-security.md): Clerk authorization, Strapi origin lock, BFF delivery lock, and identity synchronization.
+
+## Guides
+
+- [Local Development](guides/local-development.md): commands, environment names, security smoke checks, and troubleshooting.
+- [Content Manager Layout Bootstrap](guides/content-manager-layout-bootstrap.md): idempotent core-store layout configuration and editorial fields.
+
+## Reference
+
+- [Program Kerja and LPJ Content Models](reference/content-models.md): schemas, fields, relations, and components.
+- [Key File Reference](reference/key-files.md): source entry points, routes, schemas, and canonical codemaps.

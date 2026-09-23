@@ -5,7 +5,7 @@
     "singularName": "program-kerja",
     "pluralName": "program-kerjas",
     "displayName": "🌐 [VISITOR] Program Kerja",
-    "description": ""
+    "description": "Konten publik program, URL kuesioner, dokumentasi, dan relasi penanggung jawab. Status sidang/anggaran tetap bersumber dari MUBES LPJ."
   },
   "options": {
     "draftAndPublish": true

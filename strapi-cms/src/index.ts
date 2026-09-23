@@ -133,6 +133,7 @@ async function setupRBAC(strapi: Core.Strapi) {
     'api::edufest-timeline.edufest-timeline',
     'api::edufest-config.edufest-config',
     'api::partner.partner',
+    'api::mubes-lpj.mubes-lpj',
   ];
 
   const contributorContentTypes = [
@@ -408,42 +409,204 @@ async function ensureDefaultMediaAssets(strapi: Core.Strapi) {
       { field: 'background_image', size: 6 }
     );
 
-    // 🌐 Program Kerja — dedicated Capaian + Evaluasi & Solusi fields
+    // 🌐 Program Kerja — public content + MUBES UI fallbacks
     const prokerKey =
       'plugin_content_manager_configuration_content_types::api::program-kerja.program-kerja';
     await ensureContentManagerField(strapi, prokerKey, {
+      field: 'tujuan',
+      size: 12,
+      label: 'Tujuan / Pendahuluan (Fallback)',
+      description:
+        'Konten publik. Untuk LPJ sidang, utamakan MUBES LPJ → sections jenis "pendahuluan" atau "tujuan".',
+    });
+    await ensureContentManagerField(strapi, prokerKey, {
+      field: 'teknis_pelaksanaan',
+      size: 12,
+      label: 'Teknis Pelaksanaan (Fallback)',
+      description:
+        'Konten publik. Untuk LPJ sidang, utamakan MUBES LPJ → sections jenis "teknis_waktu".',
+    });
+    await ensureContentManagerField(strapi, prokerKey, {
+      field: 'golongan_target',
+      size: 6,
+      label: 'Golongan Sasaran / Peserta (Fallback)',
+      description:
+        'Konten publik/fallback. Untuk LPJ sidang, utamakan sections jenis "golongan_sasaran".',
+    });
+    await ensureContentManagerField(strapi, prokerKey, {
+      field: 'evaluasi_form_url',
+      size: 6,
+      label: 'URL Kuesioner / Form Evaluasi',
+      description:
+        'Link form evaluasi yang tampil di dokumen MUBES (tombol kuesioner).',
+    });
+    await ensureContentManagerField(strapi, prokerKey, {
+      field: 'penanggung_jawab',
+      size: 6,
+      label: 'Penanggung Jawab & Foto',
+      description:
+        'Relasi ke Anggota OSIS. Nama, jabatan, foto dipakai di header dokumen MUBES. ketua_foto = fallback lama.',
+    });
+    await ensureContentManagerField(strapi, prokerKey, {
+      field: 'dokumentasi_items',
+      size: 12,
+      label: 'Dokumentasi Terstruktur (Foto / Video)',
+      description:
+        'Sumber utama galeri MUBES: judul, deskripsi, media, urutan. Field "dokumentasi" = fallback media lama.',
+    });
+    await ensureContentManagerField(strapi, prokerKey, {
       field: 'capaian',
       size: 12,
-      label: 'Capaian',
-      description: 'Ringkasan hasil/capaian program (tampil di visitor & portal MUBES).',
+      label: 'Capaian (Fallback)',
+      description:
+        'Ringkasan publik/fallback. Untuk LPJ sidang, utamakan sections jenis "capaian".',
       before: 'evaluasi_deskripsi',
     });
     await ensureContentManagerField(strapi, prokerKey, {
       field: 'evaluasi_deskripsi',
       size: 12,
-      label: 'Evaluasi & Solusi',
+      label: 'Evaluasi Deskripsi (Fallback)',
       description:
-        'Evaluasi pelaksanaan dan solusi perbaikan. Isi ini tetap tampil di Portal MUBES dan untuk user login terverifikasi.',
+        'Fallback evaluasi bila LPJ sections jenis "evaluasi_internal" / field evaluasi_internal kosong. Tetap tampil di Portal MUBES.',
     });
     await ensureContentManagerField(strapi, prokerKey, {
       field: 'tampilkan_evaluasi',
       size: 6,
       label: 'Tampilkan Evaluasi (Guest/Visitor)',
       description:
-        'Hanya untuk guest (belum login). OFF = sembunyikan di halaman visitor publik. User login+terverifikasi & Portal MUBES tetap melihat evaluasi.',
+        'Hanya guest. OFF = sembunyikan di visitor publik. Login+terverifikasi & Portal MUBES tetap melihat evaluasi.',
       before: 'mode_ukuran_frame',
     });
 
-    // 🏛️ MUBES LPJ — sections (dynamic body: Tujuan / Teknis / Capaian / Evaluasi)
+    // 🏛️ MUBES LPJ — source of truth for hearing content and finance
     const lpjKey =
       'plugin_content_manager_configuration_content_types::api::mubes-lpj.mubes-lpj';
     await ensureContentManagerField(strapi, lpjKey, {
+      field: 'program_kerja',
+      size: 6,
+      label: 'Program Kerja (Tautan)',
+      description: 'Wajib tautkan ke satu Program Kerja agar LPJ muncul di dokumen MUBES.',
+      before: 'sections',
+    });
+    await ensureContentManagerField(strapi, lpjKey, {
       field: 'sections',
       size: 12,
-      label: 'Bagian LPJ (Tujuan, Teknis, Capaian, Evaluasi & Solusi)',
+      label: 'Isi LPJ Bernomor (Tujuan / Teknis / Capaian / Evaluasi)',
       description:
-        'Tambah baris komponen: Judul = "Capaian" atau "Evaluasi & Solusi", Isi = teks LPJ. Urutan via field order.',
+        'Sumber utama isi sidang. Set "Jenis Bagian" + Judul + Isi + Order. Jenis: pendahuluan|golongan_sasaran|tujuan|teknis_waktu|capaian|evaluasi_internal|kendala_solusi|lainnya.',
       before: 'realisasi_anggaran',
+    });
+    await ensureContentManagerField(strapi, lpjKey, {
+      field: 'status_pengesahan',
+      size: 6,
+      label: 'Status Pengesahan Sidang',
+      description: 'Satu-satunya sumber status LPJ: draft | ditinjau | disahkan.',
+    });
+    await ensureContentManagerField(strapi, lpjKey, {
+      field: 'realisasi_anggaran',
+      size: 4,
+      label: 'Realisasi Anggaran (Rp)',
+      description: 'Nilai realisasi anggaran LPJ dalam rupiah.',
+    });
+    await ensureContentManagerField(strapi, lpjKey, {
+      field: 'sumber_dana',
+      size: 6,
+      label: 'Sumber Dana',
+      description: 'Contoh: Kas OSIS, Swadaya, Proposal.',
+    });
+    await ensureContentManagerField(strapi, lpjKey, {
+      field: 'nota_kwitansi',
+      size: 6,
+      label: 'Nota / Kwitansi',
+      description: 'Bukti transaksi (gambar/PDF). Dipetakan ke UI sebagai "nota".',
+    });
+    await ensureContentManagerField(strapi, lpjKey, {
+      field: 'pendahuluan',
+      size: 12,
+      label: 'Pendahuluan / Gambaran Umum (Fallback)',
+      description:
+        'Fallback bila sections jenis "pendahuluan"/"tujuan" belum diisi.',
+    });
+    await ensureContentManagerField(strapi, lpjKey, {
+      field: 'golongan_target',
+      size: 6,
+      label: 'Golongan Sasaran / Peserta (Fallback)',
+      description:
+        'Fallback bila sections jenis "golongan_sasaran" belum diisi.',
+    });
+    await ensureContentManagerField(strapi, lpjKey, {
+      field: 'teknis_pelaksanaan',
+      size: 12,
+      label: 'Teknis Pelaksanaan / Alur (Fallback)',
+      description:
+        'Fallback bila sections jenis "teknis_waktu" belum diisi.',
+    });
+    await ensureContentManagerField(strapi, lpjKey, {
+      field: 'evaluasi_internal',
+      size: 12,
+      label: 'Evaluasi Internal Sidang (Fallback)',
+      description:
+        'Fallback bila sections jenis "evaluasi_internal" belum diisi. Setara evaluasi_deskripsi di Program Kerja.',
+    });
+    await ensureContentManagerField(strapi, lpjKey, {
+      field: 'kendala_solusi',
+      size: 12,
+      label: 'Kendala & Solusi (JSON atau sections)',
+      description:
+        'JSON: [{ "kendala": "...", "solusi": "..." }]. Alternatif: sections jenis "kendala_solusi".',
+    });
+
+    const lpjSectionKey =
+      'plugin_content_manager_configuration_components::program-kerja.lpj-section';
+    await ensureContentManagerField(strapi, lpjSectionKey, {
+      field: 'jenis',
+      size: 6,
+      label: 'Jenis Bagian',
+      description:
+        'Penanda semantik opsional. Data lama tanpa jenis tetap dibaca melalui judul.',
+      before: 'judul',
+    });
+    await ensureContentManagerField(strapi, lpjSectionKey, {
+      field: 'judul',
+      size: 6,
+      label: 'Judul yang Ditampilkan',
+      description: 'Judul bebas yang tampil pada bagian LPJ.',
+    });
+    await ensureContentManagerField(strapi, lpjSectionKey, {
+      field: 'isi',
+      size: 12,
+      label: 'Isi Bagian',
+      description: 'Isi lengkap bagian LPJ.',
+    });
+    await ensureContentManagerField(strapi, lpjSectionKey, {
+      field: 'order',
+      size: 4,
+      label: 'Nomor / Urutan',
+      description: 'Gunakan 1, 2, 3, dan seterusnya untuk urutan tampilan.',
+    });
+
+    const documentationItemKey =
+      'plugin_content_manager_configuration_components::program-kerja.dokumentasi-item';
+    await ensureContentManagerField(strapi, documentationItemKey, {
+      field: 'judul',
+      size: 6,
+      label: 'Judul Dokumentasi',
+    });
+    await ensureContentManagerField(strapi, documentationItemKey, {
+      field: 'deskripsi',
+      size: 6,
+      label: 'Deskripsi Dokumentasi',
+    });
+    await ensureContentManagerField(strapi, documentationItemKey, {
+      field: 'media',
+      size: 6,
+      label: 'Media Foto / Video',
+      description: 'Pilih satu gambar atau video.',
+    });
+    await ensureContentManagerField(strapi, documentationItemKey, {
+      field: 'order',
+      size: 4,
+      label: 'Urutan Dokumentasi',
     });
   } catch (err: any) {
     strapi.log.warn('⚠️ Could not update content-manager layouts: ' + err.message);

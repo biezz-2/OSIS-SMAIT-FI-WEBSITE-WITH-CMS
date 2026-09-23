@@ -6,6 +6,15 @@ Format changelog ini mengacu pada [Keep a Changelog](https://keepachangelog.com/
 
 ---
 
+## [2.1.56] - 2026-09-23
+
+### ✨ UI & CMS (Dokumen Evaluasi Proker MUBES — mockup layout + Capaian/Evaluasi manage)
+- **Presentasi MUBES** (`MubesProkerPresentation`): shell dokumen responsif (modal + full)—header biru muda + badge status pengesahan, grid portrait seluruh PJ, kartu anggaran/nota, lima poin bernomor (Pendahuluan → Golongan Sasaran → Capaian → Teknis → Evaluasi Internal), opsional kendala/kuesioner, grid dokumentasi foto/video.
+- **Capaian UI**: baris pendek → chip grid; prosa panjang tetap blok teks. Poin kosong disembunyikan (tanpa placeholder dummy).
+- **Data Strapi (dual-source)**: status/anggaran/nota dari `mubes-lpj`; PJ/foto + kuesioner + dokumentasi dari `program-kerja`; body bernomor via `findLpjSectionIsi` (`jenis` dulu, lalu match `judul`) dengan fallback field skalar kompatibel.
+- **Strapi editor**: component Bagian LPJ — enum opsional `jenis` (pendahuluan … kendala_solusi / lainnya); displayName **Bagian LPJ Bernomor**; deskripsi CT Program Kerja / MUBES LPJ diperjelas; field/API lama tetap hidup.
+- **Dokumentasi**: AutoWiki — konsep dual-source Program Kerja ↔ MUBES LPJ, normalizer, dan tabel sumber per blok UI.
+
 ## [2.1.55] - 2026-09-23
 
 ### ✅ Ship (Capaian & Evaluasi — schema + UI + Strapi rebuild)
